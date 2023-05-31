@@ -1,0 +1,53 @@
+{
+  "version": "v2.3.3",
+  "name": "OldCode",
+  "bytecode": "0102094022010000000102ce000201000204000b130064160113016417031702160016021603bb",
+  "codeHash": "aaad7b5fbaa43e5176f92b4688ca4cad6526f060aeec52b6766f5262f070286b",
+  "fieldsSig": {
+    "names": [
+      "n"
+    ],
+    "types": [
+      "U256"
+    ],
+    "isMutable": [
+      false
+    ]
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "get",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "migrateWithFields",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "newCode",
+        "newN"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": []
+    }
+  ],
+  "constants": [],
+  "enums": []
+}

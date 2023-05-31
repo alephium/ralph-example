@@ -1,0 +1,52 @@
+{
+  "version": "v2.3.3",
+  "name": "NewCode",
+  "bytecode": "01020916010000000102a000020100010101041600a100a00002",
+  "codeHash": "16ef550a08d9e4991afd5af65516e28bd52f408260de4c1b3d331edd59d68288",
+  "fieldsSig": {
+    "names": [
+      "n"
+    ],
+    "types": [
+      "U256"
+    ],
+    "isMutable": [
+      true
+    ]
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "get",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "set",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "m"
+      ],
+      "paramTypes": [
+        "U256"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": [
+        "U256"
+      ]
+    }
+  ],
+  "constants": [],
+  "enums": []
+}

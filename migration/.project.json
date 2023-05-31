@@ -1,0 +1,55 @@
+{
+  "fullNodeVersion": "v2.3.3",
+  "compilerOptionsUsed": {
+    "ignoreUnusedConstantsWarnings": false,
+    "ignoreUnusedVariablesWarnings": false,
+    "ignoreUnusedFieldsWarnings": false,
+    "ignoreUnusedPrivateFunctionsWarnings": false,
+    "ignoreUpdateFieldsCheckWarnings": false,
+    "ignoreCheckExternalCallerWarnings": false
+  },
+  "infos": {
+    "MigrateWithFields": {
+      "sourceFile": "script.ral",
+      "sourceCodeHash": "0b842f9009fe0a64f3bf64d7fffc06f6d7c8aad9eda55c22c248fd293047629c",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "",
+      "warnings": []
+    },
+    "NewCode": {
+      "sourceFile": "contract.ral",
+      "sourceCodeHash": "67ae5ebd3898d49df2ae88afadf58bc28a0f4cc26f058df9117091e400937363",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "16ef550a08d9e4991afd5af65516e28bd52f408260de4c1b3d331edd59d68288",
+      "warnings": []
+    },
+    "NewGet": {
+      "sourceFile": "script.ral",
+      "sourceCodeHash": "0b842f9009fe0a64f3bf64d7fffc06f6d7c8aad9eda55c22c248fd293047629c",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "",
+      "warnings": []
+    },
+    "NewSet": {
+      "sourceFile": "script.ral",
+      "sourceCodeHash": "0b842f9009fe0a64f3bf64d7fffc06f6d7c8aad9eda55c22c248fd293047629c",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "",
+      "warnings": []
+    },
+    "OldCode": {
+      "sourceFile": "contract.ral",
+      "sourceCodeHash": "67ae5ebd3898d49df2ae88afadf58bc28a0f4cc26f058df9117091e400937363",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "aaad7b5fbaa43e5176f92b4688ca4cad6526f060aeec52b6766f5262f070286b",
+      "warnings": []
+    },
+    "OldGet": {
+      "sourceFile": "script.ral",
+      "sourceCodeHash": "0b842f9009fe0a64f3bf64d7fffc06f6d7c8aad9eda55c22c248fd293047629c",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "",
+      "warnings": []
+    }
+  }
+}

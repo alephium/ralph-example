@@ -1,0 +1,31 @@
+{
+  "version": "v2.3.3",
+  "name": "OldGet",
+  "bytecodeTemplate": "010100000000080c0d{0}0100{1}2f0c7b",
+  "fieldsSig": {
+    "names": [
+      "contract",
+      "expected"
+    ],
+    "types": [
+      "ByteVec",
+      "U256"
+    ],
+    "isMutable": [
+      false,
+      false
+    ]
+  },
+  "functions": [
+    {
+      "name": "main",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    }
+  ]
+}

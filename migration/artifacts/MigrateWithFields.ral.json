@@ -1,0 +1,34 @@
+{
+  "version": "v2.3.3",
+  "name": "MigrateWithFields",
+  "bytecodeTemplate": "01010000000006{1}{2}0e0c{0}0101",
+  "fieldsSig": {
+    "names": [
+      "contract",
+      "newCode",
+      "newN"
+    ],
+    "types": [
+      "ByteVec",
+      "ByteVec",
+      "U256"
+    ],
+    "isMutable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "functions": [
+    {
+      "name": "main",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    }
+  ]
+}

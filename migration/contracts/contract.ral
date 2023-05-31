@@ -1,0 +1,24 @@
+Contract OldCode(n: U256) {
+    pub fn get() -> U256 {
+        return n
+    }
+
+    // Please check owner in production code
+    @using(checkExternalCaller = false, updateFields = true)
+    pub fn migrateWithFields(newCode: ByteVec, newN: U256) -> () {
+        let (immFields, mutFields) = NewCode.encodeFields!(newN)
+        migrateWithFields!(newCode, immFields, mutFields)
+    }
+}
+
+Contract NewCode(mut n: U256) {
+    pub fn get() -> U256 {
+        return n
+    }
+
+    @using(checkExternalCaller = false, updateFields = true)
+    pub fn set(m: U256) -> U256 {
+        n = m
+        return n
+    }
+}

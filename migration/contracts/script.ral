@@ -1,0 +1,19 @@
+@using(preapprovedAssets = false)
+TxScript OldGet(contract: OldCode, expected: U256) {
+    assert!(contract.get() == expected, 0)
+}
+
+@using(preapprovedAssets = false)
+TxScript MigrateWithFields(contract: OldCode, newCode: ByteVec, newN: U256) {
+    contract.migrateWithFields(newCode, newN)
+}
+
+@using(preapprovedAssets = false)
+TxScript NewGet(contract: NewCode, expected: U256) {
+    assert!(contract.get() == expected, 0)
+}
+
+@using(preapprovedAssets = false)
+TxScript NewSet(contract: NewCode, newN: U256) {
+    contract.set(newN)
+}
