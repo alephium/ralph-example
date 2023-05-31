@@ -3,6 +3,13 @@ Contract OldCode(n: U256) {
         return n
     }
 
+    // You could migrate to a contract with the same fields
+    // 
+    // @using(checkExternalCaller = false, updateFields = true)
+    // pub fn migrate(newCode: ByteVec) -> () {
+    //     migrat!(newCode)
+    // }
+
     // Please check owner in production code
     @using(checkExternalCaller = false, updateFields = true)
     pub fn migrateWithFields(newCode: ByteVec, newN: U256) -> () {
