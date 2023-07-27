@@ -1,0 +1,88 @@
+Contract Auction(
+  bidderTemplateId: ByteVec,
+  auctioneer: Address,
+  beneficiaryAsset: ByteVec,
+  beneficiaryAssetAmount: U256,
+  auctionEndTime: U256,
+  mut highestBidder: Address,
+  mut highestBid: U256,
+  mut ended: Bool
+) {
+
+  event HighestBidIncreased(bidder: Address, amount: U256)
+  event AuctionEnded(winner: Address, amount: U256)
+
+  enum ErrorCodes {
+    InvalidArg = 0
+    AuctionAlreadyEnded = 1
+    BidNotHighEnough = 2
+    InvalidBidderAddress = 3
+    BidderNotExists = 4
+    HighestBidderNotAllowedToWithdraw = 5
+    AuctionNotYetEnded = 6
+    AuctionEndAlreadyCalled = 7
+    InvalidCaller = 8
+  }
+
+  pub fn getAuctioneer() -> Address {
+    return auctioneer
+  }
+
+  @using(preapprovedAssets = true, checkExternalCaller = false, updateFields = true)
+  pub fn bid(from: Address, amount: U256) -> () {
+    assert!(blockTimeStamp!() <= auctionEndTime, ErrorCodes.AuctionAlreadyEnded)
+    assert!(isAssetAddress!(from), ErrorCodes.InvalidBidderAddress)
+    assert!(amount > highestBid, ErrorCodes.BidNotHighEnough)
+
+    let path = toByteVec!(from)
+    let bidderContractId = subContractId!(path)
+    if (!contractExists!(bidderContractId)) {
+      let expectedAlphAmount = amount + 1 alph
+      assert!(tokenRemaining!(from, ALPH) >= expectedAlphAmount, ErrorCodes.InvalidArg)
+
+      let (encodedImmFields, encodedMutFields) = Bidder.encodeFields!(selfContract!(), from, amount)
+      copyCreateSubContract!{from -> ALPH : expectedAlphAmount}(path, bidderTemplateId, encodedImmFields, encodedMutFields)
+
+    } else {
+      assert!(tokenRemaining!(from, ALPH) >= amount, ErrorCodes.InvalidArg)
+
+      let bidder = Bidder(bidderContractId)
+      assert!(bidder.getAddress() == from, ErrorCodes.InvalidCaller)
+
+      bidder.rebid{from -> ALPH : amount}(amount)
+    }
+
+    highestBid = amount
+    highestBidder = from
+    emit HighestBidIncreased(highestBidder, highestBid)
+  }
+
+  fn getBidder(address: Address) -> Bidder {
+    let bidderContractId = subContractId!(toByteVec!(address))
+    assert!(contractExists!(bidderContractId), ErrorCodes.BidderNotExists)
+    return Bidder(bidderContractId)
+  }
+
+  pub fn withdraw() -> () {
+    let caller = callerAddress!()
+    assert!(caller != highestBidder, ErrorCodes.HighestBidderNotAllowedToWithdraw)
+
+    let bidder = getBidder(caller)
+    checkCaller!(caller == bidder.getAddress(), ErrorCodes.InvalidCaller)
+    bidder.withdraw()
+  }
+
+  @using(updateFields = true, assetsInContract = true, checkExternalCaller = false)
+  pub fn auctionEnd() -> () {
+    assert!(blockTimeStamp!() > auctionEndTime, ErrorCodes.AuctionNotYetEnded)
+    assert!(!ended, ErrorCodes.AuctionEndAlreadyCalled)
+
+    let bidder = getBidder(highestBidder)
+    bidder.auctionEnd(auctioneer, highestBid)
+    transferTokenFromSelf!(highestBidder, beneficiaryAsset, beneficiaryAssetAmount)
+
+    ended = true
+
+    emit AuctionEnded(highestBidder, highestBid)
+  }
+}

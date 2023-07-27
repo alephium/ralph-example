@@ -1,0 +1,93 @@
+{
+  "version": "v2.3.5",
+  "name": "Bidder",
+  "bytecode": "030409402340324046010000000102ce010201010101000db3ce00410c7bce01a000a8ce011600a91600a100010200000007b3ce00410c7bce01b001020202000ab3ce00410c7b16001601a8ce01b0",
+  "codeHash": "0f31c5db9706970d0f12be335dd9837f0e7c9ec257f4b64f668207aa449ae6ce",
+  "fieldsSig": {
+    "names": [
+      "auction",
+      "address",
+      "bidAmount"
+    ],
+    "types": [
+      "ByteVec",
+      "Address",
+      "U256"
+    ],
+    "isMutable": [
+      false,
+      false,
+      true
+    ]
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "getAddress",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "Address"
+      ]
+    },
+    {
+      "name": "rebid",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": true,
+      "isPublic": true,
+      "paramNames": [
+        "amount"
+      ],
+      "paramTypes": [
+        "U256"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "withdraw",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": true,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    },
+    {
+      "name": "auctionEnd",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": true,
+      "isPublic": true,
+      "paramNames": [
+        "to",
+        "amount"
+      ],
+      "paramTypes": [
+        "Address",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": []
+    }
+  ],
+  "constants": [
+    {
+      "name": "InvalidCaller",
+      "value": {
+        "type": "U256",
+        "value": "0"
+      }
+    }
+  ],
+  "enums": []
+}
