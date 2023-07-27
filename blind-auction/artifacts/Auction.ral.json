@@ -1,0 +1,232 @@
+{
+  "version": "v2.3.5",
+  "name": "Auction",
+  "bytecode": "0a0640314045408a40d240fa412d010300030016b41700ce00b116001303640c13016417021701160013c40de0b6b3a7640000a2160047ce0116011602c11800000102010a160047cb17011601c5107b1601020103030400402516014313202f0c7b56ce05320d7b1600480e7b1600000117030c0d160301001600450f7b1600160213c40de0b6b3a76400002aa2160116020e0c160301010100040700402856ce0533117b56ce063213067b1600000117040c0d16040100170516051600450f7b160116021603a001100d1604010217061606a001334c041606a1011605a100010000020016b417001600a0004613097b16000001170116000c0d16010100450f7b0c0c1601010401020001001c56ce063313077ba0021913087ba00000011700ce02a0010e0c16000105a000ce03ce04ab03a10205a000a0015f",
+  "codeHash": "73c8954c460829ee726906762af2ea738d7824aa898cfb789971731a3d000b90",
+  "fieldsSig": {
+    "names": [
+      "blindedBidTemplateId",
+      "bidderTemplateId",
+      "auctioneer",
+      "beneficiaryAsset",
+      "beneficiaryAssetAmount",
+      "biddingEnd",
+      "revealEnd",
+      "highestBidder",
+      "highestBid",
+      "ended"
+    ],
+    "types": [
+      "ByteVec",
+      "ByteVec",
+      "Address",
+      "ByteVec",
+      "U256",
+      "U256",
+      "U256",
+      "Address",
+      "U256",
+      "Bool"
+    ],
+    "isMutable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true
+    ]
+  },
+  "eventsSig": [
+    {
+      "name": "AuctionEnded",
+      "fieldNames": [
+        "winner",
+        "amount"
+      ],
+      "fieldTypes": [
+        "Address",
+        "U256"
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "name": "createBidder",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    },
+    {
+      "name": "getBidder",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": false,
+      "paramNames": [
+        "from"
+      ],
+      "paramTypes": [
+        "Address"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "bid",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "from",
+        "blindedBid",
+        "amount"
+      ],
+      "paramTypes": [
+        "Address",
+        "ByteVec",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "reveal",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "from",
+        "values",
+        "fakes",
+        "secrets"
+      ],
+      "paramTypes": [
+        "Address",
+        "ByteVec",
+        "ByteVec",
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "withdraw",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    },
+    {
+      "name": "auctionEnd",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": true,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    }
+  ],
+  "constants": [],
+  "enums": [
+    {
+      "name": "ErrorCodes",
+      "fields": [
+        {
+          "name": "InvalidArg",
+          "value": {
+            "type": "U256",
+            "value": "0"
+          }
+        },
+        {
+          "name": "BiddingAlreadyEnded",
+          "value": {
+            "type": "U256",
+            "value": "1"
+          }
+        },
+        {
+          "name": "InvalidBidderAddress",
+          "value": {
+            "type": "U256",
+            "value": "2"
+          }
+        },
+        {
+          "name": "InvalidCaller",
+          "value": {
+            "type": "U256",
+            "value": "3"
+          }
+        },
+        {
+          "name": "BidderNotExists",
+          "value": {
+            "type": "U256",
+            "value": "4"
+          }
+        },
+        {
+          "name": "BiddingNotEnd",
+          "value": {
+            "type": "U256",
+            "value": "5"
+          }
+        },
+        {
+          "name": "RevealAlreadyEnded",
+          "value": {
+            "type": "U256",
+            "value": "6"
+          }
+        },
+        {
+          "name": "RevealNotEnd",
+          "value": {
+            "type": "U256",
+            "value": "7"
+          }
+        },
+        {
+          "name": "AuctionEndAlreadyCalled",
+          "value": {
+            "type": "U256",
+            "value": "8"
+          }
+        },
+        {
+          "name": "HighestBidderNotAllowedToWithdraw",
+          "value": {
+            "type": "U256",
+            "value": "9"
+          }
+        }
+      ]
+    }
+  ]
+}

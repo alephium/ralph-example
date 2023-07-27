@@ -1,0 +1,8 @@
+TxScript Reveal(
+  auction: Auction,
+  values: ByteVec,
+  fakes: ByteVec,
+  secrets: ByteVec
+) {
+  auction.reveal(callerAddress!(), values, fakes, secrets)
+}

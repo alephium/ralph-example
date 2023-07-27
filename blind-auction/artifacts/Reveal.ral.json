@@ -1,0 +1,37 @@
+{
+  "version": "v2.3.5",
+  "name": "Reveal",
+  "bytecodeTemplate": "01010300000008b4{1}{2}{3}100c{0}0103",
+  "fieldsSig": {
+    "names": [
+      "auction",
+      "values",
+      "fakes",
+      "secrets"
+    ],
+    "types": [
+      "ByteVec",
+      "ByteVec",
+      "ByteVec",
+      "ByteVec"
+    ],
+    "isMutable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "functions": [
+    {
+      "name": "main",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    }
+  ]
+}

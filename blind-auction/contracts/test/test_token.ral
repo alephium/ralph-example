@@ -1,0 +1,24 @@
+import "std/fungible_token_interface"
+
+Contract TestToken(totalSupply: U256) implements IFungibleToken {
+  @using(assetsInContract = true, checkExternalCaller = false)
+  pub fn getToken(sender: Address, amount: U256) -> () {
+    transferTokenFromSelf!(sender, selfTokenId!(), amount)
+  }
+
+  pub fn getSymbol() -> ByteVec {
+    return #00
+  }
+
+  pub fn getName() -> ByteVec {
+    return #00
+  }
+
+  pub fn getDecimals() -> U256 {
+    return 18
+  }
+
+  pub fn getTotalSupply() -> U256 {
+    return totalSupply
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "version": "v2.3.5",
+  "name": "BlindedBid",
+  "bytecode": "0402405f406e01020507014038b3ce00410c7ba0004b402f16006b16011e44160244170516054ece01424c0216030203a1000c0dce0001001706160119ce021600341a16001603331a4c0b1606ce0216002ba816041600a81600024a031606ce02a8160302010201010007b3ce00410c7b1600b0",
+  "codeHash": "0cddc833f4a794ebe27be5564e50f5c1e546c3fe2e8079cdb65d0e079754e628",
+  "fieldsSig": {
+    "names": [
+      "bidder",
+      "data",
+      "deposit",
+      "revealed"
+    ],
+    "types": [
+      "ByteVec",
+      "ByteVec",
+      "U256",
+      "Bool"
+    ],
+    "isMutable": [
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "reveal",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": true,
+      "isPublic": true,
+      "paramNames": [
+        "value",
+        "fake",
+        "secret",
+        "highestBid",
+        "receiver"
+      ],
+      "paramTypes": [
+        "U256",
+        "Bool",
+        "ByteVec",
+        "U256",
+        "Address"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "withdraw",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": true,
+      "isPublic": true,
+      "paramNames": [
+        "to"
+      ],
+      "paramTypes": [
+        "Address"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    }
+  ],
+  "constants": [
+    {
+      "name": "InvalidCaller",
+      "value": {
+        "type": "U256",
+        "value": "0"
+      }
+    }
+  ],
+  "enums": []
+}
