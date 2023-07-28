@@ -94,7 +94,7 @@ describe('test auction', () => {
     expect(state.fields.bidder).toEqual(bidderContractId)
   }
 
-  async function assetBidderDestroyed(bidder: PrivateKeyWallet, bidSize: number) {
+  async function assertBidderDestroyed(bidder: PrivateKeyWallet, bidSize: number) {
     const bidderContractId = getBidderContractId(bidder.address)
     for (let index = 0; index < bidSize; index++) {
       const blindedBidPath = index.toString(16).padStart(16, '0')
@@ -151,7 +151,7 @@ describe('test auction', () => {
     await checkHighestBidder(ZERO_ADDRESS, 0n)
 
     await withdraw(bidder, auction)
-    await assetBidderDestroyed(bidder, 2)
+    await assertBidderDestroyed(bidder, 2)
   }, 30000)
 
   test('auction:reveal one bidder', async () => {
@@ -208,7 +208,7 @@ describe('test auction', () => {
     await withdrawFailed(bidder1, auction)
 
     await withdraw(bidder0, auction)
-    await assetBidderDestroyed(bidder0, 2)
+    await assertBidderDestroyed(bidder0, 2)
   }, 30000)
 
   test('auction:auction end', async () => {
@@ -236,7 +236,7 @@ describe('test auction', () => {
     await sleep(10 * 1000)
 
     await auctionEnd(bidder1, auction)
-    await assetBidderDestroyed(bidder1, 2)
+    await assertBidderDestroyed(bidder1, 2)
 
     const auctioneerBalance = await balanceOf(ALPH_TOKEN_ID, auctioneer)
     expect(auctioneerBalance).toEqual(bidInfo10.value)
@@ -245,7 +245,7 @@ describe('test auction', () => {
     expect(beneficiaryAmount).toEqual(beneficiaryAssetAmount)
 
     await withdraw(bidder0, auction)
-    await assetBidderDestroyed(bidder0, 2)
+    await assertBidderDestroyed(bidder0, 2)
 
     await auctionEndFailed(bidder1, auction, Auction.consts.ErrorCodes.AuctionEndAlreadyCalled)
 
