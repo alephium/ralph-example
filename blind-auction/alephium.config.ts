@@ -1,10 +1,13 @@
 import { Configuration } from '@alephium/cli'
+import { Address, HexString } from '@alephium/web3'
 
-// Settings are usually for configuring
 export type Settings = {
-  initialN: bigint
+  beneficiaryAsset: HexString
+  beneficiaryAssetAmount: bigint
+  auctioneer: Address
+  biddingEnd: number
+  revealEnd: number
 }
-const defaultSettings: Settings = { initialN: 100n }
 
 const configuration: Configuration<Settings> = {
   networks: {
@@ -12,19 +15,19 @@ const configuration: Configuration<Settings> = {
       nodeUrl: 'http://localhost:22973',
       // here we could configure which address groups to deploy the contract
       privateKeys: ['a642942e67258589cd2b1822c631506632db5a12aabcf413604e785300d762a5'],
-      settings: defaultSettings
+      settings: undefined as unknown as Settings
     },
 
     testnet: {
       nodeUrl: process.env.NODE_URL as string,
       privateKeys: process.env.PRIVATE_KEYS === undefined ? [] : process.env.PRIVATE_KEYS.split(','),
-      settings: defaultSettings
+      settings: undefined as unknown as Settings
     },
 
     mainnet: {
       nodeUrl: process.env.NODE_URL as string,
       privateKeys: process.env.PRIVATE_KEYS === undefined ? [] : process.env.PRIVATE_KEYS.split(','),
-      settings: defaultSettings
+      settings: undefined as unknown as Settings
     }
   }
 }
