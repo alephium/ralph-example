@@ -1,5 +1,5 @@
 {
-  "name": "my-dapp-template",
+  "name": "simple-aution",
   "version": "0.1.0",
   "license": "GPL",
   "scripts": {
@@ -18,7 +18,8 @@
     "@alephium/cli": "^0.14.4",
     "@alephium/web3": "^0.14.4",
     "@alephium/web3-test": "^0.14.4",
-    "@alephium/web3-wallet": "^0.14.4"
+    "@alephium/web3-wallet": "^0.14.4",
+    "blakejs": "^1.2.1"
   },
   "devDependencies": {
     "@types/jest": "^27.5.1",

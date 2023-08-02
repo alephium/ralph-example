@@ -1,0 +1,28 @@
+Contract Bidder(auction: Auction, address: Address, mut bidAmount: U256) {
+  const InvalidCaller = 0
+
+  pub fn getAddress() -> Address {
+    return address
+  }
+
+  @using(assetsInContract = true, preapprovedAssets = true, updateFields = true)
+  pub fn rebid(amount: U256) -> () {
+    checkCaller!(callerContractId!() == contractId!(auction), InvalidCaller)
+    transferTokenFromSelf!(address, ALPH, bidAmount)
+    transferTokenToSelf!(address, ALPH, amount)
+    bidAmount = amount
+  }
+
+  @using(assetsInContract = true)
+  pub fn withdraw() -> () {
+    checkCaller!(callerContractId!() == contractId!(auction), InvalidCaller)
+    destroySelf!(address)
+  }
+
+  @using(assetsInContract = true)
+  pub fn auctionEnd(to: Address, amount: U256) -> () {
+    checkCaller!(callerContractId!() == contractId!(auction), InvalidCaller)
+    transferTokenFromSelf!(to, ALPH, amount)
+    destroySelf!(address)
+  }
+}

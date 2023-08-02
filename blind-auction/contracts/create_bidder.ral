@@ -1,0 +1,3 @@
+TxScript CreateBidder(auction: Auction) {
+  auction.createBidder{callerAddress!() -> ALPH : 1 alph}()
+}

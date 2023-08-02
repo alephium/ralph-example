@@ -1,0 +1,44 @@
+Contract BlindedBid(
+  bidder: Bidder,
+  data: ByteVec,
+  deposit: U256,
+  mut revealed: Bool
+) {
+  const InvalidCaller = 0
+
+  @using(updateFields = true, assetsInContract = true)
+  pub fn reveal(
+    value: U256,
+    fake: Bool,
+    secret: ByteVec,
+    highestBid: U256,
+    receiver: Address
+  ) -> U256 {
+    checkCaller!(callerContractId!() == contractId!(bidder), InvalidCaller)
+
+    if (!revealed) {
+      let encoded = u256To32Byte!(value) ++ toByteVec!(fake) ++ secret
+      if (blake2b!(encoded) != data) {
+        return highestBid
+      }
+
+      revealed = true
+
+      let bidAddress = bidder.getAddress()
+      if (!fake && deposit >= value && value > highestBid) {
+        transferTokenFromSelf!(bidAddress, ALPH, deposit - value)
+        transferTokenFromSelf!(receiver, ALPH, value)
+        return value
+      } else {
+        transferTokenFromSelf!(bidAddress, ALPH, deposit)
+      }
+    }
+    return highestBid
+  }
+
+  @using(assetsInContract = true)
+  pub fn withdraw(to: Address) -> () {
+    checkCaller!(callerContractId!() == contractId!(bidder), InvalidCaller)
+    destroySelf!(to)
+  }
+}

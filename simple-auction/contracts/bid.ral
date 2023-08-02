@@ -1,0 +1,3 @@
+TxScript Bid(auction: Auction, amount: U256) {
+  auction.bid{callerAddress!() -> ALPH : amount + 1 alph}(callerAddress!(), amount)
+}
