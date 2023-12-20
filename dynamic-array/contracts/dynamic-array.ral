@@ -1,0 +1,35 @@
+// Each element in the array is a 4 bytes integer
+// It's easy to adapt this for 8 bytes integer
+Contract DynamicArrayForLong() {
+    pub fn get(array: ByteVec, index: U256) -> U256 {
+        let offset = index * 4
+        let bytes = byteVecSlice!(array, offset, offset + 4)
+        return u256From4Byte!(bytes)
+    }
+
+    // Avoid this function because it costs more gas and creates new ByteVec.
+    pub fn update(array: ByteVec, index: U256, value: U256) -> ByteVec {
+        let offset = index * 4
+        return byteVecSlice!(array, 0, offset) ++ u256To4Byte!(value) ++ byteVecSlice!(array, offset + 4, size!(array))
+    }
+
+    pub fn push(array: ByteVec, value: U256) -> ByteVec {
+        return array ++ u256To4Byte!(value)
+    }
+
+    pub fn pop(array: ByteVec) -> ByteVec {
+        return byteVecSlice!(array, 0, size!(array) - 4)
+    }
+
+    pub fn sum(array: ByteVec) -> U256 {
+        assert!(size!(array) > 0, 0)
+
+        let mut sum = 0
+        for(let mut offset = 0; offset < size!(array); offset = offset + 4) {
+            let bytes = byteVecSlice!(array, offset, offset + 4)
+            let value = u256From4Byte!(bytes)
+            sum = sum + value
+        }
+        return sum
+    }
+}

@@ -1,0 +1,37 @@
+{
+  "version": "v2.5.5",
+  "name": "Push",
+  "bytecodeTemplate": "0101030001000c{1}{2}0e0d{0}010217001600{3}410c7b",
+  "fieldsSig": {
+    "names": [
+      "contract",
+      "array",
+      "value",
+      "expected"
+    ],
+    "types": [
+      "ByteVec",
+      "ByteVec",
+      "U256",
+      "ByteVec"
+    ],
+    "isMutable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "functions": [
+    {
+      "name": "main",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    }
+  ]
+}

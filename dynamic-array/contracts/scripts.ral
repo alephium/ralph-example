@@ -1,0 +1,24 @@
+TxScript Get(contract: DynamicArrayForLong, array: ByteVec, index: U256, expected: U256) {
+    let result = contract.get(array, index)
+    assert!(result == expected, 0)
+}
+
+TxScript Update(contract: DynamicArrayForLong, array: ByteVec, index: U256, value: U256, expected: ByteVec) {
+    let result = contract.update(array, index, value)
+    assert!(result == expected, 0)
+}
+
+TxScript Push(contract: DynamicArrayForLong, array: ByteVec, value: U256, expected: ByteVec) {
+    let result = contract.push(array, value)
+    assert!(result == expected, 0)
+}
+
+TxScript Pop(contract: DynamicArrayForLong, array: ByteVec, expected: ByteVec) {
+    let result = contract.pop(array)
+    assert!(result == expected, 0)
+}
+
+TxScript Sum(contract: DynamicArrayForLong, array: ByteVec, expected: U256) {
+    let result = contract.sum(array)
+    assert!(result == expected, 0)
+}

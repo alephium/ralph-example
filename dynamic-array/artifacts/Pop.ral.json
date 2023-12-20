@@ -1,0 +1,34 @@
+{
+  "version": "v2.5.5",
+  "name": "Pop",
+  "bytecodeTemplate": "0101030001000b{1}0d0d{0}010317001600{2}410c7b",
+  "fieldsSig": {
+    "names": [
+      "contract",
+      "array",
+      "expected"
+    ],
+    "types": [
+      "ByteVec",
+      "ByteVec",
+      "ByteVec"
+    ],
+    "isMutable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "functions": [
+    {
+      "name": "main",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    }
+  ]
+}

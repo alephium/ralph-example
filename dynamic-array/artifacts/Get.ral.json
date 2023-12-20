@@ -1,0 +1,37 @@
+{
+  "version": "v2.5.5",
+  "name": "Get",
+  "bytecodeTemplate": "0101030001000c{1}{2}0e0d{0}010017001600{3}2f0c7b",
+  "fieldsSig": {
+    "names": [
+      "contract",
+      "array",
+      "index",
+      "expected"
+    ],
+    "types": [
+      "ByteVec",
+      "ByteVec",
+      "U256",
+      "U256"
+    ],
+    "isMutable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "functions": [
+    {
+      "name": "main",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "version": "v2.5.5",
+  "name": "Update",
+  "bytecodeTemplate": "0101030001000d{1}{2}{3}0f0d{0}010117001600{4}410c7b",
+  "fieldsSig": {
+    "names": [
+      "contract",
+      "array",
+      "index",
+      "value",
+      "expected"
+    ],
+    "types": [
+      "ByteVec",
+      "ByteVec",
+      "U256",
+      "U256",
+      "ByteVec"
+    ],
+    "isMutable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "functions": [
+    {
+      "name": "main",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    }
+  ]
+}
