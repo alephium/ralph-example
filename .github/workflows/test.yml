@@ -40,3 +40,4 @@ jobs:
           sleep 5
       - run: pushd simple-auction && npm install && npx @alephium/cli test && popd
       - run: pushd blind-auction && npm install && npx @alephium/cli test && popd
+      - run: pushd dynamic-array && npm install && npx @alephium/cli test && popd
