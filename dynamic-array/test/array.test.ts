@@ -1,16 +1,5 @@
-import {
-  web3,
-  Project,
-  TestContractParams,
-  addressFromContractId,
-  AssetOutput,
-  DUST_AMOUNT,
-  encodeByteVec
-} from '@alephium/web3'
-import { expectAssertionError, randomContractId, testAddress, testNodeWallet } from '@alephium/web3-test'
-import { deployToDevnet } from '@alephium/cli'
-import { Get, Update, Push, Pop, Sum, DynamicArrayForInt } from '../artifacts/ts'
-import exp from 'constants'
+import { web3, Project } from '@alephium/web3'
+import { DynamicArrayForInt } from '../artifacts/ts'
 
 // Convert a number array to a ByteVec, each number is 4 bytes
 function arrayToByteVec(array: number[]): string {
@@ -46,12 +35,12 @@ function testPush(array: number[], value: number, expected: number[]) {
   })
 }
 
-function testPop(array: number[], expected: number[]) {
+function testPop(array: number[], expected: [number[], number]) {
   it(`test pop ${array}`, async () => {
     const testResult = await DynamicArrayForInt.tests.pop({
       testArgs: { array: arrayToByteVec(array) }
     })
-    expect(testResult.returns).toEqual(arrayToByteVec(expected))
+    expect(testResult.returns).toEqual([arrayToByteVec(expected[0]), BigInt(expected[1])])
   })
 }
 
@@ -106,9 +95,9 @@ describe('unit tests', () => {
       })
     ).rejects.toThrow('VM execution error: ArithmeticError')
   })
-  testPop([2], [])
-  testPop([2, 3], [2])
-  testPop([2, 3, 5], [2, 3])
+  testPop([2], [[], 2])
+  testPop([2, 3], [[2], 3])
+  testPop([2, 3, 5], [[2, 3], 5])
 
   it('test sum empty array', async () => {
     // Cannot use empty array

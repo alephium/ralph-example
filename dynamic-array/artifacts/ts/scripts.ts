@@ -26,7 +26,8 @@ export const Get = new ExecutableScript<{
 export const Pop = new ExecutableScript<{
   contract: HexString;
   array: HexString;
-  expected: HexString;
+  expectedArray: HexString;
+  expectedValue: bigint;
 }>(Script.fromJson(PopScriptJson));
 export const Push = new ExecutableScript<{
   contract: HexString;

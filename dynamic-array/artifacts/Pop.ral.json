@@ -1,19 +1,22 @@
 {
   "version": "v2.5.5",
   "name": "Pop",
-  "bytecodeTemplate": "0101030001000b{1}0d0d{0}010317001600{2}410c7b",
+  "bytecodeTemplate": "01010300020011{1}0d0e{0}0103170117001600{2}410c7b1601{3}2f0d7b",
   "fieldsSig": {
     "names": [
       "contract",
       "array",
-      "expected"
+      "expectedArray",
+      "expectedValue"
     ],
     "types": [
       "ByteVec",
       "ByteVec",
-      "ByteVec"
+      "ByteVec",
+      "U256"
     ],
     "isMutable": [
+      false,
       false,
       false,
       false

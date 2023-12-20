@@ -13,9 +13,10 @@ TxScript Push(contract: DynamicArrayForInt, array: ByteVec, value: U256, expecte
     assert!(result == expected, 0)
 }
 
-TxScript Pop(contract: DynamicArrayForInt, array: ByteVec, expected: ByteVec) {
-    let result = contract.pop(array)
-    assert!(result == expected, 0)
+TxScript Pop(contract: DynamicArrayForInt, array: ByteVec, expectedArray: ByteVec, expectedValue: U256) {
+    let (newArray, value) = contract.pop(array)
+    assert!(newArray == expectedArray, 0)
+    assert!(value == expectedValue, 1)
 }
 
 TxScript Sum(contract: DynamicArrayForInt, array: ByteVec, expected: U256) {

@@ -11,42 +11,42 @@
   "infos": {
     "DynamicArrayForInt": {
       "sourceFile": "dynamic-array.ral",
-      "sourceCodeHash": "69447b102a9c8d153e6e801a79b6b58e327f7b9b6605577ea65a9f88ce2de5e9",
+      "sourceCodeHash": "e11ba7e19f40efe33d940aebf09a7ce43c61238cbdce2fe91a08cc7338d29ecf",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "4ace1748914470bca8f946094834338fb033b04ca4d7df2a176844e5750ec536",
+      "codeHashDebug": "6b29a512dd1be54cddf58ab1e374743320c817c895c954fca2d6e40c0d1c0d64",
       "warnings": []
     },
     "Get": {
       "sourceFile": "scripts.ral",
-      "sourceCodeHash": "bcf452f7cfc72dd640bad4ae0e041cfc02f4caa03fa53717643874943cbc21ed",
+      "sourceCodeHash": "287e39d08dc2cd4faf5c0f8dd1d631316e2a2f2d8051d85a3142790049cde22d",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
     },
     "Pop": {
       "sourceFile": "scripts.ral",
-      "sourceCodeHash": "bcf452f7cfc72dd640bad4ae0e041cfc02f4caa03fa53717643874943cbc21ed",
+      "sourceCodeHash": "287e39d08dc2cd4faf5c0f8dd1d631316e2a2f2d8051d85a3142790049cde22d",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
     },
     "Push": {
       "sourceFile": "scripts.ral",
-      "sourceCodeHash": "bcf452f7cfc72dd640bad4ae0e041cfc02f4caa03fa53717643874943cbc21ed",
+      "sourceCodeHash": "287e39d08dc2cd4faf5c0f8dd1d631316e2a2f2d8051d85a3142790049cde22d",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
     },
     "Sum": {
       "sourceFile": "scripts.ral",
-      "sourceCodeHash": "bcf452f7cfc72dd640bad4ae0e041cfc02f4caa03fa53717643874943cbc21ed",
+      "sourceCodeHash": "287e39d08dc2cd4faf5c0f8dd1d631316e2a2f2d8051d85a3142790049cde22d",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
     },
     "Update": {
       "sourceFile": "scripts.ral",
-      "sourceCodeHash": "bcf452f7cfc72dd640bad4ae0e041cfc02f4caa03fa53717643874943cbc21ed",
+      "sourceCodeHash": "287e39d08dc2cd4faf5c0f8dd1d631316e2a2f2d8051d85a3142790049cde22d",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
