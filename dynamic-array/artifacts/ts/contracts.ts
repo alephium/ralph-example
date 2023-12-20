@@ -3,12 +3,12 @@
 /* eslint-disable */
 
 import { Contract, ContractFactory } from "@alephium/web3";
-import { DynamicArrayForLong } from ".";
+import { DynamicArrayForInt } from ".";
 
 let contracts: ContractFactory<any>[] | undefined = undefined;
 export function getContractByCodeHash(codeHash: string): Contract {
   if (contracts === undefined) {
-    contracts = [DynamicArrayForLong];
+    contracts = [DynamicArrayForInt];
   }
   const c = contracts.find(
     (c) =>

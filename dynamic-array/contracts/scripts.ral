@@ -1,24 +1,24 @@
-TxScript Get(contract: DynamicArrayForLong, array: ByteVec, index: U256, expected: U256) {
+TxScript Get(contract: DynamicArrayForInt, array: ByteVec, index: U256, expected: U256) {
     let result = contract.get(array, index)
     assert!(result == expected, 0)
 }
 
-TxScript Update(contract: DynamicArrayForLong, array: ByteVec, index: U256, value: U256, expected: ByteVec) {
+TxScript Update(contract: DynamicArrayForInt, array: ByteVec, index: U256, value: U256, expected: ByteVec) {
     let result = contract.update(array, index, value)
     assert!(result == expected, 0)
 }
 
-TxScript Push(contract: DynamicArrayForLong, array: ByteVec, value: U256, expected: ByteVec) {
+TxScript Push(contract: DynamicArrayForInt, array: ByteVec, value: U256, expected: ByteVec) {
     let result = contract.push(array, value)
     assert!(result == expected, 0)
 }
 
-TxScript Pop(contract: DynamicArrayForLong, array: ByteVec, expected: ByteVec) {
+TxScript Pop(contract: DynamicArrayForInt, array: ByteVec, expected: ByteVec) {
     let result = contract.pop(array)
     assert!(result == expected, 0)
 }
 
-TxScript Sum(contract: DynamicArrayForLong, array: ByteVec, expected: U256) {
+TxScript Sum(contract: DynamicArrayForInt, array: ByteVec, expected: U256) {
     let result = contract.sum(array)
     assert!(result == expected, 0)
 }

@@ -1,6 +1,6 @@
 // Each element in the array is a 4 bytes integer
 // It's easy to adapt this for 8 bytes integer
-Contract DynamicArrayForLong() {
+Contract DynamicArrayForInt() {
     pub fn get(array: ByteVec, index: U256) -> U256 {
         let offset = index * 4
         let bytes = byteVecSlice!(array, offset, offset + 4)

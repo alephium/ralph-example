@@ -9,7 +9,7 @@ import {
 } from '@alephium/web3'
 import { expectAssertionError, randomContractId, testAddress, testNodeWallet } from '@alephium/web3-test'
 import { deployToDevnet } from '@alephium/cli'
-import { Get, Update, Push, Pop, Sum, DynamicArrayForLong } from '../artifacts/ts'
+import { Get, Update, Push, Pop, Sum, DynamicArrayForInt } from '../artifacts/ts'
 import exp from 'constants'
 
 // Convert a number array to a ByteVec, each number is 4 bytes
@@ -21,7 +21,7 @@ function arrayToByteVec(array: number[]): string {
 
 function testGet(array: number[], index: number, expected: number) {
   it(`test get ${array} ${index} ${expected}`, async () => {
-    const testResult = await DynamicArrayForLong.tests.get({
+    const testResult = await DynamicArrayForInt.tests.get({
       testArgs: { array: arrayToByteVec(array), index: BigInt(index) }
     })
     expect(testResult.returns).toEqual(BigInt(expected))
@@ -30,7 +30,7 @@ function testGet(array: number[], index: number, expected: number) {
 
 function testUpdate(array: number[], index: number, value: number, expected: number[]) {
   it(`test update ${array} ${index} ${value}`, async () => {
-    const testResult = await DynamicArrayForLong.tests.update({
+    const testResult = await DynamicArrayForInt.tests.update({
       testArgs: { array: arrayToByteVec(array), index: BigInt(index), value: BigInt(value) }
     })
     expect(testResult.returns).toEqual(arrayToByteVec(expected))
@@ -39,7 +39,7 @@ function testUpdate(array: number[], index: number, value: number, expected: num
 
 function testPush(array: number[], value: number, expected: number[]) {
   it(`test push ${array} ${value}`, async () => {
-    const testResult = await DynamicArrayForLong.tests.push({
+    const testResult = await DynamicArrayForInt.tests.push({
       testArgs: { array: arrayToByteVec(array), value: BigInt(value) }
     })
     expect(testResult.returns).toEqual(arrayToByteVec(expected))
@@ -48,7 +48,7 @@ function testPush(array: number[], value: number, expected: number[]) {
 
 function testPop(array: number[], expected: number[]) {
   it(`test pop ${array}`, async () => {
-    const testResult = await DynamicArrayForLong.tests.pop({
+    const testResult = await DynamicArrayForInt.tests.pop({
       testArgs: { array: arrayToByteVec(array) }
     })
     expect(testResult.returns).toEqual(arrayToByteVec(expected))
@@ -57,7 +57,7 @@ function testPop(array: number[], expected: number[]) {
 
 function testSum(array: number[], expected: number) {
   it(`test sum ${array}`, async () => {
-    const testResult = await DynamicArrayForLong.tests.sum({
+    const testResult = await DynamicArrayForInt.tests.sum({
       testArgs: { array: arrayToByteVec(array) }
     })
     expect(testResult.returns).toEqual(BigInt(expected))
@@ -73,7 +73,7 @@ describe('unit tests', () => {
   it('test get empty array', async () => {
     // Cannot use empty array
     await expect(
-      DynamicArrayForLong.tests.get({
+      DynamicArrayForInt.tests.get({
         testArgs: { array: arrayToByteVec([]), index: 0n }
       })
     ).rejects.toThrow('VM execution error: InvalidBytesSliceArg')
@@ -85,7 +85,7 @@ describe('unit tests', () => {
   it('test update empty array', async () => {
     // Cannot use empty array
     await expect(
-      DynamicArrayForLong.tests.update({
+      DynamicArrayForInt.tests.update({
         testArgs: { array: arrayToByteVec([]), index: 0n, value: 0n }
       })
     ).rejects.toThrow('VM execution error: InvalidBytesSliceArg')
@@ -101,7 +101,7 @@ describe('unit tests', () => {
   it('test pop empty array', async () => {
     // Cannot use empty array
     await expect(
-      DynamicArrayForLong.tests.pop({
+      DynamicArrayForInt.tests.pop({
         testArgs: { array: arrayToByteVec([]) }
       })
     ).rejects.toThrow('VM execution error: ArithmeticError')
@@ -113,7 +113,7 @@ describe('unit tests', () => {
   it('test sum empty array', async () => {
     // Cannot use empty array
     await expect(
-      DynamicArrayForLong.tests.sum({
+      DynamicArrayForInt.tests.sum({
         testArgs: { array: arrayToByteVec([]) }
       })
     ).rejects.toThrow('VM execution error: AssertionFailedWithErrorCode')

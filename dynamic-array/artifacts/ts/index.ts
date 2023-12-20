@@ -2,5 +2,5 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export * from "./DynamicArrayForLong";
+export * from "./DynamicArrayForInt";
 export * from "./scripts";
