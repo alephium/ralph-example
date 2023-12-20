@@ -1,0 +1,119 @@
+{
+  "version": "v2.5.5",
+  "name": "DynamicArrayForInt",
+  "bytecode": "00054024404f4065409040d7010002040116160043102e0c2f0c7b1601102c1702160016021602102a62170316036e0201000304011c160043102e0c2f0c7b1601102c170316000c1603621602684416001603102a16004362440201000202010d160043102e0c2f0c7b1600160168440201000103021b160043102e0c2f0c7b160043102b1701160016011601102a626e170216000c1601621602020100010501402c160043102e0c2f0c7b1600430c330d7b0c17010c17021602160043314c13160016021602102a62170316036e1704160116042a17011602102a17024a28160102",
+  "codeHash": "6b29a512dd1be54cddf58ab1e374743320c817c895c954fca2d6e40c0d1c0d64",
+  "fieldsSig": {
+    "names": [],
+    "types": [],
+    "isMutable": []
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "get",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "array",
+        "index"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "update",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "array",
+        "index",
+        "value"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "U256",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false
+      ],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "push",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "array",
+        "value"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "pop",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "array"
+      ],
+      "paramTypes": [
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": [
+        "ByteVec",
+        "U256"
+      ]
+    },
+    {
+      "name": "sum",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "array"
+      ],
+      "paramTypes": [
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": [
+        "U256"
+      ]
+    }
+  ],
+  "constants": [],
+  "enums": []
+}
