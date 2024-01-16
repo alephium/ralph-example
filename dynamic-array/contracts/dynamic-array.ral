@@ -1,3 +1,5 @@
+// Note: if you only use 1-2 or the functions, better to copy the code to your contract
+// 
 // Each element in the array is a 4 bytes integer
 // It's easy to adapt this for 8 bytes integer
 Contract DynamicArrayForInt() {
