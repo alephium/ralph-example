@@ -1,0 +1,28 @@
+TxScript DepositAirdrop(airdrop: Airdrop, tokenId: ByteVec, amount: U256) {
+    airdrop.deposit{callerAddress!() -> tokenId: amount}(tokenId, amount)
+}
+
+TxScript DisperseAirdrop10(airdrop: Airdrop, tokenId: ByteVec, amountPerAddress: U256) {
+    let addresses = [@1EDcGs3Tj5uA76WPnzi8RY4UxKpseAhKLfzEPwTx71MPg, @1GTJfYF95hVvmLHe44i44NDLccvwWByddrepGVaTKVkew,
+                     @123VnEBARzoZhy7ykvKhqw1KHsQWgPhr1UMwquXVV7t4q, @1CEv7vNzQqf84Zx65XGaxRkweQPPsiPeGQVcN6PBLhN12,
+                     @154rcEJECc9rutY8tAZj1uN49i9D8yByLRiQbmq4sWFzF, @1DmAk8jnnxkJ6ow3HSwT7gBszadDbJu2mheE2jCEmNvs7,
+                     @1GfQU1jzBLCabcUShiCiaa1M5y1yxqyRDms2NvcjrysN8, @13tbqfPFwgRxfiGYF5RuPM5RNzaFBvHbdhH92b4MvZMBu,
+                     @1E9XXEufrMA8BSjwpnFv3Hj2FKKWz4VYEChEkn1DQjBcS, @1ASwwXkXURjxZ3oCSX8seX49V8VojpN6GE3LQVbn9sivb]
+      
+    airdrop.disperse10{callerAddress!() -> ALPH: (dustAmount!() * 10), tokenId: amountPerAddress * 10}(tokenId, amountPerAddress, addresses)
+}
+
+TxScript DisperseAirdrop25(airdrop: Airdrop, tokenId: ByteVec, amountPerAddress: U256) {
+    let addresses = [@14c3uXAr14dCw8mqrat4szMT15JugTEebBNSdw6Amnycz, @1B5aKGuWSdv8aKJNE7zYgcduXvyRxLttvxffaYZtc2M5d, @1BGn1BkmnyJxUQhRTKY2w3s2Zy5pk2gJ7Me19NJTvcPPB, 
+                     @18ESCtBVW3EPqg1XHQWG6ssD8jZkz8GZc7H8Y1m6yZaVf, @17Q55uPvQA4MZ9MDtfVnBbCX8UdqUpdJkjQKNFTymZWop, @127o2L2tPkGG26hk9XyqVHgZLkZ84fSfz7V87EA9ReqMw, 
+                     @1ESS6LD8PkWbkmcWNGRRok6f1LCPL8JAmMByKNtef8fX9, @1mCpLhCtaUtob5tzCCr3rqs2kdTxjNCBAqYCM5bQE8YC, @1Aev9wYy8GWN6VrQQxvBVvB8Us75ZFkk52BoSdcWf2AsL, 
+                     @12R8ZPgDKmD5Xb4Amqs686m5bn2LxCafbKgDc3hbgcHmw, @1FQJWaf35Q4SHzATE2e3r2rWY79cYgCZCueCCDBrWnZ76, @1CC2yAvFHQcuf4E2hmk1FqHfd5srs2nEtwZ4FPfWBo4fa, 
+                     @1GMWHfGyFqm2awKoVGrMunwMjiL8JqZxCmp8w2iMUiMWs, @16bGbatUL9C4nzhd1JrsRdrZTSVbyZRvzKLhDewKRkaya, @15Ja57oGawW8nFdpu3K1kfyBD75eumPjcuY9EM42TUQah, 
+                     @13iBj3Nhju7F3zGDukUrAaMGhdbfzKT3hhpdZ2hd1HtjZ, @1CnmYqPV3eNunURQ2B9QFvUBgbRdT1R7PsUK7kFXFjHBC, @1AYASZ1fe9NbAethakhNSDdqk8ofV3NUzzw6MJEMULUTS, 
+                     @1FBMq45hbfNNmqgPBY5tU2HUNpsAY6tZACUVdpZV3ywg3, @19X5XNJF16YJ6XRWSURjinEYTvzzTwYbpnXmhqYM5WAAA, @17uAL9qSuWt6bW1aeUkEVRGhf6UyboLTuxb5LNp1LNTjQ, 
+                     @184P1E3NN5YQGH6McZUErbBzGT9XYW8y1EhpA3f2S6hid, @1CbHzXM9S69BJZGv8Y9rv7FCcHwVNJ4CreKwyL7966o9N, @186wzvMdDow2kzMMReExuHjQkSFGimcj86ahXpd2RCjvt, 
+                     @1B9DgEPQDz4LF2BeipqihqCXsFdWPwQDcj6aU4UXAaCjc]
+
+  
+    airdrop.disperse25{callerAddress!() -> ALPH: (dustAmount!() * 25), tokenId: amountPerAddress * 25}(tokenId, amountPerAddress, addresses)
+}
