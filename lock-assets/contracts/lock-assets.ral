@@ -1,0 +1,34 @@
+Contract LockAssets() {
+    @using(preapprovedAssets = true, checkExternalCaller = false)
+    pub fn lockAlphOnly(amount: U256) -> () {
+        emit Debug(`lockAlphOnly`)
+        let caller = callerAddress!()
+        lockApprovedAssets!{caller -> ALPH: amount}(caller, blockTimeStamp!() + 86400000) // 1 day
+    }
+
+    @using(preapprovedAssets = true, checkExternalCaller = false)
+    pub fn lockTokenOnly(tokenId: ByteVec, amount: U256) -> () {
+        emit Debug(`lockTokenOnly`)
+        let caller = callerAddress!()
+        lockApprovedAssets!{caller -> ALPH: dustAmount!(), tokenId: amount}(caller, blockTimeStamp!() + 86400000) // 1 day
+    }
+
+    @using(preapprovedAssets = true, checkExternalCaller = false)
+    pub fn lockAlphAndToken(alphAmount: U256, tokenId: ByteVec, tokenAmount: U256) -> () {
+        emit Debug(`lockAlphAndToken`)
+        let caller = callerAddress!()
+        lockApprovedAssets!{caller -> ALPH: alphAmount, tokenId: tokenAmount}(caller, blockTimeStamp!() + 86400000) // 1 day
+    }
+}
+
+TxScript LockAlphOnly(lockAssets: LockAssets, amount: U256) {
+    lockAssets.lockAlphOnly{callerAddress!() -> ALPH: amount}(amount)
+}
+
+TxScript LockTokenOnly(lockAssets: LockAssets, tokenId: ByteVec, amount: U256) {
+    lockAssets.lockTokenOnly{callerAddress!() -> ALPH: dustAmount!(), tokenId: amount}(tokenId, amount)
+}
+
+TxScript LockAlphAndToken(lockAssets: LockAssets, alphAmount: U256, tokenId: ByteVec, tokenAmount: U256) {
+    lockAssets.lockAlphAndToken{callerAddress!() -> ALPH: alphAmount, tokenId: tokenAmount}(alphAmount, tokenId, tokenAmount)
+}
