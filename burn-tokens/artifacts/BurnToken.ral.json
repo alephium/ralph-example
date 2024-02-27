@@ -1,0 +1,31 @@
+{
+  "version": "v2.9.0",
+  "name": "BurnToken",
+  "bytecodeTemplate": "01010300000004b4{0}{1}bd",
+  "fieldsSig": {
+    "names": [
+      "tokenId",
+      "amount"
+    ],
+    "types": [
+      "ByteVec",
+      "U256"
+    ],
+    "isMutable": [
+      false,
+      false
+    ]
+  },
+  "functions": [
+    {
+      "name": "main",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    }
+  ]
+}

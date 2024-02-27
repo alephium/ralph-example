@@ -1,0 +1,20 @@
+{
+  "fullNodeVersion": "v2.9.0",
+  "compilerOptionsUsed": {
+    "ignoreUnusedConstantsWarnings": false,
+    "ignoreUnusedVariablesWarnings": false,
+    "ignoreUnusedFieldsWarnings": false,
+    "ignoreUnusedPrivateFunctionsWarnings": false,
+    "ignoreUpdateFieldsCheckWarnings": false,
+    "ignoreCheckExternalCallerWarnings": false
+  },
+  "infos": {
+    "BurnToken": {
+      "sourceFile": "burn-tokens.ral",
+      "sourceCodeHash": "617b0a3ddca4deff2410e0afae67b617115409250ac529ad01c00149233fcfab",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "",
+      "warnings": []
+    }
+  }
+}

@@ -1,0 +1,4 @@
+TxScript BurnToken(tokenId: ByteVec, amount: U256) {
+    // No need to approve token with braces, burnToken will do it for you like transfer functions
+    burnToken!(callerAddress!(), tokenId, amount)
+}
