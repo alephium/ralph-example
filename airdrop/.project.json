@@ -1,5 +1,5 @@
 {
-  "fullNodeVersion": "v2.8.4",
+  "fullNodeVersion": "v2.9.0",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
@@ -11,35 +11,35 @@
   "infos": {
     "Airdrop": {
       "sourceFile": "airdrop.ral",
-      "sourceCodeHash": "a072715de1fd309f077240ed41010487b3e27ff564025b2f1ebd3083d6161494",
+      "sourceCodeHash": "0178dab8f0d39494a86e4f7d6c2fbaa5ebb510c7e860368c565800accddfb3fb",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "7c47d4d5490e0ab6c8804d7a6945afd12231a31fa1e0264522d35a406da714a5",
-      "warnings": []
-    },
-    "DepositAirdrop": {
-      "sourceFile": "scripts.ral",
-      "sourceCodeHash": "f7a4a1f373fea278fd48444c43b4e5428374ad5326ba935d545cb6e6e32aa10d",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
+      "codeHashDebug": "ebb2cca54fd435d972fb3bc228ef10841f6ab65497985e7592c9794975898401",
       "warnings": []
     },
     "DisperseAirdrop10": {
       "sourceFile": "scripts.ral",
-      "sourceCodeHash": "f7a4a1f373fea278fd48444c43b4e5428374ad5326ba935d545cb6e6e32aa10d",
+      "sourceCodeHash": "c1f5e0cae5b1409bb3f25d635f1982de636e16b1b17716ec29dd56e8462f2e90",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "",
+      "warnings": []
+    },
+    "DisperseAirdrop100": {
+      "sourceFile": "scripts.ral",
+      "sourceCodeHash": "c1f5e0cae5b1409bb3f25d635f1982de636e16b1b17716ec29dd56e8462f2e90",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
     },
     "DisperseAirdrop25": {
       "sourceFile": "scripts.ral",
-      "sourceCodeHash": "f7a4a1f373fea278fd48444c43b4e5428374ad5326ba935d545cb6e6e32aa10d",
+      "sourceCodeHash": "c1f5e0cae5b1409bb3f25d635f1982de636e16b1b17716ec29dd56e8462f2e90",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
     },
-    "Owned": {
-      "sourceFile": "owned.ral",
-      "sourceCodeHash": "0ef251900385d40b43257da3a54ff0acbf5e77c0a605dc63036d659fe5052cbb",
+    "DisperseAirdrop50": {
+      "sourceFile": "scripts.ral",
+      "sourceCodeHash": "c1f5e0cae5b1409bb3f25d635f1982de636e16b1b17716ec29dd56e8462f2e90",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
