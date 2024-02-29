@@ -29,442 +29,263 @@ import { getContractByCodeHash } from "./contracts";
 
 // Custom types for the contract
 export namespace AirdropTypes {
-  export type Fields = {
-    selfOwner: Address;
-  };
-
-  export type State = ContractState<Fields>;
+  export type State = Omit<ContractState<any>, "fields">;
 }
 
-class Factory extends ContractFactory<AirdropInstance, AirdropTypes.Fields> {
-  getInitialFieldsWithDefaultValues() {
-    return this.contract.getInitialFieldsWithDefaultValues() as AirdropTypes.Fields;
-  }
-
-  consts = { OwnedError: { Forbidden: BigInt(90) } };
-
+class Factory extends ContractFactory<AirdropInstance, {}> {
   at(address: string): AirdropInstance {
     return new AirdropInstance(address);
   }
 
   tests = {
-    assertOwner: async (
-      params: TestContractParams<AirdropTypes.Fields, { caller: Address }>
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "assertOwner", params);
-    },
-    setOwner: async (
-      params: TestContractParams<AirdropTypes.Fields, { newOwner: Address }>
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "setOwner", params);
-    },
-    deposit: async (
-      params: TestContractParams<
-        AirdropTypes.Fields,
-        { tokenId: HexString; amount: bigint }
-      >
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "deposit", params);
-    },
     disperse10: async (
-      params: TestContractParams<
-        AirdropTypes.Fields,
-        {
-          tokenId: HexString;
-          amountPerAddress: bigint;
-          addresses: [
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address
-          ];
-        }
+      params: Omit<
+        TestContractParams<
+          never,
+          {
+            tokenId: HexString;
+            amountPerAddress: bigint;
+            addresses: [
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address
+            ];
+          }
+        >,
+        "initialFields"
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "disperse10", params);
     },
     disperse25: async (
-      params: TestContractParams<
-        AirdropTypes.Fields,
-        {
-          tokenId: HexString;
-          amountPerAddress: bigint;
-          addresses: [
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address
-          ];
-        }
+      params: Omit<
+        TestContractParams<
+          never,
+          {
+            tokenId: HexString;
+            amountPerAddress: bigint;
+            addresses: [
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address
+            ];
+          }
+        >,
+        "initialFields"
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "disperse25", params);
     },
     disperse50: async (
-      params: TestContractParams<
-        AirdropTypes.Fields,
-        {
-          tokenId: HexString;
-          amountPerAddress: bigint;
-          addresses: [
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address
-          ];
-        }
+      params: Omit<
+        TestContractParams<
+          never,
+          {
+            tokenId: HexString;
+            amountPerAddress: bigint;
+            addresses: [
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address
+            ];
+          }
+        >,
+        "initialFields"
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "disperse50", params);
     },
     disperse100: async (
-      params: TestContractParams<
-        AirdropTypes.Fields,
-        {
-          tokenId: HexString;
-          amountPerAddress: bigint;
-          addresses: [
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address
-          ];
-        }
+      params: Omit<
+        TestContractParams<
+          never,
+          {
+            tokenId: HexString;
+            amountPerAddress: bigint;
+            addresses: [
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address,
+              Address
+            ];
+          }
+        >,
+        "initialFields"
       >
     ): Promise<TestContractResult<null>> => {
       return testMethod(this, "disperse100", params);
-    },
-    disperse150: async (
-      params: TestContractParams<
-        AirdropTypes.Fields,
-        {
-          tokenId: HexString;
-          amountPerAddress: bigint;
-          addresses: [
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address,
-            Address
-          ];
-        }
-      >
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "disperse150", params);
     },
   };
 }
@@ -474,7 +295,7 @@ export const Airdrop = new Factory(
   Contract.fromJson(
     AirdropContractJson,
     "",
-    "7c47d4d5490e0ab6c8804d7a6945afd12231a31fa1e0264522d35a406da714a5"
+    "ebb2cca54fd435d972fb3bc228ef10841f6ab65497985e7592c9794975898401"
   )
 );
 

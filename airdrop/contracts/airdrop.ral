@@ -1,65 +1,42 @@
-Contract Airdrop(
-    mut selfOwner: Address
-) extends Owned(selfOwner) {
-
-   // deposit tokens to the contract
-    @using(preapprovedAssets = true, assetsInContract = true, updateFields = false, checkExternalCaller = false)
-    pub fn deposit(tokenId: ByteVec, amount: U256) -> () {
-        transferTokenToSelf!(callerAddress!(), tokenId, amount)
-    }
+Contract Airdrop() {
 
     // airdrop tokens to 10 addresses
-    @using(preapprovedAssets = true, assetsInContract = true, updateFields = false, checkExternalCaller = false)
+    @using(preapprovedAssets = true, assetsInContract = false, updateFields = false, checkExternalCaller = false)
     pub fn disperse10(tokenId: ByteVec, amountPerAddress: U256, addresses: [Address; 10]) -> () {
-        assertOwner(callerAddress!())
         for (let mut index = 0; index < 10; index = index + 1) {
             let recipient = addresses[index]
             transferToken!(callerAddress!(), recipient, ALPH, dustAmount!())
-            transferTokenFromSelf!(recipient, tokenId, amountPerAddress)
+            transferToken!(callerAddress!(), recipient, tokenId, amountPerAddress)
         }
     }
 
     // airdrop tokens to 25 addresses
-    @using(preapprovedAssets = true, assetsInContract = true, updateFields = false, checkExternalCaller = false)
+    @using(preapprovedAssets = true, assetsInContract = false, updateFields = false, checkExternalCaller = false)
     pub fn disperse25(tokenId: ByteVec, amountPerAddress: U256, addresses: [Address; 25]) -> () {
-        assertOwner(callerAddress!())
         for (let mut index = 0; index < 25; index = index + 1) {
             let recipient = addresses[index]
             transferToken!(callerAddress!(), recipient, ALPH, dustAmount!())
-            transferTokenFromSelf!(recipient, tokenId, amountPerAddress)
+            transferToken!(callerAddress!(), recipient, tokenId, amountPerAddress)
         }
     }
 
     // airdrop tokens to 50 addresses
-    @using(preapprovedAssets = true, assetsInContract = true, updateFields = false, checkExternalCaller = false)
+    @using(preapprovedAssets = true, assetsInContract = false, updateFields = false, checkExternalCaller = false)
     pub fn disperse50(tokenId: ByteVec, amountPerAddress: U256, addresses: [Address; 50]) -> () {
-        assertOwner(callerAddress!())
         for (let mut index = 0; index < 50; index = index + 1) {
             let recipient = addresses[index]
             transferToken!(callerAddress!(), recipient, ALPH, dustAmount!())
-            transferTokenFromSelf!(recipient, tokenId, amountPerAddress)
+            transferToken!(callerAddress!(), recipient, tokenId, amountPerAddress)
         }
     }
 
     // airdrop tokens to 100 addresses
-    @using(preapprovedAssets = true, assetsInContract = true, updateFields = false, checkExternalCaller = false)
+    @using(preapprovedAssets = true, assetsInContract = false, updateFields = false, checkExternalCaller = false)
     pub fn disperse100(tokenId: ByteVec, amountPerAddress: U256, addresses: [Address; 100]) -> () {
-        assertOwner(callerAddress!())
         for (let mut index = 0; index < 100; index = index + 1) {
             let recipient = addresses[index]
             transferToken!(callerAddress!(), recipient, ALPH, dustAmount!())
-            transferTokenFromSelf!(recipient, tokenId, amountPerAddress)
-        }
-    }
-
-    // airdrop tokens to 150 addresses
-    @using(preapprovedAssets = true, assetsInContract = true, updateFields = false, checkExternalCaller = false)
-    pub fn disperse150(tokenId: ByteVec, amountPerAddress: U256, addresses: [Address; 150]) -> () {
-        assertOwner(callerAddress!())
-        for (let mut index = 0; index < 150; index = index + 1) {
-            let recipient = addresses[index]
-            transferToken!(callerAddress!(), recipient, ALPH, dustAmount!())
-            transferTokenFromSelf!(recipient, tokenId, amountPerAddress)
+            transferToken!(callerAddress!(), recipient, tokenId, amountPerAddress)
         }
     }
 }

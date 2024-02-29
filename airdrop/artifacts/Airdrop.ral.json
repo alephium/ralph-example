@@ -1,76 +1,19 @@
 {
-  "version": "v2.8.4",
+  "version": "v2.9.0",
   "name": "Airdrop",
-  "bytecode": "01081640284034407040ab40e84127416600000101000ab4b24513405a7b1600a0004513405a7b010001010007b4a0004513405a7b1600a100010102020004b416001601ac01010c4076001eb400000c170c160c130a314c16160c7a130a314d0e2a78170db4160d13c3038d7ea4c68000a7160d16001601ab160c0d2a170c4a2601011b1d001eb400000c171b161b1319314c16161b7a1319314d0e2a78171cb4161c13c3038d7ea4c68000a7161c16001601ab161b0d2a171b4a26010140344036001eb400000c173416341332314c1616347a1332314d0e2a781735b4163513c3038d7ea4c68000a7163516001601ab16340d2a17344a26010140664068001eb400000c17661666134064314c1616667a134064314d0e2a781767b4166713c3038d7ea4c68000a7166716001601ab16660d2a17664a2601014098409a001eb400000c17981698134096314c1616987a134096314d0e2a781799b4169913c3038d7ea4c68000a7169916001601ab16980d2a17984a26",
-  "codeHash": "7c47d4d5490e0ab6c8804d7a6945afd12231a31fa1e0264522d35a406da714a5",
+  "bytecode": "0004403a407340ae40eb01030c4076001d0c170c160c130a314c17160c7a130a314d0e2a78170db4160d13c3038d7ea4c68000a7b4160d16001601aa160c0d2a170c4a2501031b1d001d0c171b161b1319314c17161b7a1319314d0e2a78171cb4161c13c3038d7ea4c68000a7b4161c16001601aa161b0d2a171b4a25010340344036001d0c173416341332314c1716347a1332314d0e2a781735b4163513c3038d7ea4c68000a7b4163516001601aa16340d2a17344a25010340664068001d0c17661666134064314c1716667a134064314d0e2a781767b4166713c3038d7ea4c68000a7b4166716001601aa16660d2a17664a25",
+  "codeHash": "ebb2cca54fd435d972fb3bc228ef10841f6ab65497985e7592c9794975898401",
   "fieldsSig": {
-    "names": [
-      "selfOwner"
-    ],
-    "types": [
-      "Address"
-    ],
-    "isMutable": [
-      true
-    ]
+    "names": [],
+    "types": [],
+    "isMutable": []
   },
   "eventsSig": [],
   "functions": [
     {
-      "name": "assertOwner",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": false,
-      "paramNames": [
-        "caller"
-      ],
-      "paramTypes": [
-        "Address"
-      ],
-      "paramIsMutable": [
-        false
-      ],
-      "returnTypes": []
-    },
-    {
-      "name": "setOwner",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
-      "paramNames": [
-        "newOwner"
-      ],
-      "paramTypes": [
-        "Address"
-      ],
-      "paramIsMutable": [
-        false
-      ],
-      "returnTypes": []
-    },
-    {
-      "name": "deposit",
-      "usePreapprovedAssets": true,
-      "useAssetsInContract": true,
-      "isPublic": true,
-      "paramNames": [
-        "tokenId",
-        "amount"
-      ],
-      "paramTypes": [
-        "ByteVec",
-        "U256"
-      ],
-      "paramIsMutable": [
-        false,
-        false
-      ],
-      "returnTypes": []
-    },
-    {
       "name": "disperse10",
       "usePreapprovedAssets": true,
-      "useAssetsInContract": true,
+      "useAssetsInContract": false,
       "isPublic": true,
       "paramNames": [
         "tokenId",
@@ -92,7 +35,7 @@
     {
       "name": "disperse25",
       "usePreapprovedAssets": true,
-      "useAssetsInContract": true,
+      "useAssetsInContract": false,
       "isPublic": true,
       "paramNames": [
         "tokenId",
@@ -114,7 +57,7 @@
     {
       "name": "disperse50",
       "usePreapprovedAssets": true,
-      "useAssetsInContract": true,
+      "useAssetsInContract": false,
       "isPublic": true,
       "paramNames": [
         "tokenId",
@@ -136,7 +79,7 @@
     {
       "name": "disperse100",
       "usePreapprovedAssets": true,
-      "useAssetsInContract": true,
+      "useAssetsInContract": false,
       "isPublic": true,
       "paramNames": [
         "tokenId",
@@ -154,43 +97,8 @@
         false
       ],
       "returnTypes": []
-    },
-    {
-      "name": "disperse150",
-      "usePreapprovedAssets": true,
-      "useAssetsInContract": true,
-      "isPublic": true,
-      "paramNames": [
-        "tokenId",
-        "amountPerAddress",
-        "addresses"
-      ],
-      "paramTypes": [
-        "ByteVec",
-        "U256",
-        "[Address;150]"
-      ],
-      "paramIsMutable": [
-        false,
-        false,
-        false
-      ],
-      "returnTypes": []
     }
   ],
   "constants": [],
-  "enums": [
-    {
-      "name": "OwnedError",
-      "fields": [
-        {
-          "name": "Forbidden",
-          "value": {
-            "type": "U256",
-            "value": "90"
-          }
-        }
-      ]
-    }
-  ]
+  "enums": []
 }

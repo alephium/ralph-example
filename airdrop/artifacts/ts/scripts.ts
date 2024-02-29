@@ -11,22 +11,221 @@ import {
   SignerProvider,
   HexString,
 } from "@alephium/web3";
-import { default as DepositAirdropScriptJson } from "../DepositAirdrop.ral.json";
 import { default as DisperseAirdrop10ScriptJson } from "../DisperseAirdrop10.ral.json";
+import { default as DisperseAirdrop100ScriptJson } from "../DisperseAirdrop100.ral.json";
 import { default as DisperseAirdrop25ScriptJson } from "../DisperseAirdrop25.ral.json";
+import { default as DisperseAirdrop50ScriptJson } from "../DisperseAirdrop50.ral.json";
 
-export const DepositAirdrop = new ExecutableScript<{
-  airdrop: HexString;
-  tokenId: HexString;
-  amount: bigint;
-}>(Script.fromJson(DepositAirdropScriptJson));
 export const DisperseAirdrop10 = new ExecutableScript<{
   airdrop: HexString;
   tokenId: HexString;
   amountPerAddress: bigint;
+  addresses: [
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address
+  ];
 }>(Script.fromJson(DisperseAirdrop10ScriptJson));
+export const DisperseAirdrop100 = new ExecutableScript<{
+  airdrop: HexString;
+  tokenId: HexString;
+  amountPerAddress: bigint;
+  addresses: [
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address
+  ];
+}>(Script.fromJson(DisperseAirdrop100ScriptJson));
 export const DisperseAirdrop25 = new ExecutableScript<{
   airdrop: HexString;
   tokenId: HexString;
   amountPerAddress: bigint;
+  addresses: [
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address
+  ];
 }>(Script.fromJson(DisperseAirdrop25ScriptJson));
+export const DisperseAirdrop50 = new ExecutableScript<{
+  airdrop: HexString;
+  tokenId: HexString;
+  amountPerAddress: bigint;
+  addresses: [
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address,
+    Address
+  ];
+}>(Script.fromJson(DisperseAirdrop50ScriptJson));

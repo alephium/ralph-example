@@ -7,9 +7,7 @@ import { ONE_ALPH } from '@alephium/web3'
 // Note that deployment scripts should prefixed with numbers (starting from 0)
 const deployAirdrop: DeployFunction<Settings> = async (deployer: Deployer, network: Network<Settings>): Promise<void> => {
   const result = await deployer.deployContract(Airdrop, {
-    initialFields: {
-      selfOwner: '1DrDyTr9RpRsQnDnXo2YRiPzPW4ooHX5LLoqXrqfMrpQH'
-    },
+    initialFields: {},
     initialAttoAlphAmount: ONE_ALPH
   })
   console.log('airdrop contract id: ' + result.contractInstance.contractId)
