@@ -1,123 +1,233 @@
-import { Airdrop, AirdropInstance, DisperseAirdrop10 } from '../artifacts/ts'
-import { DUST_AMOUNT, ONE_ALPH, Project, web3 } from '@alephium/web3'
-import { testPrivateKey } from '@alephium/web3-test'
+import { Airdrop } from '../artifacts/ts'
+import { NodeProvider, ONE_ALPH, Project, web3 } from '@alephium/web3'
+import { randomContractAddress, testPrivateKey } from '@alephium/web3-test'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
+import { generateMnemonic } from 'bip39'
 
 describe('unit tests', () => {
   const tokenId = '1a281053ba8601a658368594da034c2e99a0fb951b86498d05e76aedfe666800'
-  let airdrop: AirdropInstance
   let defaultSigner: PrivateKeyWallet
+  let nodeProvider
 
   beforeAll(async () => {
-    web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
+    const nodeUrl = 'http://127.0.0.1:22973'
+    nodeProvider = new NodeProvider(nodeUrl)
+    web3.setCurrentNodeProvider(nodeUrl, undefined, fetch)
     await Project.build()
     defaultSigner = new PrivateKeyWallet({ privateKey: testPrivateKey })
-    // airdrop = (
-    //   await Airdrop.deploy(defaultSigner, {
-    //     initialFields: {
-    //       selfOwner: defaultSigner.address
-    //     }
-    //   })
-    // ).contractInstance
   })
 
-  it('disperse10', async () => {
-    // const result = await DisperseAirdrop10.execute(defaultSigner, {
-    //   initialFields: {
-    //     airdrop: airdrop.contractId,
-    //     tokenId,
-    //     amountPerAddress: BigInt(1)
-    //   },
-    //   attoAlphAmount: DUST_AMOUNT * BigInt(11),
-    //   tokens: [
-    //     {
-    //       id: tokenId,
-    //       amount: BigInt(10)
-    //     }
-    //   ],
-    // })
-    //
-    // console.log(result)
+  const contractAddress = randomContractAddress()
 
-    const result = await Airdrop.tests.deposit({
-      initialFields: {
-        selfOwner: defaultSigner.address
-      },
+  it('should airdrop 10 addresses', async () => {
+    const addresses: string[] = []
+    const genAmt = 10
+
+    for (let i = 0; i < genAmt; i++) {
+      const wallet = PrivateKeyWallet.FromMnemonicWithGroup(
+        generateMnemonic(),
+        0,
+        undefined,
+        undefined,
+        undefined,
+        nodeProvider
+      )
+
+      const address = (await wallet.getSelectedAccount()).address
+      addresses.push(address)
+    }
+
+    const airdropResponse = await Airdrop.tests.disperse10({
+      address: contractAddress,
+      initialFields: {},
       testArgs: {
-        tokenId,
-        amount: BigInt(10000)
+        tokenId: tokenId,
+        amountPerAddress: BigInt(1),
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        addresses: addresses
       },
       initialAsset: {
         alphAmount: ONE_ALPH,
-        tokens: [
-          {
-            id: '1a281053ba8601a658368594da034c2e99a0fb951b86498d05e76aedfe666800',
-            amount: BigInt(10000)
-          }
-        ]
+        tokens: []
       },
       inputAssets: [
         {
           address: defaultSigner.address,
           asset: {
-            alphAmount: DUST_AMOUNT * BigInt(11),
+            alphAmount: ONE_ALPH,
             tokens: [
               {
-                id: '1a281053ba8601a658368594da034c2e99a0fb951b86498d05e76aedfe666800',
-                amount: BigInt(10000)
+                id: tokenId,
+                amount: BigInt(700)
               }
             ]
           }
         }
       ]
     })
+    const validRecipients = addresses.every((address) =>
+      airdropResponse.txOutputs.some((out) => out.address === address && out.tokens![0].amount === BigInt(1))
+    )
+    expect(validRecipients).toBeTruthy()
+  }, 100000)
 
-    // testDeposit()
-    // const result = await Airdrop.tests.disperse10({
-    //   initialFields: {
-    //     selfOwner: defaultSigner.address
-    //   },
-    //   testArgs: {
-    //     tokenId: '1a281053ba8601a658368594da034c2e99a0fb951b86498d05e76aedfe666800',
-    //     amountPerAddress: BigInt(1),
-    //     addresses: [
-    //       '1EDcGs3Tj5uA76WPnzi8RY4UxKpseAhKLfzEPwTx71MPg',
-    //       '1GTJfYF95hVvmLHe44i44NDLccvwWByddrepGVaTKVkew',
-    //       '123VnEBARzoZhy7ykvKhqw1KHsQWgPhr1UMwquXVV7t4q',
-    //       '1CEv7vNzQqf84Zx65XGaxRkweQPPsiPeGQVcN6PBLhN12',
-    //       '154rcEJECc9rutY8tAZj1uN49i9D8yByLRiQbmq4sWFzF',
-    //       '1DmAk8jnnxkJ6ow3HSwT7gBszadDbJu2mheE2jCEmNvs7',
-    //       '1GfQU1jzBLCabcUShiCiaa1M5y1yxqyRDms2NvcjrysN8',
-    //       '13tbqfPFwgRxfiGYF5RuPM5RNzaFBvHbdhH92b4MvZMBu',
-    //       '1E9XXEufrMA8BSjwpnFv3Hj2FKKWz4VYEChEkn1DQjBcS',
-    //       '1ASwwXkXURjxZ3oCSX8seX49V8VojpN6GE3LQVbn9sivb'
-    //     ]
-    //   },
-    //   initialAsset: {
-    //     alphAmount: ONE_ALPH,
-    //     tokens: [
-    //       {
-    //         id: '1a281053ba8601a658368594da034c2e99a0fb951b86498d05e76aedfe666800',
-    //         amount: BigInt(10000)
-    //       }
-    //     ]
-    //   },
-    //   inputAssets: [
-    //     {
-    //       address: defaultSigner.address,
-    //       asset: {
-    //         alphAmount: DUST_AMOUNT * BigInt(11),
-    //         tokens: [
-    //           {
-    //             id: '1a281053ba8601a658368594da034c2e99a0fb951b86498d05e76aedfe666800',
-    //             amount: BigInt(10)
-    //           }
-    //         ]
-    //       }
-    //     }
-    //   ]
-    // })
+  it('should airdrop 25 addresses', async () => {
+    const addresses: string[] = []
+    const genAmt = 25
 
-    console.log(result)
-  })
+    for (let i = 0; i < genAmt; i++) {
+      const wallet = PrivateKeyWallet.FromMnemonicWithGroup(
+        generateMnemonic(),
+        0,
+        undefined,
+        undefined,
+        undefined,
+        nodeProvider
+      )
+
+      const address = (await wallet.getSelectedAccount()).address
+      addresses.push(address)
+    }
+
+    const airdropResponse = await Airdrop.tests.disperse25({
+      address: contractAddress,
+      initialFields: {},
+      testArgs: {
+        tokenId: tokenId,
+        amountPerAddress: BigInt(1),
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        addresses: addresses
+      },
+      initialAsset: {
+        alphAmount: ONE_ALPH,
+        tokens: []
+      },
+      inputAssets: [
+        {
+          address: defaultSigner.address,
+          asset: {
+            alphAmount: ONE_ALPH,
+            tokens: [
+              {
+                id: tokenId,
+                amount: BigInt(25)
+              }
+            ]
+          }
+        }
+      ]
+    })
+    const validRecipients = addresses.every((address) =>
+      airdropResponse.txOutputs.some((out) => out.address === address && out.tokens![0].amount === BigInt(1))
+    )
+    expect(validRecipients).toBeTruthy()
+  }, 100000)
+
+  it('should airdrop 50 addresses', async () => {
+    const addresses: string[] = []
+    const genAmt = 50
+
+    for (let i = 0; i < genAmt; i++) {
+      const wallet = PrivateKeyWallet.FromMnemonicWithGroup(
+        generateMnemonic(),
+        0,
+        undefined,
+        undefined,
+        undefined,
+        nodeProvider
+      )
+
+      const address = (await wallet.getSelectedAccount()).address
+      addresses.push(address)
+    }
+
+    const airdropResponse = await Airdrop.tests.disperse50({
+      address: contractAddress,
+      initialFields: {},
+      testArgs: {
+        tokenId: tokenId,
+        amountPerAddress: BigInt(1),
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        addresses: addresses
+      },
+      initialAsset: {
+        alphAmount: ONE_ALPH,
+        tokens: []
+      },
+      inputAssets: [
+        {
+          address: defaultSigner.address,
+          asset: {
+            alphAmount: ONE_ALPH,
+            tokens: [
+              {
+                id: tokenId,
+                amount: BigInt(50)
+              }
+            ]
+          }
+        }
+      ]
+    })
+    const validRecipients = addresses.every((address) =>
+      airdropResponse.txOutputs.some((out) => out.address === address && out.tokens![0].amount === BigInt(1))
+    )
+    expect(validRecipients).toBeTruthy()
+  }, 100000)
+
+  it('should airdrop 100 addresses', async () => {
+    const addresses: string[] = []
+    const genAmt = 100
+
+    for (let i = 0; i < genAmt; i++) {
+      const wallet = PrivateKeyWallet.FromMnemonicWithGroup(
+        generateMnemonic(),
+        0,
+        undefined,
+        undefined,
+        undefined,
+        nodeProvider
+      )
+
+      const address = (await wallet.getSelectedAccount()).address
+      addresses.push(address)
+    }
+
+    const airdropResponse = await Airdrop.tests.disperse100({
+      address: contractAddress,
+      initialFields: {},
+      testArgs: {
+        tokenId: tokenId,
+        amountPerAddress: BigInt(1),
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        addresses: addresses
+      },
+      initialAsset: {
+        alphAmount: ONE_ALPH,
+        tokens: []
+      },
+      inputAssets: [
+        {
+          address: defaultSigner.address,
+          asset: {
+            alphAmount: ONE_ALPH,
+            tokens: [
+              {
+                id: tokenId,
+                amount: BigInt(100)
+              }
+            ]
+          }
+        }
+      ]
+    })
+    const validRecipients = addresses.every((address) =>
+      airdropResponse.txOutputs.some((out) => out.address === address && out.tokens![0].amount === BigInt(1))
+    )
+    expect(validRecipients).toBeTruthy()
+  }, 100000)
 })
