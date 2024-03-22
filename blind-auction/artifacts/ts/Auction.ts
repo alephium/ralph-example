@@ -9,7 +9,7 @@ import {
   TestContractResult,
   HexString,
   ContractFactory,
-  SubscribeOptions,
+  EventSubscribeOptions,
   EventSubscription,
   CallContractParams,
   CallContractResult,
@@ -23,24 +23,24 @@ import {
   fetchContractState,
   ContractInstance,
   getContractEventsCurrentCount,
+  Val,
 } from "@alephium/web3";
 import { default as AuctionContractJson } from "../Auction.ral.json";
 import { getContractByCodeHash } from "./contracts";
 
+import { Bid, AllStructs } from "./types";
+import { AllGeneratedContracts } from "./types";
+
 // Custom types for the contract
 export namespace AuctionTypes {
-  export type Fields = {
-    blindedBidTemplateId: HexString;
-    bidderTemplateId: HexString;
-    auctioneer: Address;
-    beneficiaryAsset: HexString;
-    beneficiaryAssetAmount: bigint;
+  export interface Fields extends Record<string, Val> {
+    beneficiary: Address;
     biddingEnd: bigint;
     revealEnd: bigint;
+    ended: boolean;
     highestBidder: Address;
     highestBid: bigint;
-    ended: boolean;
-  };
+  }
 
   export type State = ContractState<Fields>;
 
@@ -48,21 +48,46 @@ export namespace AuctionTypes {
     winner: Address;
     amount: bigint;
   }>;
+
+  export interface CallMethodTable {
+    getBidNum: {
+      params: CallContractParams<{ bidder: Address }>;
+      result: CallContractResult<bigint>;
+    };
+    getBid: {
+      params: CallContractParams<{ bidder: Address; index: bigint }>;
+      result: CallContractResult<Bid>;
+    };
+  }
+  export type CallMethodParams<T extends keyof CallMethodTable> =
+    CallMethodTable[T]["params"];
+  export type CallMethodResult<T extends keyof CallMethodTable> =
+    CallMethodTable[T]["result"];
+  export type MultiCallParams = Partial<{
+    [Name in keyof CallMethodTable]: CallMethodTable[Name]["params"];
+  }>;
+  export type MultiCallResults<T extends MultiCallParams> = {
+    [MaybeName in keyof T]: MaybeName extends keyof CallMethodTable
+      ? CallMethodTable[MaybeName]["result"]
+      : undefined;
+  };
 }
 
 class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
+  getInitialFieldsWithDefaultValues() {
+    return this.contract.getInitialFieldsWithDefaultValues() as AuctionTypes.Fields;
+  }
+
+  eventIndex = { AuctionEnded: 0 };
   consts = {
     ErrorCodes: {
       InvalidArg: BigInt(0),
       BiddingAlreadyEnded: BigInt(1),
       InvalidBidderAddress: BigInt(2),
-      InvalidCaller: BigInt(3),
-      BidderNotExists: BigInt(4),
-      BiddingNotEnd: BigInt(5),
-      RevealAlreadyEnded: BigInt(6),
-      RevealNotEnd: BigInt(7),
-      AuctionEndAlreadyCalled: BigInt(8),
-      HighestBidderNotAllowedToWithdraw: BigInt(9),
+      BiddingNotEnd: BigInt(3),
+      RevealAlreadyEnded: BigInt(4),
+      RevealNotEnd: BigInt(5),
+      AuctionEndAlreadyCalled: BigInt(6),
     },
   };
 
@@ -71,46 +96,93 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
   }
 
   tests = {
-    createBidder: async (
-      params: Omit<TestContractParams<AuctionTypes.Fields, never>, "testArgs">
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "createBidder", params);
-    },
-    getBidder: async (
-      params: TestContractParams<AuctionTypes.Fields, { from: Address }>
-    ): Promise<TestContractResult<HexString>> => {
-      return testMethod(this, "getBidder", params);
-    },
     bid: async (
       params: TestContractParams<
-        AuctionTypes.Fields,
-        { from: Address; blindedBid: HexString; amount: bigint }
+        AuctionTypes.Fields & {
+          bids?: Map<HexString, Bid>;
+          bidNum?: Map<Address, bigint>;
+        },
+        { bidder: Address; blindedBid: HexString; deposit: bigint }
       >
-    ): Promise<TestContractResult<null>> => {
+    ): Promise<
+      TestContractResult<
+        null,
+        { bids?: Map<HexString, Bid>; bidNum?: Map<Address, bigint> }
+      >
+    > => {
       return testMethod(this, "bid", params);
     },
     reveal: async (
       params: TestContractParams<
-        AuctionTypes.Fields,
+        AuctionTypes.Fields & {
+          bids?: Map<HexString, Bid>;
+          bidNum?: Map<Address, bigint>;
+        },
         {
-          from: Address;
+          bidder: Address;
           values: HexString;
           fakes: HexString;
           secrets: HexString;
         }
       >
-    ): Promise<TestContractResult<null>> => {
+    ): Promise<
+      TestContractResult<
+        null,
+        { bids?: Map<HexString, Bid>; bidNum?: Map<Address, bigint> }
+      >
+    > => {
       return testMethod(this, "reveal", params);
     },
-    withdraw: async (
-      params: Omit<TestContractParams<AuctionTypes.Fields, never>, "testArgs">
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "withdraw", params);
-    },
     auctionEnd: async (
-      params: Omit<TestContractParams<AuctionTypes.Fields, never>, "testArgs">
-    ): Promise<TestContractResult<null>> => {
+      params: Omit<
+        TestContractParams<
+          AuctionTypes.Fields & {
+            bids?: Map<HexString, Bid>;
+            bidNum?: Map<Address, bigint>;
+          },
+          never
+        >,
+        "testArgs"
+      >
+    ): Promise<
+      TestContractResult<
+        null,
+        { bids?: Map<HexString, Bid>; bidNum?: Map<Address, bigint> }
+      >
+    > => {
       return testMethod(this, "auctionEnd", params);
+    },
+    getBidNum: async (
+      params: TestContractParams<
+        AuctionTypes.Fields & {
+          bids?: Map<HexString, Bid>;
+          bidNum?: Map<Address, bigint>;
+        },
+        { bidder: Address }
+      >
+    ): Promise<
+      TestContractResult<
+        bigint,
+        { bids?: Map<HexString, Bid>; bidNum?: Map<Address, bigint> }
+      >
+    > => {
+      return testMethod(this, "getBidNum", params);
+    },
+    getBid: async (
+      params: TestContractParams<
+        AuctionTypes.Fields & {
+          bids?: Map<HexString, Bid>;
+          bidNum?: Map<Address, bigint>;
+        },
+        { bidder: Address; index: bigint }
+      >
+    ): Promise<
+      TestContractResult<
+        Bid,
+        { bids?: Map<HexString, Bid>; bidNum?: Map<Address, bigint> }
+      >
+    > => {
+      return testMethod(this, "getBid", params);
     },
   };
 }
@@ -119,8 +191,10 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
 export const Auction = new Factory(
   Contract.fromJson(
     AuctionContractJson,
-    "",
-    "73c8954c460829ee726906762af2ea738d7824aa898cfb789971731a3d000b90"
+    "=6-1+4=3-1+a=3-1+c=2-2+30=3-1+2=13-2+60=83-1+4=40+7a037e0300012c00=254+7a037e0300012c00=228-2+c3=165-1+d=57-1+8=201-1+d=138+7a047e0300012c00=50-2+7f=21-1+c=40+7a047e0300012c00=244",
+    "5c1be17bc7c67b890d2301464f8991a03d54b42a9a679f0c16f64fe6830d3c71",
+    AllStructs,
+    AllGeneratedContracts
   )
 );
 
@@ -139,7 +213,7 @@ export class AuctionInstance extends ContractInstance {
   }
 
   subscribeAuctionEndedEvent(
-    options: SubscribeOptions<AuctionTypes.AuctionEndedEvent>,
+    options: EventSubscribeOptions<AuctionTypes.AuctionEndedEvent>,
     fromCount?: number
   ): EventSubscription {
     return subscribeContractEvent(
@@ -149,5 +223,35 @@ export class AuctionInstance extends ContractInstance {
       "AuctionEnded",
       fromCount
     );
+  }
+
+  methods = {
+    getBidNum: async (
+      params: AuctionTypes.CallMethodParams<"getBidNum">
+    ): Promise<AuctionTypes.CallMethodResult<"getBidNum">> => {
+      return callMethod(
+        Auction,
+        this,
+        "getBidNum",
+        params,
+        getContractByCodeHash
+      );
+    },
+    getBid: async (
+      params: AuctionTypes.CallMethodParams<"getBid">
+    ): Promise<AuctionTypes.CallMethodResult<"getBid">> => {
+      return callMethod(Auction, this, "getBid", params, getContractByCodeHash);
+    },
+  };
+
+  async multicall<Calls extends AuctionTypes.MultiCallParams>(
+    calls: Calls
+  ): Promise<AuctionTypes.MultiCallResults<Calls>> {
+    return (await multicallMethods(
+      Auction,
+      this,
+      calls,
+      getContractByCodeHash
+    )) as AuctionTypes.MultiCallResults<Calls>;
   }
 }

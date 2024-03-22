@@ -11,23 +11,16 @@ const deployAuction: DeployFunction<Settings> = async (
     throw new Error('No settings specified')
   }
 
-  const blindedBidTemplate = deployer.getDeployContractResult('BlindedBid')
-  const bidderTemplate = deployer.getDeployContractResult('Bidder')
   const settings = network.settings
   const auction = await deployer.deployContract(Auction, {
     initialFields: {
-      blindedBidTemplateId: blindedBidTemplate.contractInstance.contractId,
-      bidderTemplateId: bidderTemplate.contractInstance.contractId,
-      auctioneer: settings.auctioneer,
-      beneficiaryAsset: settings.beneficiaryAsset,
-      beneficiaryAssetAmount: settings.beneficiaryAssetAmount,
+      beneficiary: settings.beneficiary,
       biddingEnd: BigInt(settings.biddingEnd),
       revealEnd: BigInt(settings.revealEnd),
       highestBidder: ZERO_ADDRESS,
       highestBid: 0n,
       ended: false
-    },
-    initialTokenAmounts: [{ id: settings.beneficiaryAsset, amount: settings.beneficiaryAssetAmount }]
+    }
   })
 
   console.log(`Auction contract id: ${auction.contractInstance.contractId}`)

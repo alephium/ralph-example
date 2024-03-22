@@ -1,3 +1,0 @@
-TxScript Bid(auction: Auction, blindedBid: ByteVec, amount: U256) {
-  auction.bid{callerAddress!() -> ALPH : amount + 1 alph}(callerAddress!(), blindedBid, amount)
-}

@@ -3,7 +3,4 @@
 /* eslint-disable */
 
 export * from "./Auction";
-export * from "./Bidder";
-export * from "./BlindedBid";
-export * from "./TestToken";
 export * from "./scripts";

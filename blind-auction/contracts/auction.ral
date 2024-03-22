@@ -1,14 +1,17 @@
+struct Bid {
+  blindedBid: ByteVec,
+  deposit: U256
+}
+
 Contract Auction(
-  blindedBidTemplateId: ByteVec,
-  bidderTemplateId: ByteVec,
-  auctioneer: Address,
-  beneficiaryAsset: ByteVec,
-  beneficiaryAssetAmount: U256,
+  beneficiary: Address,
   biddingEnd: U256,
   revealEnd: U256,
+  mut ended: Bool,
   mut highestBidder: Address,
   mut highestBid: U256,
-  mut ended: Bool
+  mut bids: Map[ByteVec, Bid],
+  mut bidNum: Map[Address, U256]
 ) {
 
   event AuctionEnded(winner: Address, amount: U256)
@@ -17,73 +20,80 @@ Contract Auction(
     InvalidArg = 0
     BiddingAlreadyEnded = 1
     InvalidBidderAddress = 2
-    InvalidCaller = 3
-    BidderNotExists = 4
-    BiddingNotEnd = 5
-    RevealAlreadyEnded = 6
-    RevealNotEnd = 7
-    AuctionEndAlreadyCalled = 8
-    HighestBidderNotAllowedToWithdraw = 9
+    BiddingNotEnd = 3
+    RevealAlreadyEnded = 4
+    RevealNotEnd = 5
+    AuctionEndAlreadyCalled = 6
   }
 
-  @using(preapprovedAssets = true, checkExternalCaller = false)
-  pub fn createBidder() -> () {
-    let caller = callerAddress!()
-    let (encodedImmFields, encodedMutFields) = Bidder.encodeFields!(
-      blindedBidTemplateId,
-      selfContract!(),
-      caller,
-      0
-    )
-    copyCreateSubContract!{caller -> ALPH : 1 alph}(
-      toByteVec!(caller),
-      bidderTemplateId,
-      encodedImmFields,
-      encodedMutFields
-    )
-  }
-
-  fn getBidder(from: Address) -> Bidder {
-    let bidderContractId = subContractId!(toByteVec!(from))
-    assert!(contractExists!(bidderContractId), ErrorCodes.BidderNotExists)
-    return Bidder(bidderContractId)
-  }
-
-  @using(preapprovedAssets = true)
-  pub fn bid(from: Address, blindedBid: ByteVec, amount: U256) -> () {
+  @using(preapprovedAssets = true, assetsInContract = true, checkExternalCaller = false)
+  pub fn bid(bidder: Address, blindedBid: ByteVec, deposit: U256) -> () {
     assert!(size!(blindedBid) == 32, ErrorCodes.InvalidArg)
     assert!(blockTimeStamp!() <= biddingEnd, ErrorCodes.BiddingAlreadyEnded)
-    assert!(isAssetAddress!(from), ErrorCodes.InvalidBidderAddress)
+    assert!(isAssetAddress!(bidder), ErrorCodes.InvalidBidderAddress)
 
-    let bidder = getBidder(from)
-    checkCaller!(bidder.getAddress() == from, ErrorCodes.InvalidCaller)
+    let mut count = 0
+    if (!bidNum.contains!(bidder)) {
+      bidNum.insert!{bidder -> ALPH: minimalContractDeposit!()}(bidder, 0)
+    } else {
+      count = bidNum[bidder]
+    }
 
-    bidder.bid{from -> ALPH : amount + 1 alph}(blindedBid, amount)
+    let bidKey = toByteVec!(bidder) ++ toByteVec!(count)
+    let newBid = Bid { blindedBid: blindedBid, deposit: deposit }
+    bids.insert!{bidder -> ALPH: minimalContractDeposit!()}(bidKey, newBid)
+    bidNum[bidder] = count + 1
+    transferTokenToSelf!(bidder, ALPH, deposit)
   }
 
-  @using(updateFields = true)
-  pub fn reveal(from: Address, values: ByteVec, fakes: ByteVec, secrets: ByteVec) -> () {
+  // Note that if there are too many bids, there may be insufficient gas when the reveal function is executed.
+  // If you want to use this code in production, please consider supporting batch reveal bids.
+  @using(preapprovedAssets = true, assetsInContract = true, updateFields = true, checkExternalCaller = false)
+  pub fn reveal(bidder: Address, values: ByteVec, fakes: ByteVec, secrets: ByteVec) -> () {
     assert!(blockTimeStamp!() > biddingEnd, ErrorCodes.BiddingNotEnd)
     assert!(blockTimeStamp!() <= revealEnd, ErrorCodes.RevealAlreadyEnded)
 
-    let bidder = getBidder(from)
-    let bidderAddress = bidder.getAddress()
-    checkCaller!(bidderAddress == from, ErrorCodes.InvalidCaller)
+    let length = bidNum[bidder]
+    assert!(size!(values) / 32 == length, ErrorCodes.InvalidArg)
+    assert!(size!(fakes) == length, ErrorCodes.InvalidArg)
+    assert!(size!(secrets) / 32 == length, ErrorCodes.InvalidArg)
 
-    let newHighestBid = bidder.reveal(values, fakes, secrets, highestBid)
-    if (newHighestBid > highestBid) {
-      highestBid = newHighestBid
-      highestBidder = bidderAddress
+    let mut refund = 0
+    let mut remains = length
+    for (let mut index = 0; index < length; index = index + 1) {
+      let bidKey = toByteVec!(bidder) ++ toByteVec!(index)
+      if (bids.contains!(bidKey)) {
+        let value = u256From32Byte!(byteVecSlice!(values, index * 32, (index + 1) * 32))
+        let fakeByte = byteVecSlice!(fakes, index, index + 1)
+        let fake = if (fakeByte == #00) false else true
+        let secret = byteVecSlice!(secrets, index * 32, (index + 1) * 32)
+
+        let bidToCheck = bids[bidKey]
+        if (bidToCheck.blindedBid == blake2b!(u256To32Byte!(value) ++ toByteVec!(fake) ++ secret)) {
+          refund = refund + bidToCheck.deposit
+
+          if (!fake && bidToCheck.deposit >= value && value > highestBid) {
+            if (highestBidder != nullContractAddress!()) {
+              // Refund the previously highest bidder.
+              transferTokenFromSelf!(highestBidder, ALPH, highestBid)
+            }
+
+            highestBid = value
+            highestBidder = bidder
+            refund = refund - value
+          }
+          bids.remove!(bidKey, bidder)
+          remains = remains - 1
+        }
+
+      } else {
+        remains = remains - 1
+      }
     }
-  }
-
-  pub fn withdraw() -> () {
-    let caller = callerAddress!()
-    assert!(caller != highestBidder, ErrorCodes.HighestBidderNotAllowedToWithdraw)
-
-    let bidder = getBidder(caller)
-    checkCaller!(caller == bidder.getAddress(), ErrorCodes.InvalidCaller)
-    bidder.withdraw()
+    transferTokenFromSelf!(bidder, ALPH, refund)
+    if (remains == 0) {
+      bidNum.remove!(bidder, bidder)
+    }
   }
 
   @using(assetsInContract = true, checkExternalCaller = false, updateFields = true)
@@ -91,12 +101,17 @@ Contract Auction(
     assert!(blockTimeStamp!() > revealEnd, ErrorCodes.RevealNotEnd)
     assert!(!ended, ErrorCodes.AuctionEndAlreadyCalled)
 
-    let bidder = getBidder(highestBidder)
-    bidder.auctionEnd(auctioneer, highestBid)
-    transferTokenFromSelf!(highestBidder, beneficiaryAsset, beneficiaryAssetAmount)
-
-    ended = true
-
     emit AuctionEnded(highestBidder, highestBid)
+    ended = true
+    transferTokenFromSelf!(beneficiary, ALPH, highestBid)
+  }
+
+  pub fn getBidNum(bidder: Address) -> U256 {
+    return if (bidNum.contains!(bidder)) bidNum[bidder] else 0
+  }
+
+  pub fn getBid(bidder: Address, index: U256) -> Bid {
+    let bidKey = toByteVec!(bidder) ++ toByteVec!(index)
+    return bids[bidKey]
   }
 }

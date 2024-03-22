@@ -1,0 +1,183 @@
+[
+  {
+    "version": "v2.11.0",
+    "name": "SimpleWrapperU256",
+    "bytecode": "02040d164023402f0000010100051600ce00410c7b010000000102a00002010001010004b300001600a100010201010004b300001600b0",
+    "codeHash": "b8745b5749f063d70978956e10d267e6480b8e94469963042d9c326794f59449",
+    "fieldsSig": {
+      "names": [
+        "value",
+        "parentContractId"
+      ],
+      "types": [
+        "U256",
+        "ByteVec"
+      ],
+      "isMutable": [
+        true,
+        false
+      ]
+    },
+    "eventsSig": [],
+    "functions": [
+      {
+        "name": "f0",
+        "usePreapprovedAssets": false,
+        "useAssetsInContract": false,
+        "isPublic": false,
+        "paramNames": [
+          "callerContractId"
+        ],
+        "paramTypes": [
+          "ByteVec"
+        ],
+        "paramIsMutable": [
+          false
+        ],
+        "returnTypes": []
+      },
+      {
+        "name": "f1",
+        "usePreapprovedAssets": false,
+        "useAssetsInContract": false,
+        "isPublic": true,
+        "paramNames": [],
+        "paramTypes": [],
+        "paramIsMutable": [],
+        "returnTypes": [
+          "U256"
+        ]
+      },
+      {
+        "name": "f2",
+        "usePreapprovedAssets": false,
+        "useAssetsInContract": false,
+        "isPublic": true,
+        "paramNames": [
+          "newValue"
+        ],
+        "paramTypes": [
+          "U256"
+        ],
+        "paramIsMutable": [
+          false
+        ],
+        "returnTypes": []
+      },
+      {
+        "name": "destroy",
+        "usePreapprovedAssets": false,
+        "useAssetsInContract": true,
+        "isPublic": true,
+        "paramNames": [
+          "address"
+        ],
+        "paramTypes": [
+          "Address"
+        ],
+        "paramIsMutable": [
+          false
+        ],
+        "returnTypes": []
+      }
+    ],
+    "constants": [],
+    "enums": []
+  },
+  {
+    "version": "v2.11.0",
+    "name": "StructWrapperBid",
+    "bytecode": "03050d184021402a40360000010100051600ce02410c7b010000000203ce00ce0102010000000102ce0002010000000102ce0102010201010004b300001600b0",
+    "codeHash": "894724159b0c1d71345079c83daca4a7829c7d825bd48114ad7809b2e814f78f",
+    "fieldsSig": {
+      "names": [
+        "blindedBid",
+        "deposit",
+        "parentContractId"
+      ],
+      "types": [
+        "ByteVec",
+        "U256",
+        "ByteVec"
+      ],
+      "isMutable": [
+        false,
+        false,
+        false
+      ]
+    },
+    "eventsSig": [],
+    "functions": [
+      {
+        "name": "f0",
+        "usePreapprovedAssets": false,
+        "useAssetsInContract": false,
+        "isPublic": false,
+        "paramNames": [
+          "callerContractId"
+        ],
+        "paramTypes": [
+          "ByteVec"
+        ],
+        "paramIsMutable": [
+          false
+        ],
+        "returnTypes": []
+      },
+      {
+        "name": "f1",
+        "usePreapprovedAssets": false,
+        "useAssetsInContract": false,
+        "isPublic": true,
+        "paramNames": [],
+        "paramTypes": [],
+        "paramIsMutable": [],
+        "returnTypes": [
+          "Bid"
+        ]
+      },
+      {
+        "name": "f2",
+        "usePreapprovedAssets": false,
+        "useAssetsInContract": false,
+        "isPublic": true,
+        "paramNames": [],
+        "paramTypes": [],
+        "paramIsMutable": [],
+        "returnTypes": [
+          "ByteVec"
+        ]
+      },
+      {
+        "name": "f3",
+        "usePreapprovedAssets": false,
+        "useAssetsInContract": false,
+        "isPublic": true,
+        "paramNames": [],
+        "paramTypes": [],
+        "paramIsMutable": [],
+        "returnTypes": [
+          "U256"
+        ]
+      },
+      {
+        "name": "destroy",
+        "usePreapprovedAssets": false,
+        "useAssetsInContract": true,
+        "isPublic": true,
+        "paramNames": [
+          "address"
+        ],
+        "paramTypes": [
+          "Address"
+        ],
+        "paramIsMutable": [
+          false
+        ],
+        "returnTypes": []
+      }
+    ],
+    "constants": [],
+    "enums": []
+  }
+]
