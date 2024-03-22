@@ -1,41 +1,38 @@
 {
-  "version": "v2.3.5",
+  "version": "v2.11.0",
   "name": "Auction",
-  "bytecode": "0a0640314045408a40d240fa412d010300030016b41700ce00b116001303640c13016417021701160013c40de0b6b3a7640000a2160047ce0116011602c11800000102010a160047cb17011601c5107b1601020103030400402516014313202f0c7b56ce05320d7b1600480e7b1600000117030c0d160301001600450f7b1600160213c40de0b6b3a76400002aa2160116020e0c160301010100040700402856ce0533117b56ce063213067b1600000117040c0d16040100170516051600450f7b160116021603a001100d1604010217061606a001334c041606a1011605a100010000020016b417001600a0004613097b16000001170116000c0d16010100450f7b0c0c1601010401020001001c56ce063313077ba0021913087ba00000011700ce02a0010e0c16000105a000ce03ce04ab03a10205a000a0015f",
-  "codeHash": "73c8954c460829ee726906762af2ea738d7824aa898cfb789971731a3d000b90",
+  "bytecode": "0608413042ea43294349438a43bd43e143fd0101030700405a16014313202f0c7b56ce01320d7b1600480e7b0c1703140a5f5f6d61705f5f315f5f16004744cbc54b111600d1a2140a5f5f6d61705f5f315f5f1600474414403702040d164023402f0000010100051600ce00410c7b010000000102a00002010001010004b300001600a100010201010004b300001600b0b10d640c0d64bf184a090c0d140a5f5f6d61705f5f315f5f16004744cb0101170316004716034044170416011602170617051600d1a2140a5f5f6d61705f5f305f5f16044414404003050d184021402a40360000010100051600ce02410c7b010000000203ce00ce0102010000000102ce0002010000000102ce0102010201010004b300001600b016051606b10f640c64bf1816030d2a0d0c140a5f5f6d61705f5f315f5f16004744cb010216001602a90101040f0040cc56ce01330f7b56ce0232107b0c0d140a5f5f6d61705f5f315f5f16004744cb0101170416014313202d16042f0c7b16024316042f0c7b16034313202d16042f0c7b0c1705160417060c170716071604314c4089160047160740441708140a5f5f6d61705f5f305f5f160844cbc54c40741601160713202c16070d2a13202c627117091602160716070d2a62170a160a140100414c02044a0103170b1603160713202c16070d2a13202c62170c0c0e140a5f5f6d61705f5f305f5f160844cb0101170e170d160d16096b160b1e44160c444e414c40391605160e2a1705160b19160e1609341a1609a002331a4c1e140a5f5f6d61705f5f325f5f16004744cbc54b101600d1a2140a5f5f6d61705f5f325f5f1600474414403702040d164023402f0000010100051600ce00410c7b010000000102a00002010001010004b300001600a100010201010004b300001600b0b10d640c0d64bf18160016090004160516092b170516000d0c140a5f5f6d61705f5f305f5f160844cb010416060d2b17064a0416060d2b170616070d2a17074a7f7316001605a816060c2f4c0916000d0c140a5f5f6d61705f5f315f5f16004744cb01030102010200190c0d140a5f5f6d61705f5f325f5f16004744cb0101170116010c334c0c16000d0c140a5f5f6d61705f5f325f5f16004744cb010316001601a801020000001256ce0233117ba0001913067b05a001a0025f03a100ce00a002a800000202001aa001ca464c120c0d140a5f5f6d61705f5f325f5fa0014744cb0101a0022a0d0c140a5f5f6d61705f5f325f5fa0014744cb01021601a1021600a101010001010112140a5f5f6d61705f5f315f5f16004744cbc54c090c0d140a5f5f6d61705f5f315f5f16004744cb01014a010c0201000204020e1600471601404417020c0e140a5f5f6d61705f5f305f5f160244cb0101020100010101090c0d140a5f5f6d61705f5f325f5f16004744cb010102",
+  "codeHash": "ad3f4697a37a8cecfcccbac824d825706b865f6f9710c9ffa587fc5381616fe5",
   "fieldsSig": {
     "names": [
-      "blindedBidTemplateId",
-      "bidderTemplateId",
-      "auctioneer",
-      "beneficiaryAsset",
-      "beneficiaryAssetAmount",
+      "beneficiary",
       "biddingEnd",
       "revealEnd",
+      "ended",
       "highestBidder",
       "highestBid",
-      "ended"
+      "bids",
+      "bidNum",
+      "pendingReturns"
     ],
     "types": [
-      "ByteVec",
-      "ByteVec",
-      "Address",
-      "ByteVec",
-      "U256",
-      "U256",
-      "U256",
       "Address",
       "U256",
-      "Bool"
+      "U256",
+      "Bool",
+      "Address",
+      "U256",
+      "Map[ByteVec,Bid]",
+      "Map[Address,U256]",
+      "Map[Address,U256]"
     ],
     "isMutable": [
       false,
       false,
       false,
-      false,
-      false,
-      false,
-      false,
+      true,
+      true,
+      true,
       true,
       true,
       true
@@ -56,42 +53,14 @@
   ],
   "functions": [
     {
-      "name": "createBidder",
-      "usePreapprovedAssets": true,
-      "useAssetsInContract": false,
-      "isPublic": true,
-      "paramNames": [],
-      "paramTypes": [],
-      "paramIsMutable": [],
-      "returnTypes": []
-    },
-    {
-      "name": "getBidder",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": false,
-      "paramNames": [
-        "from"
-      ],
-      "paramTypes": [
-        "Address"
-      ],
-      "paramIsMutable": [
-        false
-      ],
-      "returnTypes": [
-        "ByteVec"
-      ]
-    },
-    {
       "name": "bid",
       "usePreapprovedAssets": true,
-      "useAssetsInContract": false,
+      "useAssetsInContract": true,
       "isPublic": true,
       "paramNames": [
-        "from",
+        "bidder",
         "blindedBid",
-        "amount"
+        "deposit"
       ],
       "paramTypes": [
         "Address",
@@ -107,11 +76,11 @@
     },
     {
       "name": "reveal",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": true,
       "isPublic": true,
       "paramNames": [
-        "from",
+        "bidder",
         "values",
         "fakes",
         "secrets"
@@ -133,11 +102,17 @@
     {
       "name": "withdraw",
       "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
+      "useAssetsInContract": true,
       "isPublic": true,
-      "paramNames": [],
-      "paramTypes": [],
-      "paramIsMutable": [],
+      "paramNames": [
+        "bidder"
+      ],
+      "paramTypes": [
+        "Address"
+      ],
+      "paramIsMutable": [
+        false
+      ],
       "returnTypes": []
     },
     {
@@ -149,6 +124,82 @@
       "paramTypes": [],
       "paramIsMutable": [],
       "returnTypes": []
+    },
+    {
+      "name": "placeBid",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": false,
+      "paramNames": [
+        "bidder",
+        "value"
+      ],
+      "paramTypes": [
+        "Address",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "getBidNum",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "bidder"
+      ],
+      "paramTypes": [
+        "Address"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "getBid",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "bidder",
+        "index"
+      ],
+      "paramTypes": [
+        "Address",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": [
+        "Bid"
+      ]
+    },
+    {
+      "name": "getPendingReturn",
+      "usePreapprovedAssets": false,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "bidder"
+      ],
+      "paramTypes": [
+        "Address"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": [
+        "U256"
+      ]
     }
   ],
   "constants": [],
@@ -178,52 +229,31 @@
           }
         },
         {
-          "name": "InvalidCaller",
+          "name": "BiddingNotEnd",
           "value": {
             "type": "U256",
             "value": "3"
           }
         },
         {
-          "name": "BidderNotExists",
+          "name": "RevealAlreadyEnded",
           "value": {
             "type": "U256",
             "value": "4"
           }
         },
         {
-          "name": "BiddingNotEnd",
+          "name": "RevealNotEnd",
           "value": {
             "type": "U256",
             "value": "5"
           }
         },
         {
-          "name": "RevealAlreadyEnded",
-          "value": {
-            "type": "U256",
-            "value": "6"
-          }
-        },
-        {
-          "name": "RevealNotEnd",
-          "value": {
-            "type": "U256",
-            "value": "7"
-          }
-        },
-        {
           "name": "AuctionEndAlreadyCalled",
           "value": {
             "type": "U256",
-            "value": "8"
-          }
-        },
-        {
-          "name": "HighestBidderNotAllowedToWithdraw",
-          "value": {
-            "type": "U256",
-            "value": "9"
+            "value": "6"
           }
         }
       ]

@@ -12,33 +12,30 @@ import {
   HexString,
 } from "@alephium/web3";
 import { default as AuctionEndScriptJson } from "../AuctionEnd.ral.json";
-import { default as BidScriptJson } from "../Bid.ral.json";
-import { default as CreateBidderScriptJson } from "../CreateBidder.ral.json";
+import { default as NewBidScriptJson } from "../NewBid.ral.json";
 import { default as RevealScriptJson } from "../Reveal.ral.json";
-import { default as GetTokenScriptJson } from "../test/GetToken.ral.json";
 import { default as WithdrawScriptJson } from "../Withdraw.ral.json";
 
+import { Bid, AllStructs } from "./types";
+import { AllGeneratedContracts } from "./types";
+
 export const AuctionEnd = new ExecutableScript<{ auction: HexString }>(
-  Script.fromJson(AuctionEndScriptJson)
+  Script.fromJson(AuctionEndScriptJson, "", AllStructs)
 );
-export const Bid = new ExecutableScript<{
+
+export const NewBid = new ExecutableScript<{
   auction: HexString;
   blindedBid: HexString;
   amount: bigint;
-}>(Script.fromJson(BidScriptJson));
-export const CreateBidder = new ExecutableScript<{ auction: HexString }>(
-  Script.fromJson(CreateBidderScriptJson)
-);
+}>(Script.fromJson(NewBidScriptJson, "", AllStructs));
+
 export const Reveal = new ExecutableScript<{
   auction: HexString;
   values: HexString;
   fakes: HexString;
   secrets: HexString;
-}>(Script.fromJson(RevealScriptJson));
-export const GetToken = new ExecutableScript<{
-  token: HexString;
-  amount: bigint;
-}>(Script.fromJson(GetTokenScriptJson));
+}>(Script.fromJson(RevealScriptJson, "", AllStructs));
+
 export const Withdraw = new ExecutableScript<{ auction: HexString }>(
-  Script.fromJson(WithdrawScriptJson)
+  Script.fromJson(WithdrawScriptJson, "", AllStructs)
 );

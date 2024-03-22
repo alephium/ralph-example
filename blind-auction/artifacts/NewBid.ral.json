@@ -1,17 +1,20 @@
 {
-  "version": "v2.3.5",
-  "name": "GetToken",
-  "bytecodeTemplate": "01010300000006b4{1}0e0c{0}0104",
+  "version": "v2.11.0",
+  "name": "NewBid",
+  "bytecodeTemplate": "0101030000000eb4{2}d10e2c2aa2b4{1}{2}0f0c{0}0100",
   "fieldsSig": {
     "names": [
-      "token",
+      "auction",
+      "blindedBid",
       "amount"
     ],
     "types": [
+      "Auction",
       "ByteVec",
       "U256"
     ],
     "isMutable": [
+      false,
       false,
       false
     ]

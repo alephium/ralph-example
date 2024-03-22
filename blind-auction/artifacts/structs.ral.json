@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Bid",
+    "fieldNames": [
+      "blindedBid",
+      "deposit"
+    ],
+    "fieldTypes": [
+      "ByteVec",
+      "U256"
+    ],
+    "isMutable": [
+      false,
+      false
+    ]
+  }
+]

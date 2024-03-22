@@ -1,13 +1,13 @@
 {
-  "version": "v2.3.5",
+  "version": "v2.11.0",
   "name": "Withdraw",
-  "bytecodeTemplate": "010103000000040c0c{0}0104",
+  "bytecodeTemplate": "01010300000005b40d0c{0}0102",
   "fieldsSig": {
     "names": [
       "auction"
     ],
     "types": [
-      "ByteVec"
+      "Auction"
     ],
     "isMutable": [
       false

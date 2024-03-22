@@ -1,7 +1,7 @@
 {
-  "version": "v2.3.5",
+  "version": "v2.11.0",
   "name": "Reveal",
-  "bytecodeTemplate": "01010300000008b4{1}{2}{3}100c{0}0103",
+  "bytecodeTemplate": "0101030000000bb4d1a2b4{1}{2}{3}100c{0}0101",
   "fieldsSig": {
     "names": [
       "auction",
@@ -10,7 +10,7 @@
       "secrets"
     ],
     "types": [
-      "ByteVec",
+      "Auction",
       "ByteVec",
       "ByteVec",
       "ByteVec"
