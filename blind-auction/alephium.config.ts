@@ -1,10 +1,8 @@
 import { Configuration } from '@alephium/cli'
-import { Address, HexString } from '@alephium/web3'
+import { Address } from '@alephium/web3'
 
 export type Settings = {
-  beneficiaryAsset: HexString
-  beneficiaryAssetAmount: bigint
-  auctioneer: Address
+  beneficiary: Address
   biddingEnd: number
   revealEnd: number
 }
