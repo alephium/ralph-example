@@ -11,8 +11,7 @@ Contract Auction(
   mut highestBidder: Address,
   mut highestBid: U256,
   mut bids: Map[ByteVec, Bid],
-  mut bidNum: Map[Address, U256],
-  mut pendingReturns: Map[Address, U256]
+  mut bidNum: Map[Address, U256]
 ) {
 
   event AuctionEnded(winner: Address, amount: U256)
@@ -47,7 +46,9 @@ Contract Auction(
     transferTokenToSelf!(bidder, ALPH, deposit)
   }
 
-  @using(preapprovedAssets = true, assetsInContract = true, checkExternalCaller = false)
+  // Note that if there are too many bids, there may be insufficient gas when the reveal function is executed.
+  // If you want to use this code in production, please consider supporting batch reveal bids.
+  @using(preapprovedAssets = true, assetsInContract = true, updateFields = true, checkExternalCaller = false)
   pub fn reveal(bidder: Address, values: ByteVec, fakes: ByteVec, secrets: ByteVec) -> () {
     assert!(blockTimeStamp!() > biddingEnd, ErrorCodes.BiddingNotEnd)
     assert!(blockTimeStamp!() <= revealEnd, ErrorCodes.RevealAlreadyEnded)
@@ -72,11 +73,13 @@ Contract Auction(
           refund = refund + bidToCheck.deposit
 
           if (!fake && bidToCheck.deposit >= value && value > highestBid) {
-            if (!pendingReturns.contains!(bidder)) {
-              pendingReturns.insert!{bidder -> ALPH: minimalContractDeposit!()}(bidder, 0)
+            if (highestBidder != nullContractAddress!()) {
+              // Refund the previously highest bidder.
+              transferTokenFromSelf!(highestBidder, ALPH, highestBid)
             }
 
-            placeBid(bidder, value)
+            highestBid = value
+            highestBidder = bidder
             refund = refund - value
           }
           bids.remove!(bidKey, bidder)
@@ -93,15 +96,6 @@ Contract Auction(
     }
   }
 
-  @using(assetsInContract = true, checkExternalCaller = false)
-  pub fn withdraw(bidder: Address) -> () {
-    let amount = pendingReturns[bidder]
-    if (amount > 0) {
-      pendingReturns.remove!(bidder, bidder)
-      transferTokenFromSelf!(bidder, ALPH, amount)
-    }
-  }
-
   @using(assetsInContract = true, checkExternalCaller = false, updateFields = true)
   pub fn auctionEnd() -> () {
     assert!(blockTimeStamp!() > revealEnd, ErrorCodes.RevealNotEnd)
@@ -112,16 +106,6 @@ Contract Auction(
     transferTokenFromSelf!(beneficiary, ALPH, highestBid)
   }
 
-  @using(updateFields = true)
-  fn placeBid(bidder: Address, value: U256) -> () {
-    if (highestBidder != nullContractAddress!()) {
-      // Refund the previously highest bidder.
-      pendingReturns[highestBidder] = pendingReturns[highestBidder] + highestBid
-    }
-    highestBid = value
-    highestBidder = bidder
-  }
-
   pub fn getBidNum(bidder: Address) -> U256 {
     return if (bidNum.contains!(bidder)) bidNum[bidder] else 0
   }
@@ -129,9 +113,5 @@ Contract Auction(
   pub fn getBid(bidder: Address, index: U256) -> Bid {
     let bidKey = toByteVec!(bidder) ++ toByteVec!(index)
     return bids[bidKey]
-  }
-
-  pub fn getPendingReturn(bidder: Address) -> U256 {
-    return pendingReturns[bidder]
   }
 }

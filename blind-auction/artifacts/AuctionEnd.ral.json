@@ -1,7 +1,7 @@
 {
   "version": "v2.11.0",
   "name": "AuctionEnd",
-  "bytecodeTemplate": "010103000000040c0c{0}0103",
+  "bytecodeTemplate": "010103000000040c0c{0}0102",
   "fieldsSig": {
     "names": [
       "auction"

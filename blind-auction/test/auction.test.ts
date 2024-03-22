@@ -12,8 +12,7 @@ import {
   deployAuction,
   randomP2PKHAddress,
   reveal,
-  revealFailed,
-  withdraw
+  revealFailed
 } from './utils'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
 import { getSigners, testAddress } from '@alephium/web3-test'
@@ -179,7 +178,6 @@ describe('test auction', () => {
     const beneficiaryAmount = await balanceOf(ALPH_TOKEN_ID, beneficiary)
     expect(beneficiaryAmount).toEqual(alph(12))
 
-    await withdraw(bidder0, auction)
     await checkBidNum(auction, bidder0.address, 0)
     await checkBidNum(auction, bidder1.address, 0)
 

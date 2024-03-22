@@ -11,42 +11,35 @@
   "infos": {
     "Auction": {
       "sourceFile": "auction.ral",
-      "sourceCodeHash": "f1c08222b52a1f22a010f1e9d7545846debc780e9a07a8f1661d6f15aec33915",
-      "bytecodeDebugPatch": "=6-2=1-3+0=2-3+1=2-1+35a=2-1+7=4-1+b=3+e44=1+2=1-3+42e=12-2+60=83-1+4=40+7a037e0300012c00=254+7a037e0300012c00=228-2+d5=165-1+f=57-1+a=201-1+f=46+402=1-1=39-1+3=40+7a037e0300012c00=196+7a047e0300012c00=50-2+6d=21-1+c=40+7a047e0300012c00=17-1+c=57-1+f=40+7a047e0300012c00=440",
-      "codeHashDebug": "4ce43828743c50b8b65da08b96ec6e69f1f2d5f04cc372024fdffb292357d6d1",
+      "sourceCodeHash": "7f8450f1d8a2751c1b90e2d117075c38ee7bb28bd0dc761cb0d3ed4e481e13b7",
+      "bytecodeDebugPatch": "=6-1+4=3-1+a=3-1+c=2-2+30=3-1+2=13-2+60=83-1+4=40+7a037e0300012c00=254+7a037e0300012c00=228-2+c3=165-1+d=57-1+8=201-1+d=138+7a047e0300012c00=50-2+7f=21-1+c=40+7a047e0300012c00=244",
+      "codeHashDebug": "5c1be17bc7c67b890d2301464f8991a03d54b42a9a679f0c16f64fe6830d3c71",
       "warnings": []
     },
     "AuctionEnd": {
       "sourceFile": "scripts.ral",
-      "sourceCodeHash": "1698ed33f0dad13abacf256506c32efb00952cd9478f5f09b0be9d4b89e95cf8",
+      "sourceCodeHash": "bd0ddc7f2042b7433851b5947c7ce2bb4fb6592dd4e5b5f9346340ee38a85bed",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
     },
     "Bid": {
       "sourceFile": "auction.ral",
-      "sourceCodeHash": "f1c08222b52a1f22a010f1e9d7545846debc780e9a07a8f1661d6f15aec33915",
+      "sourceCodeHash": "7f8450f1d8a2751c1b90e2d117075c38ee7bb28bd0dc761cb0d3ed4e481e13b7",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
     },
     "NewBid": {
       "sourceFile": "scripts.ral",
-      "sourceCodeHash": "1698ed33f0dad13abacf256506c32efb00952cd9478f5f09b0be9d4b89e95cf8",
+      "sourceCodeHash": "bd0ddc7f2042b7433851b5947c7ce2bb4fb6592dd4e5b5f9346340ee38a85bed",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
     },
     "Reveal": {
       "sourceFile": "scripts.ral",
-      "sourceCodeHash": "1698ed33f0dad13abacf256506c32efb00952cd9478f5f09b0be9d4b89e95cf8",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
-    },
-    "Withdraw": {
-      "sourceFile": "scripts.ral",
-      "sourceCodeHash": "1698ed33f0dad13abacf256506c32efb00952cd9478f5f09b0be9d4b89e95cf8",
+      "sourceCodeHash": "bd0ddc7f2042b7433851b5947c7ce2bb4fb6592dd4e5b5f9346340ee38a85bed",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []

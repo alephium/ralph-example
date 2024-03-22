@@ -1,5 +1,5 @@
 import { testAddress, testPrivateKey } from '@alephium/web3-test'
-import { Auction, AuctionEnd, AuctionInstance, NewBid, Reveal, Withdraw } from '../artifacts/ts'
+import { Auction, AuctionEnd, AuctionInstance, NewBid, Reveal } from '../artifacts/ts'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
 import {
   ALPH_TOKEN_ID,
@@ -79,10 +79,6 @@ export async function bidFailed(
   errorCode: bigint
 ) {
   await expectAssertionError(bid(signer, auction, amount, bidInfo), auction.address, Number(errorCode))
-}
-
-export async function withdraw(signer: SignerProvider, auction: AuctionInstance) {
-  return await Withdraw.execute(signer, { initialFields: { auction: auction.contractId } })
 }
 
 export async function reveal(signer: SignerProvider, auction: AuctionInstance, bidInfos: BidInfo[]) {

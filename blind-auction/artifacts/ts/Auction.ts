@@ -58,10 +58,6 @@ export namespace AuctionTypes {
       params: CallContractParams<{ bidder: Address; index: bigint }>;
       result: CallContractResult<Bid>;
     };
-    getPendingReturn: {
-      params: CallContractParams<{ bidder: Address }>;
-      result: CallContractResult<bigint>;
-    };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
     CallMethodTable[T]["params"];
@@ -105,18 +101,13 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
         AuctionTypes.Fields & {
           bids?: Map<HexString, Bid>;
           bidNum?: Map<Address, bigint>;
-          pendingReturns?: Map<Address, bigint>;
         },
         { bidder: Address; blindedBid: HexString; deposit: bigint }
       >
     ): Promise<
       TestContractResult<
         null,
-        {
-          bids?: Map<HexString, Bid>;
-          bidNum?: Map<Address, bigint>;
-          pendingReturns?: Map<Address, bigint>;
-        }
+        { bids?: Map<HexString, Bid>; bidNum?: Map<Address, bigint> }
       >
     > => {
       return testMethod(this, "bid", params);
@@ -126,7 +117,6 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
         AuctionTypes.Fields & {
           bids?: Map<HexString, Bid>;
           bidNum?: Map<Address, bigint>;
-          pendingReturns?: Map<Address, bigint>;
         },
         {
           bidder: Address;
@@ -138,35 +128,10 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
     ): Promise<
       TestContractResult<
         null,
-        {
-          bids?: Map<HexString, Bid>;
-          bidNum?: Map<Address, bigint>;
-          pendingReturns?: Map<Address, bigint>;
-        }
+        { bids?: Map<HexString, Bid>; bidNum?: Map<Address, bigint> }
       >
     > => {
       return testMethod(this, "reveal", params);
-    },
-    withdraw: async (
-      params: TestContractParams<
-        AuctionTypes.Fields & {
-          bids?: Map<HexString, Bid>;
-          bidNum?: Map<Address, bigint>;
-          pendingReturns?: Map<Address, bigint>;
-        },
-        { bidder: Address }
-      >
-    ): Promise<
-      TestContractResult<
-        null,
-        {
-          bids?: Map<HexString, Bid>;
-          bidNum?: Map<Address, bigint>;
-          pendingReturns?: Map<Address, bigint>;
-        }
-      >
-    > => {
-      return testMethod(this, "withdraw", params);
     },
     auctionEnd: async (
       params: Omit<
@@ -174,7 +139,6 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
           AuctionTypes.Fields & {
             bids?: Map<HexString, Bid>;
             bidNum?: Map<Address, bigint>;
-            pendingReturns?: Map<Address, bigint>;
           },
           never
         >,
@@ -183,53 +147,23 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
     ): Promise<
       TestContractResult<
         null,
-        {
-          bids?: Map<HexString, Bid>;
-          bidNum?: Map<Address, bigint>;
-          pendingReturns?: Map<Address, bigint>;
-        }
+        { bids?: Map<HexString, Bid>; bidNum?: Map<Address, bigint> }
       >
     > => {
       return testMethod(this, "auctionEnd", params);
-    },
-    placeBid: async (
-      params: TestContractParams<
-        AuctionTypes.Fields & {
-          bids?: Map<HexString, Bid>;
-          bidNum?: Map<Address, bigint>;
-          pendingReturns?: Map<Address, bigint>;
-        },
-        { bidder: Address; value: bigint }
-      >
-    ): Promise<
-      TestContractResult<
-        null,
-        {
-          bids?: Map<HexString, Bid>;
-          bidNum?: Map<Address, bigint>;
-          pendingReturns?: Map<Address, bigint>;
-        }
-      >
-    > => {
-      return testMethod(this, "placeBid", params);
     },
     getBidNum: async (
       params: TestContractParams<
         AuctionTypes.Fields & {
           bids?: Map<HexString, Bid>;
           bidNum?: Map<Address, bigint>;
-          pendingReturns?: Map<Address, bigint>;
         },
         { bidder: Address }
       >
     ): Promise<
       TestContractResult<
         bigint,
-        {
-          bids?: Map<HexString, Bid>;
-          bidNum?: Map<Address, bigint>;
-          pendingReturns?: Map<Address, bigint>;
-        }
+        { bids?: Map<HexString, Bid>; bidNum?: Map<Address, bigint> }
       >
     > => {
       return testMethod(this, "getBidNum", params);
@@ -239,42 +173,16 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
         AuctionTypes.Fields & {
           bids?: Map<HexString, Bid>;
           bidNum?: Map<Address, bigint>;
-          pendingReturns?: Map<Address, bigint>;
         },
         { bidder: Address; index: bigint }
       >
     ): Promise<
       TestContractResult<
         Bid,
-        {
-          bids?: Map<HexString, Bid>;
-          bidNum?: Map<Address, bigint>;
-          pendingReturns?: Map<Address, bigint>;
-        }
+        { bids?: Map<HexString, Bid>; bidNum?: Map<Address, bigint> }
       >
     > => {
       return testMethod(this, "getBid", params);
-    },
-    getPendingReturn: async (
-      params: TestContractParams<
-        AuctionTypes.Fields & {
-          bids?: Map<HexString, Bid>;
-          bidNum?: Map<Address, bigint>;
-          pendingReturns?: Map<Address, bigint>;
-        },
-        { bidder: Address }
-      >
-    ): Promise<
-      TestContractResult<
-        bigint,
-        {
-          bids?: Map<HexString, Bid>;
-          bidNum?: Map<Address, bigint>;
-          pendingReturns?: Map<Address, bigint>;
-        }
-      >
-    > => {
-      return testMethod(this, "getPendingReturn", params);
     },
   };
 }
@@ -283,8 +191,8 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
 export const Auction = new Factory(
   Contract.fromJson(
     AuctionContractJson,
-    "=6-2=1-3+0=2-3+1=2-1+35a=2-1+7=4-1+b=3+e44=1+2=1-3+42e=12-2+60=83-1+4=40+7a037e0300012c00=254+7a037e0300012c00=228-2+d5=165-1+f=57-1+a=201-1+f=46+402=1-1=39-1+3=40+7a037e0300012c00=196+7a047e0300012c00=50-2+6d=21-1+c=40+7a047e0300012c00=17-1+c=57-1+f=40+7a047e0300012c00=440",
-    "4ce43828743c50b8b65da08b96ec6e69f1f2d5f04cc372024fdffb292357d6d1",
+    "=6-1+4=3-1+a=3-1+c=2-2+30=3-1+2=13-2+60=83-1+4=40+7a037e0300012c00=254+7a037e0300012c00=228-2+c3=165-1+d=57-1+8=201-1+d=138+7a047e0300012c00=50-2+7f=21-1+c=40+7a047e0300012c00=244",
+    "5c1be17bc7c67b890d2301464f8991a03d54b42a9a679f0c16f64fe6830d3c71",
     AllStructs,
     AllGeneratedContracts
   )
@@ -333,17 +241,6 @@ export class AuctionInstance extends ContractInstance {
       params: AuctionTypes.CallMethodParams<"getBid">
     ): Promise<AuctionTypes.CallMethodResult<"getBid">> => {
       return callMethod(Auction, this, "getBid", params, getContractByCodeHash);
-    },
-    getPendingReturn: async (
-      params: AuctionTypes.CallMethodParams<"getPendingReturn">
-    ): Promise<AuctionTypes.CallMethodResult<"getPendingReturn">> => {
-      return callMethod(
-        Auction,
-        this,
-        "getPendingReturn",
-        params,
-        getContractByCodeHash
-      );
     },
   };
 

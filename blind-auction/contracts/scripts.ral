@@ -11,10 +11,6 @@ TxScript Reveal(
   auction.reveal{callerAddress!() -> ALPH: minimalContractDeposit!()}(callerAddress!(), values, fakes, secrets)
 }
 
-TxScript Withdraw(auction: Auction) {
-  auction.withdraw(callerAddress!())
-}
-
 TxScript AuctionEnd(auction: Auction) {
   auction.auctionEnd()
 }

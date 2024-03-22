@@ -14,7 +14,6 @@ import {
 import { default as AuctionEndScriptJson } from "../AuctionEnd.ral.json";
 import { default as NewBidScriptJson } from "../NewBid.ral.json";
 import { default as RevealScriptJson } from "../Reveal.ral.json";
-import { default as WithdrawScriptJson } from "../Withdraw.ral.json";
 
 import { Bid, AllStructs } from "./types";
 import { AllGeneratedContracts } from "./types";
@@ -35,7 +34,3 @@ export const Reveal = new ExecutableScript<{
   fakes: HexString;
   secrets: HexString;
 }>(Script.fromJson(RevealScriptJson, "", AllStructs));
-
-export const Withdraw = new ExecutableScript<{ auction: HexString }>(
-  Script.fromJson(WithdrawScriptJson, "", AllStructs)
-);
