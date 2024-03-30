@@ -23,24 +23,23 @@ import {
   fetchContractState,
   ContractInstance,
   getContractEventsCurrentCount,
-  Val,
+  TestContractParamsWithoutMaps,
+  TestContractResultWithoutMaps,
 } from "@alephium/web3";
 import { default as AuctionContractJson } from "../Auction.ral.json";
 import { getContractByCodeHash } from "./contracts";
-
 import { Bid, AllStructs } from "./types";
-import { AllGeneratedContracts } from "./types";
 
 // Custom types for the contract
 export namespace AuctionTypes {
-  export interface Fields extends Record<string, Val> {
+  export type Fields = {
     beneficiary: Address;
     biddingEnd: bigint;
     revealEnd: bigint;
     ended: boolean;
     highestBidder: Address;
     highestBid: bigint;
-  }
+  };
 
   export type State = ContractState<Fields>;
 
@@ -98,11 +97,9 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
   tests = {
     bid: async (
       params: TestContractParams<
-        AuctionTypes.Fields & {
-          bids?: Map<HexString, Bid>;
-          bidNum?: Map<Address, bigint>;
-        },
-        { bidder: Address; blindedBid: HexString; deposit: bigint }
+        AuctionTypes.Fields,
+        { bidder: Address; blindedBid: HexString; deposit: bigint },
+        { bids?: Map<HexString, Bid>; bidNum?: Map<Address, bigint> }
       >
     ): Promise<
       TestContractResult<
@@ -114,16 +111,14 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
     },
     reveal: async (
       params: TestContractParams<
-        AuctionTypes.Fields & {
-          bids?: Map<HexString, Bid>;
-          bidNum?: Map<Address, bigint>;
-        },
+        AuctionTypes.Fields,
         {
           bidder: Address;
           values: HexString;
           fakes: HexString;
           secrets: HexString;
-        }
+        },
+        { bids?: Map<HexString, Bid>; bidNum?: Map<Address, bigint> }
       >
     ): Promise<
       TestContractResult<
@@ -136,11 +131,9 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
     auctionEnd: async (
       params: Omit<
         TestContractParams<
-          AuctionTypes.Fields & {
-            bids?: Map<HexString, Bid>;
-            bidNum?: Map<Address, bigint>;
-          },
-          never
+          AuctionTypes.Fields,
+          never,
+          { bids?: Map<HexString, Bid>; bidNum?: Map<Address, bigint> }
         >,
         "testArgs"
       >
@@ -154,11 +147,9 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
     },
     getBidNum: async (
       params: TestContractParams<
-        AuctionTypes.Fields & {
-          bids?: Map<HexString, Bid>;
-          bidNum?: Map<Address, bigint>;
-        },
-        { bidder: Address }
+        AuctionTypes.Fields,
+        { bidder: Address },
+        { bids?: Map<HexString, Bid>; bidNum?: Map<Address, bigint> }
       >
     ): Promise<
       TestContractResult<
@@ -170,11 +161,9 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
     },
     getBid: async (
       params: TestContractParams<
-        AuctionTypes.Fields & {
-          bids?: Map<HexString, Bid>;
-          bidNum?: Map<Address, bigint>;
-        },
-        { bidder: Address; index: bigint }
+        AuctionTypes.Fields,
+        { bidder: Address; index: bigint },
+        { bids?: Map<HexString, Bid>; bidNum?: Map<Address, bigint> }
       >
     ): Promise<
       TestContractResult<
@@ -191,10 +180,9 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
 export const Auction = new Factory(
   Contract.fromJson(
     AuctionContractJson,
-    "=6-1+4=3-1+a=3-1+c=2-2+30=3-1+2=13-2+60=83-1+4=40+7a037e0300012c00=254+7a037e0300012c00=228-2+c3=165-1+d=57-1+8=201-1+d=138+7a047e0300012c00=50-2+7f=21-1+c=40+7a047e0300012c00=244",
-    "5c1be17bc7c67b890d2301464f8991a03d54b42a9a679f0c16f64fe6830d3c71",
-    AllStructs,
-    AllGeneratedContracts
+    "=6-1+b=3-1+3=3-1+5=3-1+8=3-1+b=14-1+6=83-1+e=40+7a037e0300012c00=134+7a037e0300012c00=91-1+c=167-1+5=56-2+70=225-1+d=138+7a047e0300012c00=51-1+7=21-1+c=40+7a047e0300012c00=270",
+    "1356fae06f4830022d51691f7dc97f92514a3d108cab3722e985a29aaf405af0",
+    AllStructs
   )
 );
 

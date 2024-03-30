@@ -48,7 +48,7 @@ describe('test auction', () => {
     index: number,
     deposit: bigint
   ) {
-    const result = await auction.methods.getBid({args: { bidder, index: BigInt(index) }})
+    const result = await auction.methods.getBid({ args: { bidder, index: BigInt(index) } })
     expect(result.returns).toEqual({ blindedBid, deposit })
   }
 

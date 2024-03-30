@@ -9,10 +9,10 @@ Contract Auction(
   revealEnd: U256,
   mut ended: Bool,
   mut highestBidder: Address,
-  mut highestBid: U256,
-  mut bids: Map[ByteVec, Bid],
-  mut bidNum: Map[Address, U256]
+  mut highestBid: U256
 ) {
+  mapping[ByteVec, Bid] bids
+  mapping[Address, U256] bidNum
 
   event AuctionEnded(winner: Address, amount: U256)
 
@@ -34,14 +34,14 @@ Contract Auction(
 
     let mut count = 0
     if (!bidNum.contains!(bidder)) {
-      bidNum.insert!{bidder -> ALPH: minimalContractDeposit!()}(bidder, 0)
+      bidNum.insert!{bidder -> ALPH: mapEntryDeposit!()}(bidder, 0)
     } else {
       count = bidNum[bidder]
     }
 
     let bidKey = toByteVec!(bidder) ++ toByteVec!(count)
     let newBid = Bid { blindedBid: blindedBid, deposit: deposit }
-    bids.insert!{bidder -> ALPH: minimalContractDeposit!()}(bidKey, newBid)
+    bids.insert!{bidder -> ALPH: mapEntryDeposit!()}(bidKey, newBid)
     bidNum[bidder] = count + 1
     transferTokenToSelf!(bidder, ALPH, deposit)
   }

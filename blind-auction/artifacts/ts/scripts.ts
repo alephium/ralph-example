@@ -14,9 +14,7 @@ import {
 import { default as AuctionEndScriptJson } from "../AuctionEnd.ral.json";
 import { default as NewBidScriptJson } from "../NewBid.ral.json";
 import { default as RevealScriptJson } from "../Reveal.ral.json";
-
 import { Bid, AllStructs } from "./types";
-import { AllGeneratedContracts } from "./types";
 
 export const AuctionEnd = new ExecutableScript<{ auction: HexString }>(
   Script.fromJson(AuctionEndScriptJson, "", AllStructs)
