@@ -1,0 +1,10 @@
+Contract BurnALPH() {
+    @using(preapprovedAssets = true, assetsInContract = true, checkExternalCaller = false)
+    pub fn burn(from: Address, amount: U256) -> () {
+        transferTokenToSelf!(from, ALPH, amount)
+    }
+}
+
+TxScript BurnALPHScript(burnALPH: BurnALPH, amount: U256) {
+    burnALPH.burn{callerAddress!() -> ALPH: amount}(callerAddress!(), amount)
+}

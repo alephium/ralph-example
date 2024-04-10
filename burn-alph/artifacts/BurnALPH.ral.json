@@ -1,0 +1,35 @@
+{
+  "version": "v2.12.0",
+  "name": "BurnALPH",
+  "bytecode": "00010b01010202000316001601a9",
+  "codeHash": "59308e31f3f450eee919ae338ed0d477a49eaa19eac964c32b35438714207fb7",
+  "fieldsSig": {
+    "names": [],
+    "types": [],
+    "isMutable": []
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "burn",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": true,
+      "isPublic": true,
+      "paramNames": [
+        "from",
+        "amount"
+      ],
+      "paramTypes": [
+        "Address",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": []
+    }
+  ],
+  "constants": [],
+  "enums": []
+}
