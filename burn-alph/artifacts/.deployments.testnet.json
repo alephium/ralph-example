@@ -1,0 +1,86 @@
+[
+  {
+    "deployerAddress": "1BYZMsNbJMGPptHkyLAynNmEucpnS5anoCRoF4JqoUJjV",
+    "contracts": {
+      "BurnALPH": {
+        "txId": "0071f30a8726f4de4e4cd8b7f0f3e5677cce38da605e38b970e059cbf174c8c4",
+        "unsignedTx": "0001010101030000000815009caa76b453893dacf188234a9c01ed9fdb0889e53ba416086b96c045af9f0ddc13c40de0b6b3a7640000a2140e00010b01010202000316001601a9140100140100ad188000dec8c1174876e8000130aec3f596dd804397cf8f78a47c948b0ffcc78502d99107bb71cf62f564e01e95b9e5ea00023ace6496b3533fae8d18946e1130babb08f37321bcffbe97713fcdfea625ded701c5028b69adb8b0f2e000009caa76b453893dacf188234a9c01ed9fdb0889e53ba416086b96c045af9f0ddc00000000000000000000",
+        "signature": "5f2be1cb9a5b041611def6044d426fce493db3863d9eb48ed08f892d012b6efd2a5b5f273d5db24006384ba39fc8065e9c178f7cae5bf11c05f3267fa14b6ec3",
+        "gasPrice": "100000000000",
+        "gasAmount": 57032,
+        "blockHash": "00000000e7b05cc7cdd305e1b53bf1febf44f424402d2a8cffc0ea366c6ff600",
+        "codeHash": "dbd36f41f72a647e22ff5366d1dde792b7911328874b36c574c693f3b0800850",
+        "contractInstance": {
+          "address": "294LNTESjbx785FSdBAa9NYJnJSDtYUhg1oLG2rctsqou",
+          "contractId": "d57dfb2c4bc67fff970e5267aa9f26743c2428bbe32e6fecdb69094ad915ce00",
+          "groupIndex": 0
+        }
+      }
+    },
+    "scripts": {},
+    "migrations": {}
+  },
+  {
+    "deployerAddress": "12EN4xhm6MjF4xqdVspCEouVBjy6W7TPeBnhoWPoNnm8d",
+    "contracts": {
+      "BurnALPH": {
+        "txId": "862578e7d45a98a7ec1f0a21c0a146ce4ee738ecb643f89d73bb709f5661ea03",
+        "unsignedTx": "00010101010300000008150012480f36a30687269358d4ac777c9acf788422288ebccc8a7ed6ee35cf159e0213c40de0b6b3a7640000a2140e00010b01010202000316001601a9140100140100ad188000dec8c1174876e800018029fbe3eabe2946c186794776ad3f21d46922f37de6e8b5338f2e974d262f67d8ee61c60002310d04cfd45d0daea528a142012c4956c9ffcf27d125c2c694b1a40f9ef2587701c50192606f523c3ec0000012480f36a30687269358d4ac777c9acf788422288ebccc8a7ed6ee35cf159e0200000000000000000000",
+        "signature": "2c64d5d7c094f988afbf783de2efc1561e392c027ef2e144da05d8c5e28892d259cdc090b1f089da18b6fee41cb2b61b7cac498d6e6672c95b52821d91197f6f",
+        "gasPrice": "100000000000",
+        "gasAmount": 57032,
+        "blockHash": "0000003099e069f467b7e0741183119f8783ac99aa40d2a8321c281f90db7005",
+        "codeHash": "dbd36f41f72a647e22ff5366d1dde792b7911328874b36c574c693f3b0800850",
+        "contractInstance": {
+          "address": "2Ajhcpa4vbTUgQsYG3dRHuMVoKZD3wnzoFbBaU1Aap9ng",
+          "contractId": "ee6f58313cd4f1fd5a123d2fbbbab340936e9dee42524d22d6d7607705f8cb01",
+          "groupIndex": 1
+        }
+      }
+    },
+    "scripts": {},
+    "migrations": {}
+  },
+  {
+    "deployerAddress": "19KMcDHPVq6BG3DxTztJTbhSupNqMg79xKWTPe3Tcbgin",
+    "contracts": {
+      "BurnALPH": {
+        "txId": "75c456ed12d04e1bcdac75743dbf677ba322f7c3013644c032f420fa6be07707",
+        "unsignedTx": "0001010101030000000815007b9140207e2978d8a7df38bc11e63de7826cd2598bc285edca4b7a3630805db313c40de0b6b3a7640000a2140e00010b01010202000316001601a9140100140100ad188000dec8c1174876e800021a9b84bb6de36519c57cba5e3b650e28d77dbe358c3c82f3dcd63e4677d2cd63e75165c30002be9b75a53547562040b6a35b43d369f8f92a32a91150018df60f02ada55ed8261a9b84bb076cbfa725211deebdfad11ae8bf7e581c50dd76b2e8e3cf79791c2128f0af0c0002be9b75a53547562040b6a35b43d369f8f92a32a91150018df60f02ada55ed82601c4147bcd73c4c2c000007b9140207e2978d8a7df38bc11e63de7826cd2598bc285edca4b7a3630805db300000000000000000000",
+        "signature": "382fa531aa8d3bf4f75c81a2582258966d6b34c532a13f90ab2963322043646d2d065cda3000ad61d13cc71596ad804cf4a4fba1c9442f50dff5732790ce4e1d",
+        "gasPrice": "100000000000",
+        "gasAmount": 57032,
+        "blockHash": "000000206ebbdbb47c7a317cee4e84eb0469e88f64e1a83d2e76a701b14410da",
+        "codeHash": "dbd36f41f72a647e22ff5366d1dde792b7911328874b36c574c693f3b0800850",
+        "contractInstance": {
+          "address": "23BrpLA1Uv596FiJeBaroBuvFNvV27c29zHathB5H6qoF",
+          "contractId": "7e4559d1189ecd4bb712584852b7d3034c699fa87dc8819b8d82c855b84a0302",
+          "groupIndex": 2
+        }
+      }
+    },
+    "scripts": {},
+    "migrations": {}
+  },
+  {
+    "deployerAddress": "17ivUnRrBPdMAsiKgUrzQPCRGiREhpdHnGmsqnf86ndpp",
+    "contracts": {
+      "BurnALPH": {
+        "txId": "e59fefcd2a508c7e3f06474363fc98270a897a9464cf51bb93ace63d463c8e0c",
+        "unsignedTx": "00010101010300000008150063e36755c6feaed3d474b9ea4d3cfb3b1cf0d6801fc0743aa5742d0373bb379d13c40de0b6b3a7640000a2140e00010b01010202000316001601a9140100140100ad188000dec8c1174876e8000151dceff170eda17fcdaf8f44f569bba5aef721b40dcf9e9712f776dedebf6938598aaf83000283ddedb01eeec0597a2374e5559e8bfe1b16490bc69613de962408078d8722e201c50192606f523c3ec0000063e36755c6feaed3d474b9ea4d3cfb3b1cf0d6801fc0743aa5742d0373bb379d00000000000000000000",
+        "signature": "b1209aeb75b9c3f626adb1f5fc3dda3b0ec72298d181b229363acadec49b0a1e215f3ad809c41d84335bafd8a82e797ab4d602b09c8331d015797daa3637dac6",
+        "gasPrice": "100000000000",
+        "gasAmount": 57032,
+        "blockHash": "000000095b691eec7e851b9d82574c10c7a3915994856fb58abc3439f394724f",
+        "codeHash": "dbd36f41f72a647e22ff5366d1dde792b7911328874b36c574c693f3b0800850",
+        "contractInstance": {
+          "address": "26AyKh7KUg9ZjtJeLcJBQ1mi8D1QVRUgotCojomuxJkBU",
+          "contractId": "aa9e2ffb9e03e6d180746606e51db44b087f5b10c54630f1a256cce7a9827703",
+          "groupIndex": 3
+        }
+      }
+    },
+    "scripts": {},
+    "migrations": {}
+  }
+]
