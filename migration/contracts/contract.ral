@@ -7,7 +7,7 @@ Contract OldCode(n: U256) {
     // 
     // @using(checkExternalCaller = false, updateFields = true)
     // pub fn migrate(newCode: ByteVec) -> () {
-    //     migrat!(newCode)
+    //     migrate!(newCode)
     // }
 
     // Please check owner in production code
