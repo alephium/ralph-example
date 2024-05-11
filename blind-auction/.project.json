@@ -1,5 +1,5 @@
 {
-  "fullNodeVersion": "v2.11.0",
+  "fullNodeVersion": "v2.14.0",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
@@ -11,9 +11,9 @@
   "infos": {
     "Auction": {
       "sourceFile": "auction.ral",
-      "sourceCodeHash": "edd297cccd161583f5ac317d8683d1dbce2e690e0a53b11f88db89686b83d8b7",
-      "bytecodeDebugPatch": "=6-1+b=3-1+3=3-1+5=3-1+8=3-1+b=14-1+6=83-1+e=40+7a037e0300012c00=134+7a037e0300012c00=91-1+c=167-1+5=56-2+70=225-1+d=138+7a047e0300012c00=51-1+7=21-1+c=40+7a047e0300012c00=270",
-      "codeHashDebug": "1356fae06f4830022d51691f7dc97f92514a3d108cab3722e985a29aaf405af0",
+      "sourceCodeHash": "712973ad0914c8721120b9e304c6fc9a86777da230bea04135f80657058db25c",
+      "bytecodeDebugPatch": "=6-6+e6=2-1=1+7=2-2+ac=2-2+e5431a=13-1+5=93-1+d=40+7a7e0214696e73657274206174206d617020706174683a2000=134+7a7e0214696e73657274206174206d617020706174683a2000=91-1+b=177-1+4=57-1+f=225-1+c=138+7a7e021472656d6f7665206174206d617020706174683a2000=51-1+8=21-1+b=40+7a7e021472656d6f7665206174206d617020706174683a2000=300",
+      "codeHashDebug": "648a2196562521f62c79c87ba5aa4461bcc1c38b06ff97a929977faf712cf8b2",
       "warnings": []
     },
     "AuctionEnd": {
@@ -25,7 +25,7 @@
     },
     "Bid": {
       "sourceFile": "auction.ral",
-      "sourceCodeHash": "edd297cccd161583f5ac317d8683d1dbce2e690e0a53b11f88db89686b83d8b7",
+      "sourceCodeHash": "712973ad0914c8721120b9e304c6fc9a86777da230bea04135f80657058db25c",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
