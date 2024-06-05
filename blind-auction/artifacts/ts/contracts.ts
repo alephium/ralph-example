@@ -3,19 +3,21 @@
 /* eslint-disable */
 
 import { Contract, ContractFactory } from "@alephium/web3";
+
 import { Auction } from ".";
 
-let contracts: ContractFactory<any>[] | undefined = undefined;
+let contracts: Contract[] | undefined = undefined;
 export function getContractByCodeHash(codeHash: string): Contract {
   if (contracts === undefined) {
-    contracts = [Auction];
+    const factories: ContractFactory<any>[] = [Auction];
+    contracts = factories.map((f) => f.contract);
   }
-  const c = contracts.find(
-    (c) =>
-      c.contract.codeHash === codeHash || c.contract.codeHashDebug === codeHash
+  const allContracts = contracts;
+  const c = allContracts.find(
+    (c) => c.codeHash === codeHash || c.codeHashDebug === codeHash
   );
   if (c === undefined) {
     throw new Error("Unknown code with code hash: " + codeHash);
   }
-  return c.contract;
+  return c;
 }

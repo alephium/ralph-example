@@ -1,5 +1,5 @@
 {
-  "version": "v2.11.0",
+  "version": "v3.0.2",
   "name": "AuctionEnd",
   "bytecodeTemplate": "010103000000040c0c{0}0102",
   "fieldsSig": {

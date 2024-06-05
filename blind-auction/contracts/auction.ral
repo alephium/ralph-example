@@ -34,14 +34,14 @@ Contract Auction(
 
     let mut count = 0
     if (!bidNum.contains!(bidder)) {
-      bidNum.insert!{bidder -> ALPH: mapEntryDeposit!()}(bidder, 0)
+      bidNum.insert!(bidder, bidder, 0)
     } else {
       count = bidNum[bidder]
     }
 
     let bidKey = toByteVec!(bidder) ++ toByteVec!(count)
     let newBid = Bid { blindedBid: blindedBid, deposit: deposit }
-    bids.insert!{bidder -> ALPH: mapEntryDeposit!()}(bidKey, newBid)
+    bids.insert!(bidder, bidKey, newBid)
     bidNum[bidder] = count + 1
     transferTokenToSelf!(bidder, ALPH, deposit)
   }
@@ -82,7 +82,7 @@ Contract Auction(
             highestBidder = bidder
             refund = refund - value
           }
-          bids.remove!(bidKey, bidder)
+          bids.remove!(bidder, bidKey)
           remains = remains - 1
         }
 

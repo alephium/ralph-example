@@ -1,5 +1,5 @@
 {
-  "version": "v2.11.0",
+  "version": "v3.0.2",
   "name": "Reveal",
   "bytecodeTemplate": "0101030000000bb4d1a2b4{1}{2}{3}100c{0}0101",
   "fieldsSig": {
