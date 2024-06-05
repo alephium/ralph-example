@@ -17,15 +17,18 @@ import { default as GetTokenScriptJson } from "../test/GetToken.ral.json";
 import { default as WithdrawScriptJson } from "../Withdraw.ral.json";
 
 export const AuctionEnd = new ExecutableScript<{ auction: HexString }>(
-  Script.fromJson(AuctionEndScriptJson)
+  Script.fromJson(AuctionEndScriptJson, "", [])
 );
+
 export const Bid = new ExecutableScript<{ auction: HexString; amount: bigint }>(
-  Script.fromJson(BidScriptJson)
+  Script.fromJson(BidScriptJson, "", [])
 );
+
 export const GetToken = new ExecutableScript<{
   token: HexString;
   amount: bigint;
-}>(Script.fromJson(GetTokenScriptJson));
+}>(Script.fromJson(GetTokenScriptJson, "", []));
+
 export const Withdraw = new ExecutableScript<{ auction: HexString }>(
-  Script.fromJson(WithdrawScriptJson)
+  Script.fromJson(WithdrawScriptJson, "", [])
 );

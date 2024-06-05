@@ -1,5 +1,5 @@
 {
-  "version": "v2.5.5",
+  "version": "v3.0.2",
   "name": "Sum",
   "bytecodeTemplate": "0101030001000b{1}0d0d{0}010417001600{2}2f0c7b",
   "fieldsSig": {
@@ -9,7 +9,7 @@
       "expected"
     ],
     "types": [
-      "ByteVec",
+      "DynamicArrayForInt",
       "ByteVec",
       "U256"
     ],
@@ -22,9 +22,6 @@
   "functions": [
     {
       "name": "main",
-      "usePreapprovedAssets": true,
-      "useAssetsInContract": false,
-      "isPublic": true,
       "paramNames": [],
       "paramTypes": [],
       "paramIsMutable": [],

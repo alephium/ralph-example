@@ -1,4 +1,4 @@
-import { web3, Project } from '@alephium/web3'
+import { web3 } from '@alephium/web3'
 import { DynamicArrayForInt } from '../artifacts/ts'
 
 // Convert a number array to a ByteVec, each number is 4 bytes
@@ -56,7 +56,6 @@ function testSum(array: number[], expected: number) {
 describe('unit tests', () => {
   beforeAll(async () => {
     web3.setCurrentNodeProvider('http://127.0.0.1:22973')
-    await Project.build()
   })
 
   it('test get empty array', async () => {
@@ -105,7 +104,7 @@ describe('unit tests', () => {
       DynamicArrayForInt.tests.sum({
         testArgs: { array: arrayToByteVec([]) }
       })
-    ).rejects.toThrow('VM execution error: AssertionFailedWithErrorCode')
+    ).rejects.toThrow('VM execution error: Assertion Failed')
   })
   testSum([2], 2)
   testSum([2, 3], 5)

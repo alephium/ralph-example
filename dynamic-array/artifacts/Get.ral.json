@@ -1,5 +1,5 @@
 {
-  "version": "v2.5.5",
+  "version": "v3.0.2",
   "name": "Get",
   "bytecodeTemplate": "0101030001000c{1}{2}0e0d{0}010017001600{3}2f0c7b",
   "fieldsSig": {
@@ -10,7 +10,7 @@
       "expected"
     ],
     "types": [
-      "ByteVec",
+      "DynamicArrayForInt",
       "ByteVec",
       "U256",
       "U256"
@@ -25,9 +25,6 @@
   "functions": [
     {
       "name": "main",
-      "usePreapprovedAssets": true,
-      "useAssetsInContract": false,
-      "isPublic": true,
       "paramNames": [],
       "paramTypes": [],
       "paramIsMutable": [],

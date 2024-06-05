@@ -1,5 +1,5 @@
 {
-  "fullNodeVersion": "v2.5.5",
+  "fullNodeVersion": "v3.0.2",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
@@ -11,9 +11,9 @@
   "infos": {
     "DynamicArrayForInt": {
       "sourceFile": "dynamic-array.ral",
-      "sourceCodeHash": "e11ba7e19f40efe33d940aebf09a7ce43c61238cbdce2fe91a08cc7338d29ecf",
+      "sourceCodeHash": "1f088238b343b759e2ab5ef47656046ea94765e9390a267abcd704f57b0db7b0",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "6b29a512dd1be54cddf58ab1e374743320c817c895c954fca2d6e40c0d1c0d64",
+      "codeHashDebug": "ea33ddedad28b33a021266875424e3eb0656da6e5162ed1dbce764875ba43d01",
       "warnings": []
     },
     "Get": {

@@ -9,7 +9,7 @@ import {
   TestContractResult,
   HexString,
   ContractFactory,
-  SubscribeOptions,
+  EventSubscribeOptions,
   EventSubscription,
   CallContractParams,
   CallContractResult,
@@ -23,6 +23,10 @@ import {
   fetchContractState,
   ContractInstance,
   getContractEventsCurrentCount,
+  TestContractParamsWithoutMaps,
+  TestContractResultWithoutMaps,
+  addStdIdToFields,
+  encodeContractFields,
 } from "@alephium/web3";
 import { default as BidderContractJson } from "../Bidder.ral.json";
 import { getContractByCodeHash } from "./contracts";
@@ -58,6 +62,18 @@ export namespace BidderTypes {
 }
 
 class Factory extends ContractFactory<BidderInstance, BidderTypes.Fields> {
+  encodeFields(fields: BidderTypes.Fields) {
+    return encodeContractFields(
+      addStdIdToFields(this.contract, fields),
+      this.contract.fieldsSig,
+      []
+    );
+  }
+
+  getInitialFieldsWithDefaultValues() {
+    return this.contract.getInitialFieldsWithDefaultValues() as BidderTypes.Fields;
+  }
+
   consts = { InvalidCaller: BigInt(0) };
 
   at(address: string): BidderInstance {
@@ -66,27 +82,36 @@ class Factory extends ContractFactory<BidderInstance, BidderTypes.Fields> {
 
   tests = {
     getAddress: async (
-      params: Omit<TestContractParams<BidderTypes.Fields, never>, "testArgs">
-    ): Promise<TestContractResult<Address>> => {
-      return testMethod(this, "getAddress", params);
+      params: Omit<
+        TestContractParamsWithoutMaps<BidderTypes.Fields, never>,
+        "testArgs"
+      >
+    ): Promise<TestContractResultWithoutMaps<Address>> => {
+      return testMethod(this, "getAddress", params, getContractByCodeHash);
     },
     rebid: async (
-      params: TestContractParams<BidderTypes.Fields, { amount: bigint }>
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "rebid", params);
+      params: TestContractParamsWithoutMaps<
+        BidderTypes.Fields,
+        { amount: bigint }
+      >
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(this, "rebid", params, getContractByCodeHash);
     },
     withdraw: async (
-      params: Omit<TestContractParams<BidderTypes.Fields, never>, "testArgs">
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "withdraw", params);
+      params: Omit<
+        TestContractParamsWithoutMaps<BidderTypes.Fields, never>,
+        "testArgs"
+      >
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(this, "withdraw", params, getContractByCodeHash);
     },
     auctionEnd: async (
-      params: TestContractParams<
+      params: TestContractParamsWithoutMaps<
         BidderTypes.Fields,
         { to: Address; amount: bigint }
       >
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "auctionEnd", params);
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(this, "auctionEnd", params, getContractByCodeHash);
     },
   };
 }
@@ -96,7 +121,8 @@ export const Bidder = new Factory(
   Contract.fromJson(
     BidderContractJson,
     "",
-    "0f31c5db9706970d0f12be335dd9837f0e7c9ec257f4b64f668207aa449ae6ce"
+    "d831408521cfc16f431ff8d1ad670710032c908039f14706afaa5b13e4ec8250",
+    []
   )
 );
 
