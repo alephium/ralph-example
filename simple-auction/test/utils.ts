@@ -1,10 +1,9 @@
 import { expectAssertionError, testAddress, testPrivateKey } from '@alephium/web3-test'
 import { Auction, AuctionEnd, AuctionInstance, Bid, Bidder, GetToken, TestToken, Withdraw } from '../artifacts/ts'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
-import { ALPH_TOKEN_ID, Address, DUST_AMOUNT, ONE_ALPH, SignerProvider, groupOfAddress, web3 } from '@alephium/web3'
+import { ALPH_TOKEN_ID, Address, DUST_AMOUNT, ONE_ALPH, SignerProvider, groupOfAddress, web3, waitForTxConfirmation } from '@alephium/web3'
 import { randomBytes } from 'crypto'
 import * as base58 from 'bs58'
-import { waitTxConfirmed as _waitTxConfirmed } from '@alephium/cli'
 
 web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
 export const ZERO_ADDRESS = 'tgx7VNFoP9DJiFMFgXXtafQZkUvyEdDHT9ryamHJYrjq'
@@ -69,7 +68,7 @@ export function randomP2PKHAddress(groupIndex = 0): string {
 
 async function waitTxConfirmed<T extends { txId: string }>(promise: Promise<T>): Promise<T> {
   const result = await promise
-  await _waitTxConfirmed(web3.getCurrentNodeProvider(), result.txId, 1, 1000)
+  await waitForTxConfirmation(result.txId, 1, 1000)
   return result
 }
 

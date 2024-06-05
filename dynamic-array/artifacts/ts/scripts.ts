@@ -22,28 +22,32 @@ export const Get = new ExecutableScript<{
   array: HexString;
   index: bigint;
   expected: bigint;
-}>(Script.fromJson(GetScriptJson));
+}>(Script.fromJson(GetScriptJson, "", []));
+
 export const Pop = new ExecutableScript<{
   contract: HexString;
   array: HexString;
   expectedArray: HexString;
   expectedValue: bigint;
-}>(Script.fromJson(PopScriptJson));
+}>(Script.fromJson(PopScriptJson, "", []));
+
 export const Push = new ExecutableScript<{
   contract: HexString;
   array: HexString;
   value: bigint;
   expected: HexString;
-}>(Script.fromJson(PushScriptJson));
+}>(Script.fromJson(PushScriptJson, "", []));
+
 export const Sum = new ExecutableScript<{
   contract: HexString;
   array: HexString;
   expected: bigint;
-}>(Script.fromJson(SumScriptJson));
+}>(Script.fromJson(SumScriptJson, "", []));
+
 export const Update = new ExecutableScript<{
   contract: HexString;
   array: HexString;
   index: bigint;
   value: bigint;
   expected: HexString;
-}>(Script.fromJson(UpdateScriptJson));
+}>(Script.fromJson(UpdateScriptJson, "", []));

@@ -1,5 +1,5 @@
 {
-  "version": "v2.5.5",
+  "version": "v3.0.2",
   "name": "Update",
   "bytecodeTemplate": "0101030001000d{1}{2}{3}0f0d{0}010117001600{4}410c7b",
   "fieldsSig": {
@@ -11,7 +11,7 @@
       "expected"
     ],
     "types": [
-      "ByteVec",
+      "DynamicArrayForInt",
       "ByteVec",
       "U256",
       "U256",
@@ -28,9 +28,6 @@
   "functions": [
     {
       "name": "main",
-      "usePreapprovedAssets": true,
-      "useAssetsInContract": false,
-      "isPublic": true,
       "paramNames": [],
       "paramTypes": [],
       "paramIsMutable": [],

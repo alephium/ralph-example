@@ -1,8 +1,8 @@
 {
-  "version": "v2.3.5",
+  "version": "v3.0.2",
   "name": "Bidder",
-  "bytecode": "030409402340324046010000000102ce010201010101000db3ce00410c7bce01a000a8ce011600a91600a100010200000007b3ce00410c7bce01b001020202000ab3ce00410c7b16001601a8ce01b0",
-  "codeHash": "0f31c5db9706970d0f12be335dd9837f0e7c9ec257f4b64f668207aa449ae6ce",
+  "bytecode": "03040e402d4041405a010000000103d3acb775bece010201010101000ed3224d1f8ab3ce00410c7bce01a000a8ce011600a91600a100010200000008d3a248861cb3ce00410c7bce01b001020202000bd342b584e0b3ce00410c7b16001601a8ce01b0",
+  "codeHash": "d831408521cfc16f431ff8d1ad670710032c908039f14706afaa5b13e4ec8250",
   "fieldsSig": {
     "names": [
       "auction",
@@ -10,7 +10,7 @@
       "bidAmount"
     ],
     "types": [
-      "ByteVec",
+      "Auction",
       "Address",
       "U256"
     ],
@@ -24,9 +24,6 @@
   "functions": [
     {
       "name": "getAddress",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
       "paramNames": [],
       "paramTypes": [],
       "paramIsMutable": [],
@@ -36,9 +33,6 @@
     },
     {
       "name": "rebid",
-      "usePreapprovedAssets": true,
-      "useAssetsInContract": true,
-      "isPublic": true,
       "paramNames": [
         "amount"
       ],
@@ -52,9 +46,6 @@
     },
     {
       "name": "withdraw",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": true,
-      "isPublic": true,
       "paramNames": [],
       "paramTypes": [],
       "paramIsMutable": [],
@@ -62,9 +53,6 @@
     },
     {
       "name": "auctionEnd",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": true,
-      "isPublic": true,
       "paramNames": [
         "to",
         "amount"

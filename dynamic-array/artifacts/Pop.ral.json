@@ -1,5 +1,5 @@
 {
-  "version": "v2.5.5",
+  "version": "v3.0.2",
   "name": "Pop",
   "bytecodeTemplate": "01010300020011{1}0d0e{0}0103170117001600{2}410c7b1601{3}2f0d7b",
   "fieldsSig": {
@@ -10,7 +10,7 @@
       "expectedValue"
     ],
     "types": [
-      "ByteVec",
+      "DynamicArrayForInt",
       "ByteVec",
       "ByteVec",
       "U256"
@@ -25,9 +25,6 @@
   "functions": [
     {
       "name": "main",
-      "usePreapprovedAssets": true,
-      "useAssetsInContract": false,
-      "isPublic": true,
       "paramNames": [],
       "paramTypes": [],
       "paramIsMutable": [],

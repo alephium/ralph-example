@@ -23,6 +23,10 @@ import {
   fetchContractState,
   ContractInstance,
   getContractEventsCurrentCount,
+  TestContractParamsWithoutMaps,
+  TestContractResultWithoutMaps,
+  addStdIdToFields,
+  encodeContractFields,
 } from "@alephium/web3";
 import { default as DynamicArrayForIntContractJson } from "../DynamicArrayForInt.ral.json";
 import { getContractByCodeHash } from "./contracts";
@@ -72,6 +76,10 @@ export namespace DynamicArrayForIntTypes {
 }
 
 class Factory extends ContractFactory<DynamicArrayForIntInstance, {}> {
+  encodeFields() {
+    return encodeContractFields({}, this.contract.fieldsSig, []);
+  }
+
   at(address: string): DynamicArrayForIntInstance {
     return new DynamicArrayForIntInstance(address);
   }
@@ -79,46 +87,52 @@ class Factory extends ContractFactory<DynamicArrayForIntInstance, {}> {
   tests = {
     get: async (
       params: Omit<
-        TestContractParams<never, { array: HexString; index: bigint }>,
+        TestContractParamsWithoutMaps<
+          never,
+          { array: HexString; index: bigint }
+        >,
         "initialFields"
       >
-    ): Promise<TestContractResult<bigint>> => {
-      return testMethod(this, "get", params);
+    ): Promise<TestContractResultWithoutMaps<bigint>> => {
+      return testMethod(this, "get", params, getContractByCodeHash);
     },
     update: async (
       params: Omit<
-        TestContractParams<
+        TestContractParamsWithoutMaps<
           never,
           { array: HexString; index: bigint; value: bigint }
         >,
         "initialFields"
       >
-    ): Promise<TestContractResult<HexString>> => {
-      return testMethod(this, "update", params);
+    ): Promise<TestContractResultWithoutMaps<HexString>> => {
+      return testMethod(this, "update", params, getContractByCodeHash);
     },
     push: async (
       params: Omit<
-        TestContractParams<never, { array: HexString; value: bigint }>,
+        TestContractParamsWithoutMaps<
+          never,
+          { array: HexString; value: bigint }
+        >,
         "initialFields"
       >
-    ): Promise<TestContractResult<HexString>> => {
-      return testMethod(this, "push", params);
+    ): Promise<TestContractResultWithoutMaps<HexString>> => {
+      return testMethod(this, "push", params, getContractByCodeHash);
     },
     pop: async (
       params: Omit<
-        TestContractParams<never, { array: HexString }>,
+        TestContractParamsWithoutMaps<never, { array: HexString }>,
         "initialFields"
       >
-    ): Promise<TestContractResult<[HexString, bigint]>> => {
-      return testMethod(this, "pop", params);
+    ): Promise<TestContractResultWithoutMaps<[HexString, bigint]>> => {
+      return testMethod(this, "pop", params, getContractByCodeHash);
     },
     sum: async (
       params: Omit<
-        TestContractParams<never, { array: HexString }>,
+        TestContractParamsWithoutMaps<never, { array: HexString }>,
         "initialFields"
       >
-    ): Promise<TestContractResult<bigint>> => {
-      return testMethod(this, "sum", params);
+    ): Promise<TestContractResultWithoutMaps<bigint>> => {
+      return testMethod(this, "sum", params, getContractByCodeHash);
     },
   };
 }
@@ -128,7 +142,8 @@ export const DynamicArrayForInt = new Factory(
   Contract.fromJson(
     DynamicArrayForIntContractJson,
     "",
-    "6b29a512dd1be54cddf58ab1e374743320c817c895c954fca2d6e40c0d1c0d64"
+    "ea33ddedad28b33a021266875424e3eb0656da6e5162ed1dbce764875ba43d01",
+    []
   )
 );
 

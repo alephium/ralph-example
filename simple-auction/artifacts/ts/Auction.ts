@@ -9,7 +9,7 @@ import {
   TestContractResult,
   HexString,
   ContractFactory,
-  SubscribeOptions,
+  EventSubscribeOptions,
   EventSubscription,
   CallContractParams,
   CallContractResult,
@@ -23,6 +23,10 @@ import {
   fetchContractState,
   ContractInstance,
   getContractEventsCurrentCount,
+  TestContractParamsWithoutMaps,
+  TestContractResultWithoutMaps,
+  addStdIdToFields,
+  encodeContractFields,
 } from "@alephium/web3";
 import { default as AuctionContractJson } from "../Auction.ral.json";
 import { getContractByCodeHash } from "./contracts";
@@ -72,6 +76,19 @@ export namespace AuctionTypes {
 }
 
 class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
+  encodeFields(fields: AuctionTypes.Fields) {
+    return encodeContractFields(
+      addStdIdToFields(this.contract, fields),
+      this.contract.fieldsSig,
+      []
+    );
+  }
+
+  getInitialFieldsWithDefaultValues() {
+    return this.contract.getInitialFieldsWithDefaultValues() as AuctionTypes.Fields;
+  }
+
+  eventIndex = { HighestBidIncreased: 0, AuctionEnded: 1 };
   consts = {
     ErrorCodes: {
       InvalidArg: BigInt(0),
@@ -92,32 +109,44 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
 
   tests = {
     getAuctioneer: async (
-      params: Omit<TestContractParams<AuctionTypes.Fields, never>, "testArgs">
-    ): Promise<TestContractResult<Address>> => {
-      return testMethod(this, "getAuctioneer", params);
+      params: Omit<
+        TestContractParamsWithoutMaps<AuctionTypes.Fields, never>,
+        "testArgs"
+      >
+    ): Promise<TestContractResultWithoutMaps<Address>> => {
+      return testMethod(this, "getAuctioneer", params, getContractByCodeHash);
     },
     bid: async (
-      params: TestContractParams<
+      params: TestContractParamsWithoutMaps<
         AuctionTypes.Fields,
         { from: Address; amount: bigint }
       >
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "bid", params);
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(this, "bid", params, getContractByCodeHash);
     },
     getBidder: async (
-      params: TestContractParams<AuctionTypes.Fields, { address: Address }>
-    ): Promise<TestContractResult<HexString>> => {
-      return testMethod(this, "getBidder", params);
+      params: TestContractParamsWithoutMaps<
+        AuctionTypes.Fields,
+        { address: Address }
+      >
+    ): Promise<TestContractResultWithoutMaps<HexString>> => {
+      return testMethod(this, "getBidder", params, getContractByCodeHash);
     },
     withdraw: async (
-      params: Omit<TestContractParams<AuctionTypes.Fields, never>, "testArgs">
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "withdraw", params);
+      params: Omit<
+        TestContractParamsWithoutMaps<AuctionTypes.Fields, never>,
+        "testArgs"
+      >
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(this, "withdraw", params, getContractByCodeHash);
     },
     auctionEnd: async (
-      params: Omit<TestContractParams<AuctionTypes.Fields, never>, "testArgs">
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "auctionEnd", params);
+      params: Omit<
+        TestContractParamsWithoutMaps<AuctionTypes.Fields, never>,
+        "testArgs"
+      >
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(this, "auctionEnd", params, getContractByCodeHash);
     },
   };
 }
@@ -127,7 +156,8 @@ export const Auction = new Factory(
   Contract.fromJson(
     AuctionContractJson,
     "",
-    "6f45e2992040f7ef9b6e4ced2b3e9fd30c9611f72533b51dc886296dee420ffb"
+    "9435c062906c84ebc32204488a0d51e0c45ca6b447aceebfc23bf5f40101c1a0",
+    []
   )
 );
 
@@ -146,7 +176,7 @@ export class AuctionInstance extends ContractInstance {
   }
 
   subscribeHighestBidIncreasedEvent(
-    options: SubscribeOptions<AuctionTypes.HighestBidIncreasedEvent>,
+    options: EventSubscribeOptions<AuctionTypes.HighestBidIncreasedEvent>,
     fromCount?: number
   ): EventSubscription {
     return subscribeContractEvent(
@@ -159,7 +189,7 @@ export class AuctionInstance extends ContractInstance {
   }
 
   subscribeAuctionEndedEvent(
-    options: SubscribeOptions<AuctionTypes.AuctionEndedEvent>,
+    options: EventSubscribeOptions<AuctionTypes.AuctionEndedEvent>,
     fromCount?: number
   ): EventSubscription {
     return subscribeContractEvent(
@@ -172,7 +202,7 @@ export class AuctionInstance extends ContractInstance {
   }
 
   subscribeAllEvents(
-    options: SubscribeOptions<
+    options: EventSubscribeOptions<
       AuctionTypes.HighestBidIncreasedEvent | AuctionTypes.AuctionEndedEvent
     >,
     fromCount?: number
