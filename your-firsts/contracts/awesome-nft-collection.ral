@@ -1,0 +1,54 @@
+import "std/nft_collection_interface"
+
+Contract AwesomeNFTCollection(
+  nftTemplateId: ByteVec,
+  collectionUri: ByteVec,
+  mut totalSupply: U256
+) implements INFTCollection {
+  enum ErrorCodes {
+    IncorrectTokenIndex = 0
+    NFTNotFound = 1
+    NFTNotPartOfCollection = 2
+  }
+
+  pub fn getCollectionUri() -> ByteVec {
+    return collectionUri
+  }
+
+  pub fn totalSupply() -> U256 {
+    return totalSupply
+  }
+
+  pub fn nftByIndex(index: U256) -> INFT {
+    checkCaller!(index < totalSupply(), ErrorCodes.IncorrectTokenIndex)
+
+    let nftTokenId = subContractId!(toByteVec!(index))
+    assert!(contractExists!(nftTokenId), ErrorCodes.NFTNotFound)
+
+    return INFT(nftTokenId)
+  }
+
+  pub fn validateNFT(nftId: ByteVec, nftIndex: U256) -> () {
+      let expectedTokenContract =  nftByIndex(nftIndex)
+      assert!(nftId == contractId!(expectedTokenContract), ErrorCodes.NFTNotPartOfCollection)
+  }
+
+  @using(preapprovedAssets = true, updateFields = true, checkExternalCaller = false)
+  pub fn mint(nftUri: ByteVec) -> (ByteVec) {
+    let minter = callerAddress!()
+
+    let (initialImmState, initialMutState) = AwesomeNFT.encodeFields!(selfContractId!(), totalSupply, nftUri)
+
+    let contractId = copyCreateSubContractWithToken!{minter -> ALPH: minimalContractDeposit!()}(
+        toByteVec!(totalSupply),
+        nftTemplateId,
+        initialImmState,
+        initialMutState,
+        1,
+        minter
+    )
+
+    totalSupply = totalSupply + 1
+    return contractId
+  }
+}

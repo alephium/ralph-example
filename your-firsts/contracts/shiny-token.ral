@@ -1,0 +1,19 @@
+import "std/fungible_token_interface"
+
+Contract ShinyToken() {
+  pub fn getTotalSupply() -> U256 {
+      return 10000
+  }
+
+  pub fn getSymbol() -> ByteVec {
+      return b`Stk`
+  }
+
+  pub fn getName() -> ByteVec {
+      return b`ShinyToken`
+  }
+
+  pub fn getDecimals() -> U256 {
+      return 18
+  }
+}
