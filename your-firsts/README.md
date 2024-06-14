@@ -15,7 +15,7 @@ Please refer to the documentation here: https://docs.alephium.org/full-node/gett
 
 ## Compile
 
-Compile the TypeScript files into JavaScript:
+Compile the contract files:
 
 ```
 npx @alephium/cli@latest compile 
