@@ -1,0 +1,38 @@
+{
+  "version": "v3.2.0",
+  "name": "PriceFetcher",
+  "bytecode": "0401405a01000006001cd3948fae9514074254432f5553440d0ece00d4a0e6c231170117001600a10014074554482f5553440d0ece00d4a0e6c231170317021602a1011408555344432f5553440d0ece00d4a0e6c231170517041604a102",
+  "codeHash": "3742a1d06f43b74b3baf62ac2f20d1caa782839fc27b2f804c47fb0b5c09b1fd",
+  "fieldsSig": {
+    "names": [
+      "oracle",
+      "btcPrice",
+      "ethPrice",
+      "usdcPrice"
+    ],
+    "types": [
+      "IOracle",
+      "U256",
+      "U256",
+      "U256"
+    ],
+    "isMutable": [
+      false,
+      true,
+      true,
+      true
+    ]
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "update",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    }
+  ],
+  "constants": [],
+  "enums": []
+}
