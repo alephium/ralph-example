@@ -42,6 +42,8 @@ export namespace PriceFetcherTypes {
     btcPrice: bigint;
     ethPrice: bigint;
     usdcPrice: bigint;
+    alphPrice: bigint;
+    ayinPrice: bigint;
   };
 
   export type State = ContractState<Fields>;
@@ -114,7 +116,7 @@ export const PriceFetcher = new Factory(
   Contract.fromJson(
     PriceFetcherContractJson,
     "",
-    "3742a1d06f43b74b3baf62ac2f20d1caa782839fc27b2f804c47fb0b5c09b1fd",
+    "234c356f92e0e441323a14f31234857df46285aba20dc9423bccba90b0f3714e",
     AllStructs
   )
 );

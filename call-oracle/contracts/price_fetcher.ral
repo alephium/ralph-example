@@ -11,12 +11,16 @@ Contract PriceFetcher(
   oracle: IOracle,
   mut btcPrice: U256,
   mut ethPrice: U256,
-  mut usdcPrice: U256
+  mut usdcPrice: U256,
+  mut alphPrice: U256,
+  mut ayinPrice: U256
 ) {
   @using(updateFields = true, checkExternalCaller = false)
   pub fn update() -> () {
     btcPrice = oracle.getValue(b`BTC/USD`).value
     ethPrice = oracle.getValue(b`ETH/USD`).value
     usdcPrice = oracle.getValue(b`USDC/USD`).value
+    alphPrice = oracle.getValue(b`ALPH/USD`).value
+    ayinPrice = oracle.getValue(b`AYIN/USD`).value
   }
 }
