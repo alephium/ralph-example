@@ -1,5 +1,5 @@
 {
-  "fullNodeVersion": "v3.2.0",
+  "fullNodeVersion": "v3.3.1",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
@@ -11,23 +11,23 @@
   "infos": {
     "IOracle": {
       "sourceFile": "price_fetcher.ral",
-      "sourceCodeHash": "893ed3fa4c10d88cffe0fdf4f654bc2ea053542b7f749bc3eb3fd2338030f479",
+      "sourceCodeHash": "2d69637edba7d73038d6c408b7a2be3f72554193c6d915f532c1822c1e00cea2",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
     },
     "OracleValue": {
       "sourceFile": "price_fetcher.ral",
-      "sourceCodeHash": "893ed3fa4c10d88cffe0fdf4f654bc2ea053542b7f749bc3eb3fd2338030f479",
+      "sourceCodeHash": "2d69637edba7d73038d6c408b7a2be3f72554193c6d915f532c1822c1e00cea2",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
     },
     "PriceFetcher": {
       "sourceFile": "price_fetcher.ral",
-      "sourceCodeHash": "893ed3fa4c10d88cffe0fdf4f654bc2ea053542b7f749bc3eb3fd2338030f479",
+      "sourceCodeHash": "2d69637edba7d73038d6c408b7a2be3f72554193c6d915f532c1822c1e00cea2",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "3742a1d06f43b74b3baf62ac2f20d1caa782839fc27b2f804c47fb0b5c09b1fd",
+      "codeHashDebug": "234c356f92e0e441323a14f31234857df46285aba20dc9423bccba90b0f3714e",
       "warnings": []
     }
   }

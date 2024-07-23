@@ -6,19 +6,21 @@ import { PriceFetcherInstance } from 'artifacts/ts';
 
 const DECIMALS = 10 ** 8
 
-async function getPrices(priceFetcher: PriceFetcherInstance): Promise<{ BTC: number, ETH: number, USDC: number }> {
+async function getPrices(priceFetcher: PriceFetcherInstance): Promise<{ BTC: number, ETH: number, USDC: number, ALPH: number, AYIN: number }> {
   const state = await priceFetcher.fetchState()
   return {
     BTC: Number(state.fields.btcPrice) / DECIMALS,
     ETH: Number(state.fields.ethPrice) / DECIMALS,
-    USDC: Number(state.fields.usdcPrice) / DECIMALS
+    USDC: Number(state.fields.usdcPrice) / DECIMALS,
+    ALPH: Number(state.fields.alphPrice) / DECIMALS,
+    AYIN: Number(state.fields.ayinPrice) / DECIMALS,
   }
 }
 
 const PriceUpdater = () => {
   web3.setCurrentNodeProvider('https://node.testnet.alephium.org')
   const priceFetcher = loadDeployments('testnet').contracts.PriceFetcher.contractInstance
-  const [prices, setPrices] = useState({ BTC: 0, ETH: 0, USDC: 0 });
+  const [prices, setPrices] = useState({ BTC: 0, ETH: 0, USDC: 0, ALPH: 0, AYIN: 0 });
   const [txId, setTxId] = useState('')
   const wallet = useWallet()
 
@@ -43,6 +45,8 @@ const PriceUpdater = () => {
         <h2>BTC: ${prices.BTC}</h2>
         <h2>ETH: ${prices.ETH}</h2>
         <h2>USDC: ${prices.USDC}</h2>
+        <h2>ALPH: ${prices.ALPH}</h2>
+        <h2>AYIN: ${prices.AYIN}</h2>
       </div>
       <button onClick={fetchPrices} style={{ marginTop: '20px', padding: '10px 20px', fontSize: '16px' }}>
         Update Prices
