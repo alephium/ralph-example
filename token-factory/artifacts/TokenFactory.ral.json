@@ -1,0 +1,46 @@
+{
+  "version": "v3.4.0",
+  "name": "TokenFactory",
+  "bytecode": "0101404201030409011dd3b1e680a5b417041600160116021406414c50480001130464160313016417061705160017071604d1a21607ce001605160616031604c91708160802",
+  "codeHash": "7f7ea9c90000311d95b1e183fddece83bfb77be3e29c85724bd0eec82f18f21b",
+  "fieldsSig": {
+    "names": [
+      "tokenTemplate"
+    ],
+    "types": [
+      "Token"
+    ],
+    "isMutable": [
+      false
+    ]
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "createToken",
+      "paramNames": [
+        "symbol",
+        "name",
+        "decimals",
+        "totalSupply"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "ByteVec",
+        "U256",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "returnTypes": [
+        "Token"
+      ]
+    }
+  ],
+  "constants": [],
+  "enums": []
+}

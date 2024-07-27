@@ -1,0 +1,31 @@
+Contract TokenFactory(
+    tokenTemplate: Token
+) {
+    @using(preapprovedAssets = true, checkExternalCaller = false)
+    pub fn createToken(
+        symbol: ByteVec,
+        name: ByteVec,
+        decimals: U256,
+        totalSupply: U256
+    ) -> Token {
+        let caller = callerAddress!()
+        let (encodeImmutableFields, encodeMutableFields) = Token.encodeFields!(
+            symbol,
+            name,
+            decimals,
+            totalSupply
+        )
+        let subContractPath = symbol
+        let contractId = copyCreateSubContractWithToken!{caller -> ALPH: minimalContractDeposit!()}(
+            subContractPath,
+            contractId!(tokenTemplate),
+            encodeImmutableFields,
+            encodeMutableFields,
+            totalSupply,
+            caller
+        )
+
+        emit Debug(`Created token contract with ID: ${contractId}`)
+        return Token(contractId)
+    }
+}
