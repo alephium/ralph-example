@@ -1,0 +1,48 @@
+{
+  "fullNodeVersion": "v2.9.0",
+  "compilerOptionsUsed": {
+    "ignoreUnusedConstantsWarnings": false,
+    "ignoreUnusedVariablesWarnings": false,
+    "ignoreUnusedFieldsWarnings": false,
+    "ignoreUnusedPrivateFunctionsWarnings": false,
+    "ignoreUpdateFieldsCheckWarnings": false,
+    "ignoreCheckExternalCallerWarnings": false
+  },
+  "infos": {
+    "Airdrop": {
+      "sourceFile": "airdrop.ral",
+      "sourceCodeHash": "0178dab8f0d39494a86e4f7d6c2fbaa5ebb510c7e860368c565800accddfb3fb",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "ebb2cca54fd435d972fb3bc228ef10841f6ab65497985e7592c9794975898401",
+      "warnings": []
+    },
+    "DisperseAirdrop10": {
+      "sourceFile": "scripts.ral",
+      "sourceCodeHash": "c1f5e0cae5b1409bb3f25d635f1982de636e16b1b17716ec29dd56e8462f2e90",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "",
+      "warnings": []
+    },
+    "DisperseAirdrop100": {
+      "sourceFile": "scripts.ral",
+      "sourceCodeHash": "c1f5e0cae5b1409bb3f25d635f1982de636e16b1b17716ec29dd56e8462f2e90",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "",
+      "warnings": []
+    },
+    "DisperseAirdrop25": {
+      "sourceFile": "scripts.ral",
+      "sourceCodeHash": "c1f5e0cae5b1409bb3f25d635f1982de636e16b1b17716ec29dd56e8462f2e90",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "",
+      "warnings": []
+    },
+    "DisperseAirdrop50": {
+      "sourceFile": "scripts.ral",
+      "sourceCodeHash": "c1f5e0cae5b1409bb3f25d635f1982de636e16b1b17716ec29dd56e8462f2e90",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "",
+      "warnings": []
+    }
+  }
+}
