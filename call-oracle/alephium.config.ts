@@ -22,7 +22,7 @@ const configuration: Configuration<Settings> = {
     mainnet: {
       nodeUrl: process.env.NODE_URL as string ?? 'https://node.mainnet.alephium.org',
       privateKeys: process.env.PRIVATE_KEYS === undefined ? [] : process.env.PRIVATE_KEYS.split(','),
-      settings: undefined as any
+      settings: { oracleAddress: '285zrkZTPpUCpjKg9E3z238VmpUBQEAbESGsJT6yX7Rod' } // DIA oracle address on mainnet
     }
   }
 }

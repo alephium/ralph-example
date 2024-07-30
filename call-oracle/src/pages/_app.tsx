@@ -6,7 +6,7 @@ import { AlephiumWalletProvider } from '@alephium/web3-react'
 export default function App({ Component, pageProps }: AppProps) {
 
   return (
-    <AlephiumWalletProvider theme="web95" network='testnet' addressGroup={0}>
+    <AlephiumWalletProvider theme="web95" network='mainnet' addressGroup={0}>
       <Component {...pageProps} />
     </AlephiumWalletProvider>
   )

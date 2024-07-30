@@ -18,8 +18,8 @@ async function getPrices(priceFetcher: PriceFetcherInstance): Promise<{ BTC: num
 }
 
 const PriceUpdater = () => {
-  web3.setCurrentNodeProvider('https://node.testnet.alephium.org')
-  const priceFetcher = loadDeployments('testnet').contracts.PriceFetcher.contractInstance
+  web3.setCurrentNodeProvider('https://node.mainnet.alephium.org')
+  const priceFetcher = loadDeployments('mainnet').contracts.PriceFetcher.contractInstance
   const [prices, setPrices] = useState({ BTC: 0, ETH: 0, USDC: 0, ALPH: 0, AYIN: 0 });
   const [txId, setTxId] = useState('')
   const wallet = useWallet()
