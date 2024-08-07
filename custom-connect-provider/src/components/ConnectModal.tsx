@@ -19,7 +19,7 @@ export function ConnectModal() {
     }
   }, [connectClicked, opened, setConnectClicked, connect, setOpened])
 
-  const onConnect = useCallback((id: 'injected' | 'walletConnect') => {
+  const onConnect = useCallback((id: 'injected' | 'walletConnect' | 'desktopWallet') => {
     context.setConnectorId(id)
     setConnectClicked(true)
   }, [context, setConnectClicked])
@@ -44,6 +44,7 @@ export function ConnectModal() {
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 20 }}>
               <Button variant="contained" onClick={() => onConnect('injected')}>Extension Wallet</Button>
               <Button variant="contained" sx={{ mt: 2 }} onClick={() => onConnect('walletConnect')}>Wallet Connect</Button>
+              <Button variant="contained" sx={{ mt: 2 }} onClick={() => onConnect('desktopWallet')}>Desktop Wallet</Button>
             </Box>
           </Modal>
         </div>
