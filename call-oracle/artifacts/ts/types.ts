@@ -9,3 +9,8 @@ export interface OracleValue extends Record<string, Val> {
   value: bigint;
   timestamp: bigint;
 }
+export interface Random extends Record<string, Val> {
+  randomness: HexString;
+  signature: HexString;
+  previousSignature: HexString;
+}

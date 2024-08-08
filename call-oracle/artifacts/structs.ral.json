@@ -13,5 +13,23 @@
       false,
       false
     ]
+  },
+  {
+    "name": "Random",
+    "fieldNames": [
+      "randomness",
+      "signature",
+      "previousSignature"
+    ],
+    "fieldTypes": [
+      "ByteVec",
+      "ByteVec",
+      "ByteVec"
+    ],
+    "isMutable": [
+      true,
+      true,
+      true
+    ]
   }
 ]

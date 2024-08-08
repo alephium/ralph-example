@@ -1,0 +1,22 @@
+struct Random {
+  mut randomness: ByteVec,
+  mut signature: ByteVec,
+  mut previousSignature: ByteVec
+}
+
+Interface IRandomOracle {
+  pub fn getLastRound() -> U256
+  pub fn getRandomValue(round: U256) -> Random
+}
+
+Contract RandomValueFetcher(
+  oracle: IRandomOracle,
+  mut lastRound: U256,
+  mut value: Random
+) {
+  @using(updateFields = true, checkExternalCaller = false)
+  pub fn update() -> () {
+    lastRound = oracle.getLastRound()
+    value = oracle.getRandomValue(lastRound)
+  }
+}
