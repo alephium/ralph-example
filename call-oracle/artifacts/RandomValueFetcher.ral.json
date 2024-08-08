@@ -1,0 +1,35 @@
+{
+  "version": "v3.3.0",
+  "name": "RandomValueFetcher",
+  "bytecode": "0501402701000000000ed3948fae950c0dce00d46393ea60a100a0000d0fce00d4b121f490a103a102a101",
+  "codeHash": "9f3715ba3cf130bd8398a3338315876a13c2ecbae485b4a6a439c7e0f5331564",
+  "fieldsSig": {
+    "names": [
+      "oracle",
+      "lastRound",
+      "value"
+    ],
+    "types": [
+      "IDIARandomOracle",
+      "U256",
+      "DIARandomValue"
+    ],
+    "isMutable": [
+      false,
+      true,
+      true
+    ]
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "update",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    }
+  ],
+  "constants": [],
+  "enums": []
+}

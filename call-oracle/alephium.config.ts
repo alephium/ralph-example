@@ -2,7 +2,8 @@ import { Configuration } from '@alephium/cli'
 import { Address } from '@alephium/web3'
 
 export type Settings = {
-  oracleAddress: Address
+  assetOracleAddress: Address
+  vrfOracleAddress: Address
 }
 
 const configuration: Configuration<Settings> = {
@@ -16,7 +17,10 @@ const configuration: Configuration<Settings> = {
     testnet: {
       nodeUrl: process.env.NODE_URL as string ?? 'https://node.testnet.alephium.org',
       privateKeys: process.env.PRIVATE_KEYS === undefined ? [] : process.env.PRIVATE_KEYS.split(','),
-      settings: { oracleAddress: '216wgM3Xi5uBFYwwiw2T7iZoCy9vozPJ4XjToW74nQjbV' } // DIA oracle address on testnet
+      settings: {
+        assetOracleAddress: '216wgM3Xi5uBFYwwiw2T7iZoCy9vozPJ4XjToW74nQjbV',
+        vrfOracleAddress: 'x5b8UP9m7XuZfiH5eZB3HKuKDAiWaKoZsBX5rXRYm6By'
+      }
     },
 
     mainnet: {

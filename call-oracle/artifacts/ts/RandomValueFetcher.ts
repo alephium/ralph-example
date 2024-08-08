@@ -31,19 +31,16 @@ import {
   addStdIdToFields,
   encodeContractFields,
 } from "@alephium/web3";
-import { default as PriceFetcherContractJson } from "../PriceFetcher.ral.json";
+import { default as RandomValueFetcherContractJson } from "../RandomValueFetcher.ral.json";
 import { getContractByCodeHash } from "./contracts";
 import { DIAOracleValue, DIARandomValue, AllStructs } from "./types";
 
 // Custom types for the contract
-export namespace PriceFetcherTypes {
+export namespace RandomValueFetcherTypes {
   export type Fields = {
     oracle: HexString;
-    btcPrice: bigint;
-    ethPrice: bigint;
-    usdcPrice: bigint;
-    alphPrice: bigint;
-    ayinPrice: bigint;
+    lastRound: bigint;
+    value: DIARandomValue;
   };
 
   export type State = ContractState<Fields>;
@@ -80,10 +77,10 @@ export namespace PriceFetcherTypes {
 }
 
 class Factory extends ContractFactory<
-  PriceFetcherInstance,
-  PriceFetcherTypes.Fields
+  RandomValueFetcherInstance,
+  RandomValueFetcherTypes.Fields
 > {
-  encodeFields(fields: PriceFetcherTypes.Fields) {
+  encodeFields(fields: RandomValueFetcherTypes.Fields) {
     return encodeContractFields(
       addStdIdToFields(this.contract, fields),
       this.contract.fieldsSig,
@@ -92,17 +89,17 @@ class Factory extends ContractFactory<
   }
 
   getInitialFieldsWithDefaultValues() {
-    return this.contract.getInitialFieldsWithDefaultValues() as PriceFetcherTypes.Fields;
+    return this.contract.getInitialFieldsWithDefaultValues() as RandomValueFetcherTypes.Fields;
   }
 
-  at(address: string): PriceFetcherInstance {
-    return new PriceFetcherInstance(address);
+  at(address: string): RandomValueFetcherInstance {
+    return new RandomValueFetcherInstance(address);
   }
 
   tests = {
     update: async (
       params: Omit<
-        TestContractParamsWithoutMaps<PriceFetcherTypes.Fields, never>,
+        TestContractParamsWithoutMaps<RandomValueFetcherTypes.Fields, never>,
         "testArgs"
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
@@ -112,31 +109,31 @@ class Factory extends ContractFactory<
 }
 
 // Use this object to test and deploy the contract
-export const PriceFetcher = new Factory(
+export const RandomValueFetcher = new Factory(
   Contract.fromJson(
-    PriceFetcherContractJson,
+    RandomValueFetcherContractJson,
     "",
-    "234c356f92e0e441323a14f31234857df46285aba20dc9423bccba90b0f3714e",
+    "9f3715ba3cf130bd8398a3338315876a13c2ecbae485b4a6a439c7e0f5331564",
     AllStructs
   )
 );
 
 // Use this class to interact with the blockchain
-export class PriceFetcherInstance extends ContractInstance {
+export class RandomValueFetcherInstance extends ContractInstance {
   constructor(address: Address) {
     super(address);
   }
 
-  async fetchState(): Promise<PriceFetcherTypes.State> {
-    return fetchContractState(PriceFetcher, this);
+  async fetchState(): Promise<RandomValueFetcherTypes.State> {
+    return fetchContractState(RandomValueFetcher, this);
   }
 
   view = {
     update: async (
-      params?: PriceFetcherTypes.CallMethodParams<"update">
-    ): Promise<PriceFetcherTypes.CallMethodResult<"update">> => {
+      params?: RandomValueFetcherTypes.CallMethodParams<"update">
+    ): Promise<RandomValueFetcherTypes.CallMethodResult<"update">> => {
       return callMethod(
-        PriceFetcher,
+        RandomValueFetcher,
         this,
         "update",
         params === undefined ? {} : params,
@@ -147,9 +144,9 @@ export class PriceFetcherInstance extends ContractInstance {
 
   transact = {
     update: async (
-      params: PriceFetcherTypes.SignExecuteMethodParams<"update">
-    ): Promise<PriceFetcherTypes.SignExecuteMethodResult<"update">> => {
-      return signExecuteMethod(PriceFetcher, this, "update", params);
+      params: RandomValueFetcherTypes.SignExecuteMethodParams<"update">
+    ): Promise<RandomValueFetcherTypes.SignExecuteMethodResult<"update">> => {
+      return signExecuteMethod(RandomValueFetcher, this, "update", params);
     },
   };
 }
