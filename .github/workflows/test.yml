@@ -21,7 +21,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: |
           pushd docker
-          docker-compose up -d
+          docker compose up -d
           popd
           SECONDS=0
           sleep 5
