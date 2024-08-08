@@ -10,9 +10,9 @@
       "value"
     ],
     "types": [
-      "IRandomOracle",
+      "IDIARandomOracle",
       "U256",
-      "Random"
+      "DIARandomValue"
     ],
     "isMutable": [
       false,

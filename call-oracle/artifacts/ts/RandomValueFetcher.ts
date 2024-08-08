@@ -33,14 +33,14 @@ import {
 } from "@alephium/web3";
 import { default as RandomValueFetcherContractJson } from "../RandomValueFetcher.ral.json";
 import { getContractByCodeHash } from "./contracts";
-import { OracleValue, Random, AllStructs } from "./types";
+import { DIAOracleValue, DIARandomValue, AllStructs } from "./types";
 
 // Custom types for the contract
 export namespace RandomValueFetcherTypes {
   export type Fields = {
     oracle: HexString;
     lastRound: bigint;
-    value: Random;
+    value: DIARandomValue;
   };
 
   export type State = ContractState<Fields>;

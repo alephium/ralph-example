@@ -1,18 +1,18 @@
-struct Random {
+struct DIARandomValue {
   mut randomness: ByteVec,
   mut signature: ByteVec,
   mut previousSignature: ByteVec
 }
 
-Interface IRandomOracle {
+Interface IDIARandomOracle {
   pub fn getLastRound() -> U256
-  pub fn getRandomValue(round: U256) -> Random
+  pub fn getRandomValue(round: U256) -> DIARandomValue
 }
 
 Contract RandomValueFetcher(
-  oracle: IRandomOracle,
+  oracle: IDIARandomOracle,
   mut lastRound: U256,
-  mut value: Random
+  mut value: DIARandomValue
 ) {
   @using(updateFields = true, checkExternalCaller = false)
   pub fn update() -> () {

@@ -1,6 +1,6 @@
 [
   {
-    "name": "OracleValue",
+    "name": "DIAOracleValue",
     "fieldNames": [
       "value",
       "timestamp"
@@ -10,12 +10,12 @@
       "U256"
     ],
     "isMutable": [
-      false,
-      false
+      true,
+      true
     ]
   },
   {
-    "name": "Random",
+    "name": "DIARandomValue",
     "fieldNames": [
       "randomness",
       "signature",
