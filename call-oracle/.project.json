@@ -1,5 +1,5 @@
 {
-  "fullNodeVersion": "v3.3.1",
+  "fullNodeVersion": "v3.5.0",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
@@ -9,23 +9,23 @@
     "ignoreCheckExternalCallerWarnings": false
   },
   "infos": {
-    "IOracle": {
+    "DIAOracleValue": {
       "sourceFile": "price_fetcher.ral",
-      "sourceCodeHash": "2d69637edba7d73038d6c408b7a2be3f72554193c6d915f532c1822c1e00cea2",
+      "sourceCodeHash": "0b4cfa86cb15cee0dbfb5d7f31800b82025f6b44aea7439558d6912f2bb84bc3",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
     },
-    "OracleValue": {
+    "IDIAOracle": {
       "sourceFile": "price_fetcher.ral",
-      "sourceCodeHash": "2d69637edba7d73038d6c408b7a2be3f72554193c6d915f532c1822c1e00cea2",
+      "sourceCodeHash": "0b4cfa86cb15cee0dbfb5d7f31800b82025f6b44aea7439558d6912f2bb84bc3",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
     },
     "PriceFetcher": {
       "sourceFile": "price_fetcher.ral",
-      "sourceCodeHash": "2d69637edba7d73038d6c408b7a2be3f72554193c6d915f532c1822c1e00cea2",
+      "sourceCodeHash": "0b4cfa86cb15cee0dbfb5d7f31800b82025f6b44aea7439558d6912f2bb84bc3",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "234c356f92e0e441323a14f31234857df46285aba20dc9423bccba90b0f3714e",
       "warnings": []
