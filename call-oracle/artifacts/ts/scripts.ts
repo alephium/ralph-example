@@ -13,4 +13,4 @@ import {
 } from "@alephium/web3";
 import { getContractByCodeHash } from "./contracts";
 
-import { DIAOracleValue, DIARandomValue, AllStructs } from "./types";
+import { OracleValue, AllStructs } from "./types";

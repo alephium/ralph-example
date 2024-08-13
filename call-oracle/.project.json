@@ -1,5 +1,5 @@
 {
-  "fullNodeVersion": "v3.3.0",
+  "fullNodeVersion": "v3.3.1",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
@@ -9,46 +9,25 @@
     "ignoreCheckExternalCallerWarnings": false
   },
   "infos": {
-    "DIAOracleValue": {
+    "IOracle": {
       "sourceFile": "price_fetcher.ral",
-      "sourceCodeHash": "0b4cfa86cb15cee0dbfb5d7f31800b82025f6b44aea7439558d6912f2bb84bc3",
+      "sourceCodeHash": "2d69637edba7d73038d6c408b7a2be3f72554193c6d915f532c1822c1e00cea2",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
     },
-    "DIARandomValue": {
-      "sourceFile": "random_value_fetcher.ral",
-      "sourceCodeHash": "0560deb6df4c1d36d9b323c615a490d20aa63549cb7929901454ac798fd7c3f1",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
-    },
-    "IDIAOracle": {
+    "OracleValue": {
       "sourceFile": "price_fetcher.ral",
-      "sourceCodeHash": "0b4cfa86cb15cee0dbfb5d7f31800b82025f6b44aea7439558d6912f2bb84bc3",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
-    },
-    "IDIARandomOracle": {
-      "sourceFile": "random_value_fetcher.ral",
-      "sourceCodeHash": "0560deb6df4c1d36d9b323c615a490d20aa63549cb7929901454ac798fd7c3f1",
+      "sourceCodeHash": "2d69637edba7d73038d6c408b7a2be3f72554193c6d915f532c1822c1e00cea2",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "",
       "warnings": []
     },
     "PriceFetcher": {
       "sourceFile": "price_fetcher.ral",
-      "sourceCodeHash": "0b4cfa86cb15cee0dbfb5d7f31800b82025f6b44aea7439558d6912f2bb84bc3",
+      "sourceCodeHash": "2d69637edba7d73038d6c408b7a2be3f72554193c6d915f532c1822c1e00cea2",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "234c356f92e0e441323a14f31234857df46285aba20dc9423bccba90b0f3714e",
-      "warnings": []
-    },
-    "RandomValueFetcher": {
-      "sourceFile": "random_value_fetcher.ral",
-      "sourceCodeHash": "0560deb6df4c1d36d9b323c615a490d20aa63549cb7929901454ac798fd7c3f1",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": "9f3715ba3cf130bd8398a3338315876a13c2ecbae485b4a6a439c7e0f5331564",
       "warnings": []
     }
   }

@@ -33,7 +33,7 @@ import {
 } from "@alephium/web3";
 import { default as PriceFetcherContractJson } from "../PriceFetcher.ral.json";
 import { getContractByCodeHash } from "./contracts";
-import { DIAOracleValue, DIARandomValue, AllStructs } from "./types";
+import { OracleValue, AllStructs } from "./types";
 
 // Custom types for the contract
 export namespace PriceFetcherTypes {

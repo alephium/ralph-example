@@ -1,6 +1,6 @@
 [
   {
-    "name": "DIAOracleValue",
+    "name": "OracleValue",
     "fieldNames": [
       "value",
       "timestamp"
@@ -10,26 +10,8 @@
       "U256"
     ],
     "isMutable": [
-      true,
-      true
-    ]
-  },
-  {
-    "name": "DIARandomValue",
-    "fieldNames": [
-      "randomness",
-      "signature",
-      "previousSignature"
-    ],
-    "fieldTypes": [
-      "ByteVec",
-      "ByteVec",
-      "ByteVec"
-    ],
-    "isMutable": [
-      true,
-      true,
-      true
+      false,
+      false
     ]
   }
 ]

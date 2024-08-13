@@ -4,19 +4,13 @@
 
 import { RunScriptResult, DeployContractExecutionResult } from "@alephium/cli";
 import { NetworkId } from "@alephium/web3";
-import {
-  PriceFetcher,
-  PriceFetcherInstance,
-  RandomValueFetcher,
-  RandomValueFetcherInstance,
-} from ".";
+import { PriceFetcher, PriceFetcherInstance } from ".";
 import { default as testnetDeployments } from "../../deployments/.deployments.testnet.json";
 
 export type Deployments = {
   deployerAddress: string;
   contracts: {
     PriceFetcher: DeployContractExecutionResult<PriceFetcherInstance>;
-    RandomValueFetcher: DeployContractExecutionResult<RandomValueFetcherInstance>;
   };
 };
 
@@ -26,12 +20,6 @@ function toDeployments(json: any): Deployments {
       ...json.contracts["PriceFetcher"],
       contractInstance: PriceFetcher.at(
         json.contracts["PriceFetcher"].contractInstance.address
-      ),
-    },
-    RandomValueFetcher: {
-      ...json.contracts["RandomValueFetcher"],
-      contractInstance: RandomValueFetcher.at(
-        json.contracts["RandomValueFetcher"].contractInstance.address
       ),
     },
   };

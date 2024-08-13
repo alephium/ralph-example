@@ -42,11 +42,11 @@ const PriceUpdater = () => {
     <div style={{ textAlign: 'center', marginTop: '50px' }}>
       <h1>Cryptocurrency Prices</h1>
       <div>
-        <p>BTC: ${prices.BTC}</p>
-        <p>ETH: ${prices.ETH}</p>
-        <p>USDC: ${prices.USDC}</p>
-        <p>ALPH: ${prices.ALPH}</p>
-        <p>AYIN: ${prices.AYIN}</p>
+        <h2>BTC: ${prices.BTC}</h2>
+        <h2>ETH: ${prices.ETH}</h2>
+        <h2>USDC: ${prices.USDC}</h2>
+        <h2>ALPH: ${prices.ALPH}</h2>
+        <h2>AYIN: ${prices.AYIN}</h2>
       </div>
       <button onClick={fetchPrices} style={{ marginTop: '20px', padding: '10px 20px', fontSize: '16px' }}>
         Update Prices

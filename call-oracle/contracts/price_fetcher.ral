@@ -1,14 +1,14 @@
-struct DIAOracleValue {
-  mut value: U256,
-  mut timestamp: U256
+struct OracleValue {
+  value: U256,
+  timestamp: U256
 }
 
-Interface IDIAOracle {
-  pub fn getValue(key: ByteVec) -> DIAOracleValue
+Interface IOracle {
+  pub fn getValue(key: ByteVec) -> OracleValue
 }
 
 Contract PriceFetcher(
-  oracle: IDIAOracle,
+  oracle: IOracle,
   mut btcPrice: U256,
   mut ethPrice: U256,
   mut usdcPrice: U256,
