@@ -1,55 +1,50 @@
 {
-  "fullNodeVersion": "v3.1.1",
+  "fullNodeVersion": "v3.5.2",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
     "ignoreUnusedFieldsWarnings": false,
     "ignoreUnusedPrivateFunctionsWarnings": false,
     "ignoreUpdateFieldsCheckWarnings": false,
-    "ignoreCheckExternalCallerWarnings": false
+    "ignoreCheckExternalCallerWarnings": false,
+    "ignoreUnusedFunctionReturnWarnings": false
   },
   "infos": {
     "AwesomeNFT": {
       "sourceFile": "awesome-nft.ral",
       "sourceCodeHash": "04eba6b2667e9bcf1c26cb7345898904c4b88d35f923c3c8fe0df051d5cf1aaf",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "4897086210869e612d82995b765a447c5319a55a56e8a0c3c07b4d9ca81e15b1",
-      "warnings": []
+      "codeHashDebug": "4897086210869e612d82995b765a447c5319a55a56e8a0c3c07b4d9ca81e15b1"
     },
     "AwesomeNFTCollection": {
       "sourceFile": "awesome-nft-collection.ral",
       "sourceCodeHash": "6decbc69292901afb6cb759ee98fb1415b48688e9cece43a3470a98427d7d426",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "86f278d2de249eca00d0c68f12167da0c1a54c02eaa8c148f89e659ae7cf11af",
-      "warnings": []
+      "codeHashDebug": "86f278d2de249eca00d0c68f12167da0c1a54c02eaa8c148f89e659ae7cf11af"
     },
     "IFungibleToken": {
       "sourceFile": "../node_modules/@alephium/web3/std/fungible_token_interface.ral",
       "sourceCodeHash": "62910bf11e1eeb6cb2fd468626ff606a9b06306b2b81590c3b10f6deb5966bde",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
+      "codeHashDebug": ""
     },
     "INFT": {
       "sourceFile": "../node_modules/@alephium/web3/std/nft_interface.ral",
-      "sourceCodeHash": "acff0211f936d18d3f4a01ddd8f4fe8fbdf0dba9e8b9204b233a48cba1c80d8b",
+      "sourceCodeHash": "92956f4e61c198f011b48dbda2ed76193ffc79ac9c39f60bf1763a34e02f2c41",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
+      "codeHashDebug": ""
     },
     "INFTCollection": {
       "sourceFile": "../node_modules/@alephium/web3/std/nft_collection_interface.ral",
       "sourceCodeHash": "9b199426ea89c188ce858b48ab809f13b9fc1ed0d64ca91e3d600eda8fbf6c42",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
+      "codeHashDebug": ""
     },
     "ShinyToken": {
       "sourceFile": "shiny-token.ral",
       "sourceCodeHash": "5d6cc57e2acbef0c720ece927237a522732c805edecb85751d28918127ef3f81",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "24c7978eaf7b6a729f50107cc2143e0804dadd748e27ebcc39ab12b0dfb504da",
-      "warnings": []
+      "codeHashDebug": "24c7978eaf7b6a729f50107cc2143e0804dadd748e27ebcc39ab12b0dfb504da"
     }
   }
 }

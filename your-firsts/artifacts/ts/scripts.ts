@@ -11,3 +11,4 @@ import {
   SignerProvider,
   HexString,
 } from "@alephium/web3";
+import { getContractByCodeHash } from "./contracts";

@@ -68,6 +68,10 @@ export namespace ShinyTokenTypes {
       ? CallMethodTable[MaybeName]["result"]
       : undefined;
   };
+  export type MulticallReturnType<Callss extends MultiCallParams[]> =
+    Callss["length"] extends 1
+      ? MultiCallResults<Callss[0]>
+      : { [index in keyof Callss]: MultiCallResults<Callss[index]> };
 
   export interface SignExecuteMethodTable {
     getTotalSupply: {
@@ -178,7 +182,7 @@ export class ShinyTokenInstance extends ContractInstance {
     return fetchContractState(ShinyToken, this);
   }
 
-  methods = {
+  view = {
     getTotalSupply: async (
       params?: ShinyTokenTypes.CallMethodParams<"getTotalSupply">
     ): Promise<ShinyTokenTypes.CallMethodResult<"getTotalSupply">> => {
@@ -225,8 +229,6 @@ export class ShinyTokenInstance extends ContractInstance {
     },
   };
 
-  view = this.methods;
-
   transact = {
     getTotalSupply: async (
       params: ShinyTokenTypes.SignExecuteMethodParams<"getTotalSupply">
@@ -250,14 +252,14 @@ export class ShinyTokenInstance extends ContractInstance {
     },
   };
 
-  async multicall<Calls extends ShinyTokenTypes.MultiCallParams>(
-    calls: Calls
-  ): Promise<ShinyTokenTypes.MultiCallResults<Calls>> {
+  async multicall<Callss extends ShinyTokenTypes.MultiCallParams[]>(
+    ...callss: Callss
+  ): Promise<ShinyTokenTypes.MulticallReturnType<Callss>> {
     return (await multicallMethods(
       ShinyToken,
       this,
-      calls,
+      callss,
       getContractByCodeHash
-    )) as ShinyTokenTypes.MultiCallResults<Calls>;
+    )) as ShinyTokenTypes.MulticallReturnType<Callss>;
   }
 }
