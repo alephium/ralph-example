@@ -2,7 +2,7 @@ import {
   DUST_AMOUNT,
   ONE_ALPH,
   binToHex,
-  encodeU256,
+  codec,
   stringToHex,
   subContractId,
   web3,
@@ -40,7 +40,7 @@ async function nonFungibleToken() {
   })
 
   // The NFT index is `0` since this is the first NFT we minted, we can calculate its contract id like this:
-  const nftContractId = subContractId(nftCollection.contractId, binToHex(encodeU256(0n)), 0)
+  const nftContractId = subContractId(nftCollection.contractId, binToHex(codec.u256Codec.encode(0n)), 0)
   const nftMetadata = await web3.getCurrentNodeProvider().fetchNFTMetaData(nftContractId)
   console.log(`NFT Token URI: ${nftMetadata.tokenUri}; collection address: ${nftMetadata.collectionId}`)
 }

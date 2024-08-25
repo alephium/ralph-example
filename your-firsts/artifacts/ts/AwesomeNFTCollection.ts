@@ -78,6 +78,10 @@ export namespace AwesomeNFTCollectionTypes {
       ? CallMethodTable[MaybeName]["result"]
       : undefined;
   };
+  export type MulticallReturnType<Callss extends MultiCallParams[]> =
+    Callss["length"] extends 1
+      ? MultiCallResults<Callss[0]>
+      : { [index in keyof Callss]: MultiCallResults<Callss[index]> };
 
   export interface SignExecuteMethodTable {
     getCollectionUri: {
@@ -122,15 +126,11 @@ class Factory extends ContractFactory<
     );
   }
 
-  getInitialFieldsWithDefaultValues() {
-    return this.contract.getInitialFieldsWithDefaultValues() as AwesomeNFTCollectionTypes.Fields;
-  }
-
   consts = {
     ErrorCodes: {
-      IncorrectTokenIndex: BigInt(0),
-      NFTNotFound: BigInt(1),
-      NFTNotPartOfCollection: BigInt(2),
+      IncorrectTokenIndex: BigInt("0"),
+      NFTNotFound: BigInt("1"),
+      NFTNotPartOfCollection: BigInt("2"),
     },
   };
 
@@ -207,7 +207,7 @@ export class AwesomeNFTCollectionInstance extends ContractInstance {
     return fetchContractState(AwesomeNFTCollection, this);
   }
 
-  methods = {
+  view = {
     getCollectionUri: async (
       params?: AwesomeNFTCollectionTypes.CallMethodParams<"getCollectionUri">
     ): Promise<
@@ -267,8 +267,6 @@ export class AwesomeNFTCollectionInstance extends ContractInstance {
     },
   };
 
-  view = this.methods;
-
   transact = {
     getCollectionUri: async (
       params: AwesomeNFTCollectionTypes.SignExecuteMethodParams<"getCollectionUri">
@@ -325,14 +323,14 @@ export class AwesomeNFTCollectionInstance extends ContractInstance {
     },
   };
 
-  async multicall<Calls extends AwesomeNFTCollectionTypes.MultiCallParams>(
-    calls: Calls
-  ): Promise<AwesomeNFTCollectionTypes.MultiCallResults<Calls>> {
+  async multicall<Callss extends AwesomeNFTCollectionTypes.MultiCallParams[]>(
+    ...callss: Callss
+  ): Promise<AwesomeNFTCollectionTypes.MulticallReturnType<Callss>> {
     return (await multicallMethods(
       AwesomeNFTCollection,
       this,
-      calls,
+      callss,
       getContractByCodeHash
-    )) as AwesomeNFTCollectionTypes.MultiCallResults<Calls>;
+    )) as AwesomeNFTCollectionTypes.MulticallReturnType<Callss>;
   }
 }

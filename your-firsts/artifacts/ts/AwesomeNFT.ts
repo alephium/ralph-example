@@ -66,6 +66,10 @@ export namespace AwesomeNFTTypes {
       ? CallMethodTable[MaybeName]["result"]
       : undefined;
   };
+  export type MulticallReturnType<Callss extends MultiCallParams[]> =
+    Callss["length"] extends 1
+      ? MultiCallResults<Callss[0]>
+      : { [index in keyof Callss]: MultiCallResults<Callss[index]> };
 
   export interface SignExecuteMethodTable {
     getTokenUri: {
@@ -93,10 +97,6 @@ class Factory extends ContractFactory<
       this.contract.fieldsSig,
       []
     );
-  }
-
-  getInitialFieldsWithDefaultValues() {
-    return this.contract.getInitialFieldsWithDefaultValues() as AwesomeNFTTypes.Fields;
   }
 
   at(address: string): AwesomeNFTInstance {
@@ -148,7 +148,7 @@ export class AwesomeNFTInstance extends ContractInstance {
     return fetchContractState(AwesomeNFT, this);
   }
 
-  methods = {
+  view = {
     getTokenUri: async (
       params?: AwesomeNFTTypes.CallMethodParams<"getTokenUri">
     ): Promise<AwesomeNFTTypes.CallMethodResult<"getTokenUri">> => {
@@ -173,8 +173,6 @@ export class AwesomeNFTInstance extends ContractInstance {
     },
   };
 
-  view = this.methods;
-
   transact = {
     getTokenUri: async (
       params: AwesomeNFTTypes.SignExecuteMethodParams<"getTokenUri">
@@ -190,14 +188,14 @@ export class AwesomeNFTInstance extends ContractInstance {
     },
   };
 
-  async multicall<Calls extends AwesomeNFTTypes.MultiCallParams>(
-    calls: Calls
-  ): Promise<AwesomeNFTTypes.MultiCallResults<Calls>> {
+  async multicall<Callss extends AwesomeNFTTypes.MultiCallParams[]>(
+    ...callss: Callss
+  ): Promise<AwesomeNFTTypes.MulticallReturnType<Callss>> {
     return (await multicallMethods(
       AwesomeNFT,
       this,
-      calls,
+      callss,
       getContractByCodeHash
-    )) as AwesomeNFTTypes.MultiCallResults<Calls>;
+    )) as AwesomeNFTTypes.MulticallReturnType<Callss>;
   }
 }
