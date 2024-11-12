@@ -1,0 +1,33 @@
+{
+  "fullNodeVersion": "v3.8.5",
+  "compilerOptionsUsed": {
+    "ignoreUnusedConstantsWarnings": false,
+    "ignoreUnusedVariablesWarnings": false,
+    "ignoreUnusedFieldsWarnings": false,
+    "ignoreUnusedPrivateFunctionsWarnings": false,
+    "ignoreUpdateFieldsCheckWarnings": false,
+    "ignoreCheckExternalCallerWarnings": false,
+    "ignoreUnusedFunctionReturnWarnings": false,
+    "skipAbstractContractCheck": false
+  },
+  "infos": {
+    "Gasless": {
+      "sourceFile": "gasless.ral",
+      "sourceCodeHash": "8156dbf4745193720763c4668072866eed423e65603b3d98b2c918c0f301335f",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "75b46334b2d7a60b498b7ad575c33d83419c3541021948498214f966a87784e4"
+    },
+    "PayGas": {
+      "sourceFile": "gasless.ral",
+      "sourceCodeHash": "8156dbf4745193720763c4668072866eed423e65603b3d98b2c918c0f301335f",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "PayNoGas": {
+      "sourceFile": "gasless.ral",
+      "sourceCodeHash": "8156dbf4745193720763c4668072866eed423e65603b3d98b2c918c0f301335f",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    }
+  }
+}

@@ -1,0 +1,20 @@
+Contract Gasless() {
+    @using(checkExternalCaller = false)
+    pub fn payGas() -> () {
+       return
+    }
+
+    @using(assetsInContract = true, checkExternalCaller = false)
+    pub fn payNoGas() -> () {
+       payGasFee!(selfAddress!(), txGasFee!())
+       return
+    }
+}
+
+TxScript PayGas(gaslessContract: Gasless) {
+    gaslessContract.payGas()
+}
+
+TxScript PayNoGas(gaslessContract: Gasless) {
+    gaslessContract.payNoGas()
+}

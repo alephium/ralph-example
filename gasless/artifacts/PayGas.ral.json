@@ -1,0 +1,25 @@
+{
+  "version": "v3.8.5",
+  "name": "PayGas",
+  "bytecodeTemplate": "010103000000040c0c{0}0100",
+  "fieldsSig": {
+    "names": [
+      "gaslessContract"
+    ],
+    "types": [
+      "Gasless"
+    ],
+    "isMutable": [
+      false
+    ]
+  },
+  "functions": [
+    {
+      "name": "main",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    }
+  ]
+}
