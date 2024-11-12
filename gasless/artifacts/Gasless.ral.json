@@ -1,0 +1,30 @@
+{
+  "version": "v3.8.5",
+  "name": "Gasless",
+  "bytecode": "00020c1b010000000002d3fc67305702010200000005d359895f34b281d002",
+  "codeHash": "75b46334b2d7a60b498b7ad575c33d83419c3541021948498214f966a87784e4",
+  "fieldsSig": {
+    "names": [],
+    "types": [],
+    "isMutable": []
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "payGas",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    },
+    {
+      "name": "payNoGas",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    }
+  ],
+  "constants": [],
+  "enums": []
+}
