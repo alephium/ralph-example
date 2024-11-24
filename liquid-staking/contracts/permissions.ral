@@ -1,0 +1,19 @@
+Abstract Contract Permissions(
+    mut owner_: Address
+) {
+    enum PermissionsErrorCodes {
+        Forbidden = 0
+    }
+
+    fn onlyOwner(caller: Address) -> () {
+        checkCaller!(callerAddress!() == selfAddress!(), PermissionsErrorCodes.Forbidden)
+        assert!(caller == owner_, PermissionsErrorCodes.Forbidden)
+    }
+
+    @using(updateFields = true)
+    pub fn changeOwner(newOwner: Address) -> () {
+        onlyOwner(callerAddress!())
+
+        owner_ = newOwner
+    }
+}

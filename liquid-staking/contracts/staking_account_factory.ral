@@ -1,0 +1,42 @@
+Abstract Contract StakingAccountFactory(
+    tokenId: ByteVec,
+    rewardsTokenId: ByteVec,
+    stakingAccountTemplateId: ByteVec
+) {
+    enum StakingAccountErrorCodes {
+        AlreadyExists = 0
+    }
+
+    pub fn stakingAccountExists(staker: Address) -> Bool {
+        let stakingAccountId = subContractId!(toByteVec!(staker))
+
+        return contractExists!(stakingAccountId)
+    }
+
+    pub fn getStakingAccount(staker: Address) -> StakingAccount {
+        let stakingAccountId = subContractId!(toByteVec!(staker))
+        return StakingAccount(stakingAccountId)
+    }
+
+    @using(preapprovedAssets = true)
+    fn createStakingAccount(staker: Address, amount: U256, rewardPerTokenPaid: U256) -> () {
+        assert!(!stakingAccountExists(staker), StakingAccountErrorCodes.AlreadyExists)
+
+        let (encodedImmFields, encodedMutFields) = StakingAccount.encodeFields!(
+            tokenId,
+            rewardsTokenId,
+            staker,
+            selfAddress!(),
+            amount,
+            rewardPerTokenPaid,
+            0
+        )
+
+        let _ = copyCreateSubContract!{staker -> ALPH: 1 alph, tokenId: amount}(
+            toByteVec!(staker),
+            stakingAccountTemplateId,
+            encodedImmFields,
+            encodedMutFields
+        )
+    }
+}

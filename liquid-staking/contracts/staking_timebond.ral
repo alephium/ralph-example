@@ -1,0 +1,44 @@
+Abstract Contract StakingTimeBond(
+    mut startTime: U256,
+    mut duration: U256,
+    mut earlyUnstakePenaltyPercent: U256,
+    mut owner_: Address
+) extends Permissions(owner_) {
+    enum ErrorCodes {
+        PoolStarted = 0
+    }
+
+    fn isPoolEnded() -> Bool {
+        let endTime = startTime + duration
+
+        return blockTimeStamp!() >= endTime
+    }
+
+    fn isPoolStarted() -> Bool {
+        return startTime >= blockTimeStamp!()
+    }
+
+    @using(updateFields = true)
+    pub fn updateDuration(duration_: U256) -> () {
+        onlyOwner(callerAddress!())
+
+        duration = duration_
+    }
+
+    @using(updateFields = true)
+    pub fn updateStartTime(startTime_: U256) -> () {
+        onlyOwner(callerAddress!())
+
+        //make sure pool is not already started
+        assert!(!isPoolStarted(), ErrorCodes.PoolStarted)
+
+        startTime = startTime_
+    }
+
+    @using(updateFields = true)
+    pub fn updateEarlyUnstakePenaltyPercent(earlyUnstakePenaltyPercent_: U256) -> () {
+        onlyOwner(callerAddress!())
+
+        earlyUnstakePenaltyPercent = earlyUnstakePenaltyPercent_
+    }
+}

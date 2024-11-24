@@ -1,0 +1,109 @@
+Contract StakingAccount(
+    tokenId: ByteVec,
+    rewardsTokenId: ByteVec,
+    staker: Address,
+    parentContractAddress: Address,
+    mut amountStaked: U256,
+    mut rewardPerTokenPaid: U256,
+    mut rewards: U256
+) {
+    enum ErrorCodes {
+        UnauthorizedAccess = 0
+        InsufficientBalance = 1
+    }
+
+    pub fn getTokenId() -> ByteVec {
+        return tokenId
+    }
+
+    pub fn getRewardsTokenId() -> ByteVec {
+        return rewardsTokenId
+    }
+
+    pub fn getStaker() -> Address {
+        return staker
+    }
+
+    pub fn getAmountStaked() -> U256 {
+        return amountStaked
+    }
+
+    pub fn getRewardPerTokenPaid() -> U256 {
+        return rewardPerTokenPaid
+    }
+
+    pub fn getRewards() -> U256 {
+        return rewards
+    }
+
+    @using(updateFields = true)
+    pub fn setRewards(newRewards: U256, newRewardPerToken: U256) -> () {
+        let caller = callerAddress!()
+
+        checkCaller!(caller == parentContractAddress, ErrorCodes.UnauthorizedAccess)
+
+        rewards = newRewards
+        rewardPerTokenPaid = newRewardPerToken
+    }
+
+    @using(assetsInContract = true, preapprovedAssets = true, updateFields = true)
+    pub fn stake(amount: U256) -> () { 
+        let caller = callerAddress!()
+
+        checkCaller!(caller == parentContractAddress, ErrorCodes.UnauthorizedAccess)
+        transferTokenToSelf!(staker, tokenId, amount)
+
+        amountStaked = amountStaked + amount
+    }
+
+    @using(assetsInContract = true, updateFields = true)
+    pub fn unstake(amount: U256) -> () {
+        let caller = callerAddress!()
+
+        checkCaller!(caller == parentContractAddress, ErrorCodes.UnauthorizedAccess)
+        assert!(amountStaked >= amount, ErrorCodes.InsufficientBalance)
+
+        amountStaked = amountStaked - amount
+
+        transferTokenFromSelf!(staker, tokenId, amount)
+
+        if (amountStaked == 0) {
+           destroySelf!(staker)
+        }
+    }
+
+    @using(assetsInContract = true, updateFields = true)
+    pub fn unstakeWithPenalty(amount: U256, penalty: U256) -> () {
+        let caller = callerAddress!()
+
+        checkCaller!(caller == parentContractAddress, ErrorCodes.UnauthorizedAccess)
+        assert!(amountStaked >= amount, ErrorCodes.InsufficientBalance)
+
+        amountStaked = amountStaked - amount
+
+        let penaltyAmount = amount * penalty / 100
+        transferTokenFromSelf!(staker, tokenId, amount - penaltyAmount)
+
+        //send penalty to parent contract
+        //! we should probably send to an EOA, 
+        //! since there's no withdraw function in the parent contract
+        transferTokenFromSelf!(parentContractAddress, tokenId, penaltyAmount)
+
+        if (amountStaked == 0) {
+           destroySelf!(staker)
+        }
+    }
+
+    @using(preapprovedAssets = true, updateFields = true)
+    pub fn claimRewards() -> U256 {
+        let caller = callerAddress!()
+
+        checkCaller!(caller == parentContractAddress, ErrorCodes.UnauthorizedAccess)
+        let amount = rewards
+
+        transferToken!(caller, staker, rewardsTokenId, amount)
+        rewards = 0
+
+        return amount
+    }
+}

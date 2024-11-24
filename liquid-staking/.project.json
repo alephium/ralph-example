@@ -1,0 +1,44 @@
+{
+  "fullNodeVersion": "v3.8.5",
+  "compilerOptionsUsed": {
+    "ignoreUnusedConstantsWarnings": false,
+    "ignoreUnusedVariablesWarnings": false,
+    "ignoreUnusedFieldsWarnings": false,
+    "ignoreUnusedPrivateFunctionsWarnings": false,
+    "ignoreUpdateFieldsCheckWarnings": false,
+    "ignoreCheckExternalCallerWarnings": false,
+    "ignoreUnusedFunctionReturnWarnings": false
+  },
+  "infos": {
+    "Permissions": {
+      "sourceFile": "permissions.ral",
+      "sourceCodeHash": "24b450b57515aa9212c9a844bc4064da5559b52ae2eac1e16454c9bdd4a3aaf6",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "Staking": {
+      "sourceFile": "staking.ral",
+      "sourceCodeHash": "85f55312fee94a642a7abc354d9d344629172e18795ad733d1c3a7bd7208c8ba",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "c06a217f18abe9d6b2109da48c700df9e2625ae0b9349124ba9ab030b5d780fd"
+    },
+    "StakingAccount": {
+      "sourceFile": "staking_account.ral",
+      "sourceCodeHash": "f139598f8d68650b8b08d4fb872969aaa10631b0aab6e0edcb25b1bd058177b9",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "ac101c6cddd3a5b3dd5dbd09602f23f4e0735a2dbdd25fe2d60733bcbd1fe9a9"
+    },
+    "StakingAccountFactory": {
+      "sourceFile": "staking_account_factory.ral",
+      "sourceCodeHash": "845f8b4f337df2b0e02b62591c7d066bf6dfd1e06cf23078a3e1fcb7e11450de",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "StakingTimeBond": {
+      "sourceFile": "staking_timebond.ral",
+      "sourceCodeHash": "9f836472ea70db66a8cf5cd6aec0d103022fc525f7e6c932e1aefb84ace1bb07",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    }
+  }
+}
