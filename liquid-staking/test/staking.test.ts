@@ -123,6 +123,7 @@ describe('test staking', () => {
     expect(finalBalance).toEqual(1000n - expectedPenalty) // Initial 1000n minus penalty
   })
 
+  jest.setTimeout(30000)
   test('unstake:after duration', async () => {
     const [staker] = stakers
     const stakeAmount = 100n

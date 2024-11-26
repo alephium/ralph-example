@@ -218,7 +218,8 @@ export async function claimRewards(
   return await ClaimRewards.execute(signer, {
     initialFields: {
       staking: staking.contractId
-    }
+    },
+    attoAlphAmount: ONE_ALPH
   })
 }
 
