@@ -46,9 +46,9 @@ export namespace StakingTypes {
     totalAmountStaked: bigint;
     rewardPerTokenStored: bigint;
     lastUpdateTime: bigint;
-    earlyUnstakePenaltyPercent: bigint;
     startTime: bigint;
     duration: bigint;
+    earlyUnstakePenaltyPercent: bigint;
     owner_: Address;
   };
 
@@ -293,9 +293,10 @@ class Factory extends ContractFactory<StakingInstance, StakingTypes.Fields> {
     RewardRateUpdated: 3,
   };
   consts = {
-    StakingAccountErrorCodes: { AlreadyExists: BigInt("0") },
-    PermissionsErrorCodes: { Forbidden: BigInt("0") },
-    ErrorCodes: { PoolStarted: BigInt("0"), PoolNotStarted: BigInt("0") },
+    StakingAccountErrorFactoryCodes: { AlreadyExists: BigInt("30") },
+    TimeBondErrors: { PoolStarted: BigInt("10"), InvalidParams: BigInt("11") },
+    PermissionsErrorCodes: { Forbidden: BigInt("40") },
+    ErrorCodes: { PoolNotStarted: BigInt("0") },
   };
 
   at(address: string): StakingInstance {
@@ -530,7 +531,7 @@ export const Staking = new Factory(
   Contract.fromJson(
     StakingContractJson,
     "",
-    "c06a217f18abe9d6b2109da48c700df9e2625ae0b9349124ba9ab030b5d780fd",
+    "5a7f28d9d1802c0bdcc4cbc89db92c28e7b61f555c2e12caac4624cf2ac0dcac",
     []
   )
 );

@@ -186,9 +186,9 @@ class Factory extends ContractFactory<
   }
 
   consts = {
-    ErrorCodes: {
-      UnauthorizedAccess: BigInt("0"),
-      InsufficientBalance: BigInt("1"),
+    StakingAccountErrorCodes: {
+      UnauthorizedAccess: BigInt("20"),
+      InsufficientBalance: BigInt("21"),
     },
   };
 
@@ -316,7 +316,7 @@ export const StakingAccount = new Factory(
   Contract.fromJson(
     StakingAccountContractJson,
     "",
-    "ac101c6cddd3a5b3dd5dbd09602f23f4e0735a2dbdd25fe2d60733bcbd1fe9a9",
+    "4932243b2e9ac01696a7c1fb828c0805f517f0b142ee9eddf30e13f89568129d",
     []
   )
 );

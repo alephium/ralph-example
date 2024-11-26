@@ -4,4 +4,5 @@
 
 export * from "./Staking";
 export * from "./StakingAccount";
+export * from "./TestToken";
 export * from "./scripts";

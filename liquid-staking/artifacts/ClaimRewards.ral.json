@@ -1,0 +1,25 @@
+{
+  "version": "v3.8.5",
+  "name": "ClaimRewards",
+  "bytecodeTemplate": "010103000000040c0c{0}0113",
+  "fieldsSig": {
+    "names": [
+      "staking"
+    ],
+    "types": [
+      "Staking"
+    ],
+    "isMutable": [
+      false
+    ]
+  },
+  "functions": [
+    {
+      "name": "main",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    }
+  ]
+}

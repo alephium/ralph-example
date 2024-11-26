@@ -10,33 +10,81 @@
     "ignoreUnusedFunctionReturnWarnings": false
   },
   "infos": {
+    "ClaimRewards": {
+      "sourceFile": "stake-actions.ral",
+      "sourceCodeHash": "5b8d00d7cc54fe35cca638b2a565f9fcb53e44743d5cdc119af9995dcc0c1cf7",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "GetToken": {
+      "sourceFile": "test/get_token.ral",
+      "sourceCodeHash": "422128094e7c46cf6e7e079fe0c257d12b943e335ce3fed2f0833bb660afb59b",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "IFungibleToken": {
+      "sourceFile": "../node_modules/@alephium/web3/std/fungible_token_interface.ral",
+      "sourceCodeHash": "62910bf11e1eeb6cb2fd468626ff606a9b06306b2b81590c3b10f6deb5966bde",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
     "Permissions": {
       "sourceFile": "permissions.ral",
-      "sourceCodeHash": "24b450b57515aa9212c9a844bc4064da5559b52ae2eac1e16454c9bdd4a3aaf6",
+      "sourceCodeHash": "195838d2b7ad318ddb3a47b7e7fd843b4a202a37d7dfb8ca9be7766eff483958",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "SetRewardRate": {
+      "sourceFile": "stake-actions.ral",
+      "sourceCodeHash": "5b8d00d7cc54fe35cca638b2a565f9fcb53e44743d5cdc119af9995dcc0c1cf7",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "Stake": {
+      "sourceFile": "stake-actions.ral",
+      "sourceCodeHash": "5b8d00d7cc54fe35cca638b2a565f9fcb53e44743d5cdc119af9995dcc0c1cf7",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },
     "Staking": {
       "sourceFile": "staking.ral",
-      "sourceCodeHash": "85f55312fee94a642a7abc354d9d344629172e18795ad733d1c3a7bd7208c8ba",
+      "sourceCodeHash": "bf5a35e5007b27fba02cfeb9fc267d421e8650ee529161b510d0378d6169c255",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "c06a217f18abe9d6b2109da48c700df9e2625ae0b9349124ba9ab030b5d780fd"
+      "codeHashDebug": "5a7f28d9d1802c0bdcc4cbc89db92c28e7b61f555c2e12caac4624cf2ac0dcac"
     },
     "StakingAccount": {
       "sourceFile": "staking_account.ral",
-      "sourceCodeHash": "f139598f8d68650b8b08d4fb872969aaa10631b0aab6e0edcb25b1bd058177b9",
+      "sourceCodeHash": "81984e661b3a7952c6fb2d81b468b249124c84eb61583551b301ec4f6a2b83ba",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "ac101c6cddd3a5b3dd5dbd09602f23f4e0735a2dbdd25fe2d60733bcbd1fe9a9"
+      "codeHashDebug": "4932243b2e9ac01696a7c1fb828c0805f517f0b142ee9eddf30e13f89568129d"
     },
     "StakingAccountFactory": {
       "sourceFile": "staking_account_factory.ral",
-      "sourceCodeHash": "845f8b4f337df2b0e02b62591c7d066bf6dfd1e06cf23078a3e1fcb7e11450de",
+      "sourceCodeHash": "d9d219a19b7e8d816f538e593b3ee47f5c66912240ad1b7f84a8ed49b2915c36",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },
     "StakingTimeBond": {
       "sourceFile": "staking_timebond.ral",
-      "sourceCodeHash": "9f836472ea70db66a8cf5cd6aec0d103022fc525f7e6c932e1aefb84ace1bb07",
+      "sourceCodeHash": "0c24eed97e13ae179352dab803d90091487a9909e436ac30b9bdab4ea271c7a2",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "TestToken": {
+      "sourceFile": "test/test_token.ral",
+      "sourceCodeHash": "4ec56d341212f266f1ba88ee87be49850d00bc389098d95df510375b381fd17b",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "d959b6752da129d379f006c4280b0dc4960155fa453a51d0d055424781069f80"
+    },
+    "Unstake": {
+      "sourceFile": "stake-actions.ral",
+      "sourceCodeHash": "5b8d00d7cc54fe35cca638b2a565f9fcb53e44743d5cdc119af9995dcc0c1cf7",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "UpdateStartTime": {
+      "sourceFile": "stake-actions.ral",
+      "sourceCodeHash": "5b8d00d7cc54fe35cca638b2a565f9fcb53e44743d5cdc119af9995dcc0c1cf7",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     }
