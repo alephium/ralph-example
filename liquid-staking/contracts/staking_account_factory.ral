@@ -3,8 +3,8 @@ Abstract Contract StakingAccountFactory(
     rewardsTokenId: ByteVec,
     stakingAccountTemplateId: ByteVec
 ) {
-    enum StakingAccountErrorCodes {
-        AlreadyExists = 0
+    enum StakingAccountErrorFactoryCodes {
+        AlreadyExists = 30
     }
 
     pub fn stakingAccountExists(staker: Address) -> Bool {
@@ -20,7 +20,7 @@ Abstract Contract StakingAccountFactory(
 
     @using(preapprovedAssets = true)
     fn createStakingAccount(staker: Address, amount: U256, rewardPerTokenPaid: U256) -> () {
-        assert!(!stakingAccountExists(staker), StakingAccountErrorCodes.AlreadyExists)
+        assert!(!stakingAccountExists(staker), StakingAccountErrorFactoryCodes.AlreadyExists)
 
         let (encodedImmFields, encodedMutFields) = StakingAccount.encodeFields!(
             tokenId,

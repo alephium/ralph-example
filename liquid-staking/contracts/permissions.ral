@@ -2,7 +2,7 @@ Abstract Contract Permissions(
     mut owner_: Address
 ) {
     enum PermissionsErrorCodes {
-        Forbidden = 0
+        Forbidden = 40
     }
 
     fn onlyOwner(caller: Address) -> () {

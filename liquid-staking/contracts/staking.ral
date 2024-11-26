@@ -6,9 +6,9 @@ Contract Staking(
     mut totalAmountStaked: U256,
     mut rewardPerTokenStored: U256,
     mut lastUpdateTime: U256,
-    mut earlyUnstakePenaltyPercent: U256,
     mut startTime: U256,
     mut duration: U256,
+    mut earlyUnstakePenaltyPercent: U256,
     mut owner_: Address
 ) extends StakingAccountFactory(tokenId, rewardsTokenId, stakingAccountTemplateId), StakingTimeBond(startTime, duration, earlyUnstakePenaltyPercent, owner_) {
     ////////////////////////
@@ -48,14 +48,6 @@ Contract Staking(
 
         account.setRewards(reward, rewardPerTokenStored)
     }
-
-    // @using(assetsInContract = true)
-    // fn sendRewards(account: StakingAccount) -> () {
-    //     let self = selfAddress!()
-    //     let stakingRewards = account.getRewards()
-
-    //     account.claimRewards{self -> rewardsTokenId: stakingRewards}()
-    // }
 
     @using(updateFields = true)
     fn updateReward() -> () {

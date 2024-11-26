@@ -7,9 +7,9 @@ Contract StakingAccount(
     mut rewardPerTokenPaid: U256,
     mut rewards: U256
 ) {
-    enum ErrorCodes {
-        UnauthorizedAccess = 0
-        InsufficientBalance = 1
+    enum StakingAccountErrorCodes {
+        UnauthorizedAccess = 20
+        InsufficientBalance = 21
     }
 
     pub fn getTokenId() -> ByteVec {
@@ -40,7 +40,7 @@ Contract StakingAccount(
     pub fn setRewards(newRewards: U256, newRewardPerToken: U256) -> () {
         let caller = callerAddress!()
 
-        checkCaller!(caller == parentContractAddress, ErrorCodes.UnauthorizedAccess)
+        checkCaller!(caller == parentContractAddress, StakingAccountErrorCodes.UnauthorizedAccess)
 
         rewards = newRewards
         rewardPerTokenPaid = newRewardPerToken
@@ -50,7 +50,7 @@ Contract StakingAccount(
     pub fn stake(amount: U256) -> () { 
         let caller = callerAddress!()
 
-        checkCaller!(caller == parentContractAddress, ErrorCodes.UnauthorizedAccess)
+        checkCaller!(caller == parentContractAddress, StakingAccountErrorCodes.UnauthorizedAccess)
         transferTokenToSelf!(staker, tokenId, amount)
 
         amountStaked = amountStaked + amount
@@ -60,8 +60,8 @@ Contract StakingAccount(
     pub fn unstake(amount: U256) -> () {
         let caller = callerAddress!()
 
-        checkCaller!(caller == parentContractAddress, ErrorCodes.UnauthorizedAccess)
-        assert!(amountStaked >= amount, ErrorCodes.InsufficientBalance)
+        checkCaller!(caller == parentContractAddress, StakingAccountErrorCodes.UnauthorizedAccess)
+        assert!(amountStaked >= amount, StakingAccountErrorCodes.InsufficientBalance)
 
         amountStaked = amountStaked - amount
 
@@ -76,8 +76,8 @@ Contract StakingAccount(
     pub fn unstakeWithPenalty(amount: U256, penalty: U256) -> () {
         let caller = callerAddress!()
 
-        checkCaller!(caller == parentContractAddress, ErrorCodes.UnauthorizedAccess)
-        assert!(amountStaked >= amount, ErrorCodes.InsufficientBalance)
+        checkCaller!(caller == parentContractAddress, StakingAccountErrorCodes.UnauthorizedAccess)
+        assert!(amountStaked >= amount, StakingAccountErrorCodes.InsufficientBalance)
 
         amountStaked = amountStaked - amount
 
@@ -98,7 +98,7 @@ Contract StakingAccount(
     pub fn claimRewards() -> U256 {
         let caller = callerAddress!()
 
-        checkCaller!(caller == parentContractAddress, ErrorCodes.UnauthorizedAccess)
+        checkCaller!(caller == parentContractAddress, StakingAccountErrorCodes.UnauthorizedAccess)
         let amount = rewards
 
         transferToken!(caller, staker, rewardsTokenId, amount)
