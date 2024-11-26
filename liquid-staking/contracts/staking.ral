@@ -1,0 +1,158 @@
+Contract Staking(
+    tokenId: ByteVec,
+    rewardsTokenId: ByteVec,
+    stakingAccountTemplateId: ByteVec,
+    mut rewardRate: U256,
+    mut totalAmountStaked: U256,
+    mut rewardPerTokenStored: U256,
+    mut lastUpdateTime: U256,
+    mut startTime: U256,
+    mut duration: U256,
+    mut earlyUnstakePenaltyPercent: U256,
+    mut owner_: Address
+) extends StakingAccountFactory(tokenId, rewardsTokenId, stakingAccountTemplateId), StakingTimeBond(startTime, duration, earlyUnstakePenaltyPercent, owner_) {
+    ////////////////////////
+    // Events
+    ////////////////////////
+
+    event Staked(staker: Address, amount: U256)
+    event Unstaked(staker: Address, amount: U256)
+    event ClaimedRewards(staker: Address, amount: U256)
+    event RewardRateUpdated(rewardRate: U256)
+
+    ////////////////////////
+    // Error Codes
+    ////////////////////////
+
+    enum ErrorCodes {
+        PoolNotStarted = 0
+    }
+
+    ////////////////////////
+    // Internal Functions
+    ////////////////////////
+    fn earned(account: StakingAccount) -> U256 {
+        let staked = account.getAmountStaked()
+        let rewardPerTokenPaid = account.getRewardPerTokenPaid()
+        let currentRewardPerToken = calculateRewardPerToken()
+        let oldRewards = account.getRewards()
+
+        let earnedRewards = ((staked * (currentRewardPerToken - rewardPerTokenPaid)) / 1e18) + oldRewards
+
+        return earnedRewards
+    }
+
+    fn updateStakerReward(account: StakingAccount) -> () {
+        updateReward()
+        let reward = earned(account)
+
+        account.setRewards(reward, rewardPerTokenStored)
+    }
+
+    @using(updateFields = true)
+    fn updateReward() -> () {
+        rewardPerTokenStored = calculateRewardPerToken()
+        lastUpdateTime = blockTimeStamp!()
+    }
+
+    fn calculateRewardPerToken() -> U256 {
+        if (totalAmountStaked == 0) {
+            return rewardPerTokenStored
+        }
+
+        return rewardPerTokenStored + ((blockTimeStamp!() - lastUpdateTime) * rewardRate * 1e18) / totalAmountStaked
+    }
+
+    @using(assetsInContract = true)
+    fn sendRewards(account: StakingAccount) -> U256 {
+        let self = selfAddress!()
+        let stakingRewards = account.getRewards()
+
+        let amount = account.claimRewards{self -> rewardsTokenId: stakingRewards}()
+
+        return amount
+    }
+
+    ////////////////////////
+    // Public Functions
+    ////////////////////////
+
+    pub fn getTokenId() -> ByteVec {
+        return tokenId
+    }
+
+    pub fn getRewardsTokenId() -> ByteVec {
+        return rewardsTokenId
+    }
+
+    @using(preapprovedAssets = true, updateFields = true, checkExternalCaller = false)
+    pub fn stake(amount: U256) -> () {
+        assert!(isPoolStarted(), ErrorCodes.PoolNotStarted)
+        let staker = callerAddress!()
+
+        if (stakingAccountExists(staker)) {
+            let stakingAccount = getStakingAccount(staker)
+            updateStakerReward(stakingAccount)
+
+            stakingAccount.stake{staker -> tokenId: amount}(amount)
+        } else {
+            updateReward()
+            createStakingAccount{staker -> ALPH: 1 alph, tokenId: amount}(staker, amount, rewardPerTokenStored)
+        }
+        
+        totalAmountStaked = totalAmountStaked + amount
+        emit Staked(staker, amount)
+    }
+
+    @using(updateFields = true, checkExternalCaller = false)
+    pub fn unstake(amount: U256) -> () {
+        let staker = callerAddress!()
+
+        let stakingAccount = getStakingAccount(staker)
+
+        updateStakerReward(stakingAccount)
+        let rewardAmount = sendRewards(stakingAccount)
+        emit ClaimedRewards(staker, rewardAmount)
+
+        if (isPoolEnded()) {
+            stakingAccount.unstake(amount)
+        } else {
+            stakingAccount.unstakeWithPenalty(amount, earlyUnstakePenaltyPercent)
+        }
+
+        totalAmountStaked = totalAmountStaked - amount
+
+        emit Unstaked(staker, amount)
+    }
+
+    @using(checkExternalCaller = false)
+    pub fn claimRewards() -> () {
+        let staker = callerAddress!()
+
+        let stakingAccount = getStakingAccount(staker)
+
+        updateStakerReward(stakingAccount)
+        let amount = sendRewards(stakingAccount)
+
+        emit ClaimedRewards(staker, amount)
+    }
+
+    ////////////////////////
+    // Admin Functions
+    ////////////////////////
+    
+    @using(updateFields = true)
+    pub fn setRewardRate(rate: U256) -> () {
+        onlyOwner(callerAddress!())
+
+        rewardRate = rate
+
+        emit RewardRateUpdated(rate)
+    }
+
+    pub fn upgrade(newBytecode: ByteVec) -> () {
+        onlyOwner(callerAddress!())
+
+        migrate!(newBytecode)
+    }
+}

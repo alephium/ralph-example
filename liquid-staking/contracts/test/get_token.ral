@@ -1,0 +1,3 @@
+TxScript GetToken(token: TestToken, amount: U256) {
+  token.getToken(callerAddress!(), amount)
+}

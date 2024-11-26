@@ -1,0 +1,25 @@
+{
+  "version": "v3.8.5",
+  "name": "UpdateStartTime",
+  "bytecodeTemplate": "01010300000005560d0c{0}0106",
+  "fieldsSig": {
+    "names": [
+      "staking"
+    ],
+    "types": [
+      "Staking"
+    ],
+    "isMutable": [
+      false
+    ]
+  },
+  "functions": [
+    {
+      "name": "main",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    }
+  ]
+}
