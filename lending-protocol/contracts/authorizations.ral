@@ -1,0 +1,19 @@
+Abstract Contract Authorization(
+    mut owner_: Address
+) {
+    enum AuthorizationErrorCodes {
+        UNAUTHORIZED = 401
+    }
+
+    fn onlyOwner(caller: Address) -> () {
+        checkCaller!(callerAddress!() == selfAddress!(), AuthorizationErrorCodes.UNAUTHORIZED)
+        assert!(caller == owner_, AuthorizationErrorCodes.UNAUTHORIZED)
+    }
+
+    @using(updateFields = true)
+    pub fn changeOwner(newOwner: Address) -> () {
+        onlyOwner(callerAddress!())
+
+        owner_ = newOwner
+    }
+}
