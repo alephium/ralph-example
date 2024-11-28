@@ -1,0 +1,183 @@
+{
+  "version": "v3.8.5",
+  "name": "WeatherDataFeed",
+  "bytecode": "0605402f405c40ab416741a1010301010014d39d997237b3ce00410d7bb4d1a2140a5f5f6d61705f5f305f5f16004744b103d20101a0000d2aa100010001010013d35b290dbcb3ce00410d7bb40d0c140a5f5f6d61705f5f305f5f16004744cb0103a0000d2ba10001030204014027d35f1edc9bb41702160040160140445640441602474417031602d1a2140a5f5f6d61705f5f315f5f160344b116001601041165d201041602ce02ce01a705160316001601601603020100050c004063d3edef6d3eb417050c0d0d140a5f5f6d61705f5f305f5f16054744cb01010c7ba0011604320e7b1602521600160144160440444e1706160616021603530c0d0d140a5f5f6d61705f5f315f5f160044cb170b160b01010d0d0d160b01010e0d0d160b01010f0d0d160b0101170a170917081707160716080316010f0e0c140a5f5f6d61705f5f315f5f160044cb170b160b01020e0e0c160b01020d0e0c160b01020c0e0c160b010256a1011600a10206160016015f01000102041bd3e9c1cad30c0d0d140a5f5f6d61705f5f315f5f160044cb1701160101010d0d0d160101010e0d0d160101010f0d0d1601010102",
+  "codeHash": "764b2098b00df7751d9fdaa4a3f0e56258459550619694e3b0631e0eebc9f20b",
+  "fieldsSig": {
+    "names": [
+      "ownerId",
+      "authorizedOraclesCount",
+      "lastTimestamp",
+      "lastRequestId",
+      "fee",
+      "feeWallet"
+    ],
+    "types": [
+      "ByteVec",
+      "U256",
+      "U256",
+      "ByteVec",
+      "U256",
+      "Address"
+    ],
+    "isMutable": [
+      false,
+      true,
+      true,
+      true,
+      false,
+      false
+    ]
+  },
+  "eventsSig": [
+    {
+      "name": "NewRequest",
+      "fieldNames": [
+        "requestId",
+        "lat",
+        "lon"
+      ],
+      "fieldTypes": [
+        "ByteVec",
+        "U256",
+        "U256"
+      ]
+    },
+    {
+      "name": "RequestCompleted",
+      "fieldNames": [
+        "requestId",
+        "temp"
+      ],
+      "fieldTypes": [
+        "ByteVec",
+        "ByteVec"
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "name": "addOracle",
+      "paramNames": [
+        "newOracle"
+      ],
+      "paramTypes": [
+        "Address"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "removeOracle",
+      "paramNames": [
+        "oracle"
+      ],
+      "paramTypes": [
+        "Address"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "makeRequest",
+      "paramNames": [
+        "lat",
+        "lon"
+      ],
+      "paramTypes": [
+        "U256",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "completeRequest",
+      "paramNames": [
+        "requestId",
+        "temp",
+        "publicKey",
+        "signature",
+        "timestamp"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "ByteVec",
+        "ByteVec",
+        "ByteVec",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "getRequest",
+      "paramNames": [
+        "requestId"
+      ],
+      "paramTypes": [
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": [
+        "Request"
+      ]
+    }
+  ],
+  "constants": [],
+  "enums": [
+    {
+      "name": "ErrorCodes",
+      "fields": [
+        {
+          "name": "UnauthorizedOracle",
+          "value": {
+            "type": "U256",
+            "value": "0"
+          }
+        },
+        {
+          "name": "InvalidCaller",
+          "value": {
+            "type": "U256",
+            "value": "1"
+          }
+        },
+        {
+          "name": "InvalidTimestamp",
+          "value": {
+            "type": "U256",
+            "value": "2"
+          }
+        }
+      ]
+    }
+  ],
+  "mapsSig": {
+    "names": [
+      "authorizedOracles",
+      "requests"
+    ],
+    "types": [
+      "Map[Address,Bool]",
+      "Map[ByteVec,Request]"
+    ]
+  }
+}
