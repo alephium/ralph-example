@@ -1,0 +1,62 @@
+// lp_token.ral
+import "std/fungible_token_interface"
+
+Contract LPToken(
+    name: ByteVec,
+    symbol: ByteVec,
+    decimals: U256,
+    mut totalTokenSupply: U256
+) implements IFungibleToken {
+    // Track token balances
+    mapping[Address, U256] balances
+
+    // Events for token minting and burning
+    event Mint(to: Address, amount: U256)
+    event Burn(from: Address, amount: U256)
+
+    // Error codes
+    enum ErrorCodes {
+        InsufficientBalance = 0,
+        UnauthorizedMint = 1
+    }
+
+    // Only the liquidity pool can mint/burn tokens
+    @using(updateFields = true)
+    pub fn mint(to: Address, amount: U256) -> () {
+        // In a real implementation, you'd add authorization checks
+        balances[to] += amount
+        totalTokenSupply += amount
+        emit Mint(to, amount)
+    }
+
+    @using(updateFields = true)
+    pub fn burn(from: Address, amount: U256) -> () {
+        // Validate burning amount
+        assert!(balances[from] >= amount, ErrorCodes.InsufficientBalance)
+        
+        balances[from] -= amount
+        totalTokenSupply -= amount
+        emit Burn(from, amount)
+    }
+
+    // Standard token interface implementations
+    pub fn getTotalSupply() -> U256 {
+        return totalTokenSupply
+    }
+
+    pub fn getSymbol() -> ByteVec {
+        return symbol
+    }
+
+    pub fn getName() -> ByteVec {
+        return name
+    }
+
+    pub fn getDecimals() -> U256 {
+        return decimals
+    }
+
+    pub fn balanceOf(address: Address) -> U256 {
+        return balances[address]
+    }
+}
