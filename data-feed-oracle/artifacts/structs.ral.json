@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Request",
+    "fieldNames": [
+      "lat",
+      "lon",
+      "status",
+      "temp"
+    ],
+    "fieldTypes": [
+      "U256",
+      "U256",
+      "Bool",
+      "ByteVec"
+    ],
+    "isMutable": [
+      true,
+      true,
+      true,
+      true
+    ]
+  }
+]

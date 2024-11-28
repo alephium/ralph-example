@@ -1,0 +1,27 @@
+{
+  "fullNodeVersion": "v3.8.5",
+  "compilerOptionsUsed": {
+    "ignoreUnusedConstantsWarnings": false,
+    "ignoreUnusedVariablesWarnings": false,
+    "ignoreUnusedFieldsWarnings": false,
+    "ignoreUnusedPrivateFunctionsWarnings": false,
+    "ignoreUpdateFieldsCheckWarnings": false,
+    "ignoreCheckExternalCallerWarnings": false,
+    "ignoreUnusedFunctionReturnWarnings": false,
+    "skipAbstractContractCheck": false
+  },
+  "infos": {
+    "Request": {
+      "sourceFile": "datafeed.ral",
+      "sourceCodeHash": "00104b26ec2f22fa71875e8691f6e9185d26c7df71a618e2b50458e487146db1",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "WeatherDataFeed": {
+      "sourceFile": "datafeed.ral",
+      "sourceCodeHash": "00104b26ec2f22fa71875e8691f6e9185d26c7df71a618e2b50458e487146db1",
+      "bytecodeDebugPatch": "=6-2+4c=2+9=2-1+1=1-2+d=2-2+c9=1-3+203=11-1+8=68+7a7e0214696e73657274206174206d617020706174683a2000=33-1+7=68+7a7e021472656d6f7665206174206d617020706174683a2000=30-2+31=128+7a7e0214696e73657274206174206d617020706174683a2000=538",
+      "codeHashDebug": "e1c0ab5fe3aec77f5b33947d02e427555dc1dcffa57dbcffc60376b727cf3ab3"
+    }
+  }
+}
