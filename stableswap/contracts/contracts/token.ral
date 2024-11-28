@@ -1,0 +1,132 @@
+Contract StableSwap(initialA: U256, futureA: U256, initialATime: U256, futureATime: U256, balances: [U256; 3]) {
+    const N_COINS = 3
+    const FEE_DENOMINATOR = 10 ** 10
+    const LENDING_PRECISION = 10 ** 18
+    const PRECISION = 10 ** 18
+
+    pub fn getA() -> U256 {
+        let t1 = futureATime
+        let a1 = futureA
+
+        if (blockTimeStamp!()< t1) {
+            let a0 = initialA
+            let t0 = initialATime
+            if(a1 > a0) {
+                return a0 + (a1 - a0) * (blockTimeStamp!() - t0) / (t1 - t0)
+            } else {
+                return a0 - (a0 - a1) * (blockTimeStamp!() - t0) / (t1 - t0)
+            }
+        } else {
+            return a1
+        }
+    }
+
+
+    fn getD(xp: [U256; N_COINS], amp: U256) -> U256 {
+        let mut s = 0
+        for (let mut i = 0; i < N_COINS; i = i + 1) {
+            s = s +  xp[i]
+        }
+        if (s == 0) {
+            return 0
+        }
+
+        let mut dprev = 0
+        let mut d = s
+        let ann = amp * N_COINS
+
+        for (let mut i = 0; i < 255; i = i + 1){
+            let mut d_p = d
+            for (let mut j = 0; j < N_COINS; j = j + 1) {
+                d_p = d_p * d / (xp[j] * N_COINS)
+            }
+            dprev = d
+            d = (ann * s + d_p * N_COINS) * d / ((ann - 1) * d + (N_COINS + 1) * d_p)
+            
+            if (d > dprev) {
+                if (d - dprev <= 1) {
+                    return d
+                }
+            } else {
+                if (dprev - d <= 1) {
+                    return d
+                }
+            }
+        }  
+        return d
+    }
+
+    pub fn getY(i: U256, j: U256, x: U256, xp: [U256; N_COINS]) -> U256 {
+        assert!(i < j || i > j, 1)
+        assert!(j >= 0, 1)
+        assert!(j < 3, 1) // N_COINS, fix hardcoded value
+        assert!(i >= 0, 1)
+        assert!(i < 3, 1) // N_COINS, fix hardcoded value
+
+        let amp = getA()
+        let d = getD(xp, amp)
+        let mut c = d
+        let mut s_ = 0
+        let ann = amp * N_COINS
+        let mut p_x = 0
+        for (let mut p_i = 0; p_i < 3; p_i = p_i + 1) {
+            if (p_i == i) {
+                p_x = x
+                s_ = s_ + p_x
+                c = c * d / (p_x * N_COINS)
+            } else if (p_i != j) {
+                s_ = s_ + p_x
+                c = c * d / (p_x * N_COINS)
+            } else {
+                // continue
+            }
+        }
+        c = c * d / (ann * N_COINS)
+        let b = s_ + d / ann
+        let mut y_prev = 0
+        let mut y = d
+        for (let mut p_i = 0; p_i < 255; p_i = p_i + 1) {
+            y_prev = y
+            y = (y*y + c) / (2 * y + b - d)
+            if (y > y_prev) {
+                if (y - y_prev <= 1) {
+                    return y
+                }
+            } else {
+                if (y_prev - y <= 1) {
+                    return y
+                }
+            }
+        }
+        return y
+    }
+
+    fn xp(pBalances: [U256; N_COINS]) -> [U256; N_COINS] {
+        let mut result = [0; N_COINS]
+        for (let mut i = 0; i < N_COINS; i = i + 1) {
+            result[i] = result[i] * pBalances[i] / LENDING_PRECISION
+        }
+        return result
+    }
+
+    pub fn exchange(i: U256, j: U256, dx: U256, min_dy: U256) -> U256 {
+        let fee = 1000
+        let rates = [1000000000000000000, 1000000000000000000000000000000, 1000000000000000000000000000000]
+
+        let oldBalances = balances
+        let xp = xp(oldBalances)
+        let dx_w_fee = dx
+        let x = xp[i] + (dx_w_fee * rates[i] / PRECISION)
+        let y = getY(i, j, x, xp)
+        let mut dy = xp[j] - y - 1
+        let dy_fee = dy * 0 / 1
+        let dy_admin_fee = dy_fee * fee / FEE_DENOMINATOR
+         dy = (dy - dy_fee) * PRECISION / rates[j]
+        assert!(dy >= min_dy, 1)
+        let mut newBalances = oldBalances
+        newBalances[i] = oldBalances[i] + dx_w_fee
+        newBalances[j] = oldBalances[j] - dy - dy_admin_fee
+        return dy
+    }
+
+}

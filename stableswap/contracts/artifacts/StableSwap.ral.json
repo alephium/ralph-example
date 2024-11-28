@@ -1,0 +1,153 @@
+{
+  "version": "v3.8.5",
+  "name": "StableSwap",
+  "bytecode": "07054059411642254273438f01000004014031d317baf705ce031700ce011701561600314c4026ce001702ce02170316011602334c0f1602160116022b5616032b2c160016032b2d2a024a0e1602160216012b5616032b2c160016032b2d2b024a021601020000040c0140780c17040c170516050f314c0e160416057a0f314d782a170416050d2a17054a2e16040c2f4c020c020c17061604170716030f2c17080c170916091340ff314c404c1607170a0c170b160b0f314c12160a16072c160b7a0f314d780f2c2d170a160b0d2a170b4a2a16071706160816042c160a0f2c2a16072c16080d2b16072c0f0d2a160a2c2a2d170716071606334c09160716062b0d324c021607024a08160616072b0d324c0216070216090d2a17094a7fb0160702010006110140a3d3bc14be25160016013116001601331b0d7b16010c340d7b16010f310d7b16000c340d7b16000f310d7b00001706160316041605160600011707160717080c170916060f2c170a0c170b0c170c160c0f314c4029160c16002f4c0f1602170b1609160b2a1709160816072c160b0f2c2d17084a11160c1601304c0d1609160b2a1709160816072c160b0f2c2d17084a00160c0d2a170c4a7fd3160816072c160a0f2c2d170816091607160a2d2a170d0c170e1607170f0c171016101340ff314c402a160f170e160f160f2c16082a0e160f2c160d2a16072b2d170f160f160e334c09160f160e2b0d324c02160f024a08160e160f2b0d324c02160f0216100d2a17104a7fd2160f020000030703402e0c0c0c1705170417030c170616060f314c1e16067a0f314d0f2a7816067a0f314d782c13c40de0b6b3a76400002d16067a0f314d0f2a7916060d2a17064a7fde1603160416050201000417014091d34df2a0331343e8170413c40de0b6b3a764000013c90c9f2c9cd04674edea4000000013c90c9f2c9cd04674edea40000000170717061705ce04ce05ce06170a1709170816081609160a0003170d170c170b1602170e16007a0f314d130b2a78160e16007a0f314d112a782c13c40de0b6b3a76400002d2a170f16001601160f160b160c160d0002171016017a0f314d130b2a7816102b0d2b171116110c2c0d2d1712161216042c13c102540be4002d1713161116122b13c40de0b6b3a76400002c16017a0f314d112a782d171116111603340d7b16081609160a17161715171416007a0f314d13082a78160e2a16007a0f314d13142a7916017a0f314d13082a7816112b16132b16017a0f314d13142a79161102",
+  "codeHash": "afa3c5bffb9c52dd47f46dfdef872ccba77d8c66072050534a41612932846451",
+  "fieldsSig": {
+    "names": [
+      "initialA",
+      "futureA",
+      "initialATime",
+      "futureATime",
+      "balances"
+    ],
+    "types": [
+      "U256",
+      "U256",
+      "U256",
+      "U256",
+      "[U256;3]"
+    ],
+    "isMutable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "getA",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "getD",
+      "paramNames": [
+        "xp",
+        "amp"
+      ],
+      "paramTypes": [
+        "[U256;3]",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "getY",
+      "paramNames": [
+        "i",
+        "j",
+        "x",
+        "xp"
+      ],
+      "paramTypes": [
+        "U256",
+        "U256",
+        "U256",
+        "[U256;3]"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "xp",
+      "paramNames": [
+        "pBalances"
+      ],
+      "paramTypes": [
+        "[U256;3]"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": [
+        "[U256;3]"
+      ]
+    },
+    {
+      "name": "exchange",
+      "paramNames": [
+        "i",
+        "j",
+        "dx",
+        "min_dy"
+      ],
+      "paramTypes": [
+        "U256",
+        "U256",
+        "U256",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "returnTypes": [
+        "U256"
+      ]
+    }
+  ],
+  "constants": [
+    {
+      "name": "N_COINS",
+      "value": {
+        "type": "U256",
+        "value": "3"
+      }
+    },
+    {
+      "name": "FEE_DENOMINATOR",
+      "value": {
+        "type": "U256",
+        "value": "10000000000"
+      }
+    },
+    {
+      "name": "LENDING_PRECISION",
+      "value": {
+        "type": "U256",
+        "value": "1000000000000000000"
+      }
+    },
+    {
+      "name": "PRECISION",
+      "value": {
+        "type": "U256",
+        "value": "1000000000000000000"
+      }
+    }
+  ],
+  "enums": []
+}
