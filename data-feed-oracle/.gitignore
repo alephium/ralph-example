@@ -5,3 +5,4 @@ lerna-debug.log
 /dev
 .deployments.devnet.json
 .ralph-lsp/
+artifacts/
