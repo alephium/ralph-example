@@ -6,3 +6,4 @@ lerna-debug.log
 .deployments.devnet.json
 .ralph-lsp/
 artifacts/
+package-lock.json
