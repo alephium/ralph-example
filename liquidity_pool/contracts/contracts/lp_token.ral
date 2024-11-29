@@ -1,4 +1,3 @@
-// lp_token.ral
 import "std/fungible_token_interface"
 
 Contract LPToken(
@@ -16,26 +15,26 @@ Contract LPToken(
 
     // Error codes
     enum ErrorCodes {
-        InsufficientBalance = 0,
+        InsufficientBalance = 0
         UnauthorizedMint = 1
     }
 
     // Only the liquidity pool can mint/burn tokens
-    @using(updateFields = true)
+    @using(updateFields = true, checkExternalCaller = false)
     pub fn mint(to: Address, amount: U256) -> () {
         // In a real implementation, you'd add authorization checks
-        balances[to] += amount
-        totalTokenSupply += amount
+        balances[to] = balances[to] + amount  // Use explicit addition
+        totalTokenSupply = totalTokenSupply + amount  // Same here
         emit Mint(to, amount)
     }
 
-    @using(updateFields = true)
+    @using(updateFields = true, checkExternalCaller = false)
     pub fn burn(from: Address, amount: U256) -> () {
         // Validate burning amount
         assert!(balances[from] >= amount, ErrorCodes.InsufficientBalance)
         
-        balances[from] -= amount
-        totalTokenSupply -= amount
+        balances[from] = balances[from] - amount
+        totalTokenSupply = totalTokenSupply - amount
         emit Burn(from, amount)
     }
 
@@ -58,5 +57,9 @@ Contract LPToken(
 
     pub fn balanceOf(address: Address) -> U256 {
         return balances[address]
+    }
+
+    pub fn totalSupply() -> U256 {
+        return totalTokenSupply
     }
 }

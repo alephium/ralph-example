@@ -1,0 +1,111 @@
+import "std/fungible_token_interface"
+// import "./lp_token"
+
+Contract LiquidityPool(
+    token0: IFungibleToken,
+    token1: IFungibleToken,
+    lpToken: LPToken,
+    mut reserve0: U256,
+    mut reserve1: U256
+) {
+    // Events for tracking pool activities
+    event Deposit(
+        provider: Address, 
+        amount0: U256, 
+        amount1: U256, 
+        lpTokensMinted: U256
+    )
+
+    event Withdraw(
+        provider: Address, 
+        amount0: U256, 
+        amount1: U256, 
+        lpTokensBurned: U256
+    )
+
+    // Constant for minimum liquidity to prevent precision issues
+    const MINIMUM_LIQUIDITY = 1000
+    const MAX_ITERATIONS = 10
+
+    // Error codes for various scenarios
+    enum ErrorCodes {
+        InsufficientLiquidity = 0
+        InvalidDepositAmount = 1
+        InsufficientLPTokens = 2
+    }
+
+    // Calculate LP tokens to mint based on deposited amounts
+    fn calculatePoolShares(amount0: U256, amount1: U256) -> U256 {
+        if (reserve0 == 0 && reserve1 == 0) {
+            // First deposit, use geometric mean
+            let geometricMean = (amount0 * amount1) / 2
+            return geometricMean - MINIMUM_LIQUIDITY
+        }
+
+        // Subsequent deposits, use proportional calculation
+        let share0 = amount0 * lpToken.totalSupply() / reserve0
+        let share1 = amount1 * lpToken.totalSupply() / reserve1
+        
+        // Return the minimum to maintain pool ratio
+        return Math.min(share0, share1)
+    }
+
+    // Deposit assets into the liquidity pool
+    @using(assetsInContract = true, updateFields = true, checkExternalCaller = false)
+    pub fn deposit(amount0: U256, amount1: U256, minLPTokens: U256) -> () {
+        // Validate deposit amounts
+        assert!(amount0 > 0 && amount1 > 0, ErrorCodes.InvalidDepositAmount)
+
+        // Transfer tokens to pool
+        transferTokenToSelf!(callerAddress!(), token0.selfTokenId!(), amount0)
+        transferTokenToSelf!(callerAddress!(), token1.selfTokenId!(), amount1)
+
+        // Calculate LP tokens to mint
+        let lpTokens = calculatePoolShares(amount0, amount1)
+        assert!(lpTokens >= minLPTokens, ErrorCodes.InsufficientLiquidity)
+
+        // Mint LP tokens to depositor
+        lpToken.mint(callerAddress!(), lpTokens)
+
+        // Update reserves
+        reserve0 = reserve0 + amount0
+        reserve1 = reserve1 + amount1
+
+        // Emit deposit event
+        emit Deposit(callerAddress!(), amount0, amount1, lpTokens)
+    }
+
+    // Withdraw assets from liquidity pool
+    @using(assetsInContract = true, updateFields = true, checkExternalCaller = false)
+    pub fn withdraw(lpTokenAmount: U256, minAmount0: U256, minAmount1: U256) -> () {
+        // Validate LP token amount
+        assert!(lpTokenAmount > 0, ErrorCodes.InsufficientLPTokens)
+
+        // Burn LP tokens from user
+        lpToken.burn(callerAddress!(), lpTokenAmount)
+
+        // Calculate withdrawal amounts proportionally
+        let totalSupply = lpToken.totalSupply()
+        let amount0 = lpTokenAmount * reserve0 / totalSupply
+        let amount1 = lpTokenAmount * reserve1 / totalSupply
+
+        // Validate minimum withdrawal amounts
+        assert!(amount0 >= minAmount0 && amount1 >= minAmount1, ErrorCodes.InsufficientLiquidity)
+
+        // Transfer tokens back to user
+        transferTokenFromSelf!(callerAddress!(), token0.selfTokenId!(), amount0)
+        transferTokenFromSelf!(callerAddress!(), token1.selfTokenId!(), amount1)
+
+        // Update reserves
+        reserve0 = reserve0 - amount0
+        reserve1 = reserve1 - amount1
+
+        // Emit withdrawal event
+        emit Withdraw(callerAddress!(), amount0, amount1, lpTokenAmount)
+    }
+
+    // Getters for pool state
+    pub fn getReserves() -> (U256, U256) {
+        return [reserve0, reserve1]
+    }
+}
