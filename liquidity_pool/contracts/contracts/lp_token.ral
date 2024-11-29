@@ -12,11 +12,13 @@ Contract LPToken(
     // Events for token minting and burning
     event Mint(to: Address, amount: U256)
     event Burn(from: Address, amount: U256)
+    event Transfer(from: Address, to: Address, amount: U256)
 
     // Error codes
     enum ErrorCodes {
         InsufficientBalance = 0
         UnauthorizedMint = 1
+        InsufficientAllowance = 2
     }
 
     // Only the liquidity pool can mint/burn tokens
@@ -62,4 +64,37 @@ Contract LPToken(
     pub fn totalSupply() -> U256 {
         return totalTokenSupply
     }
+
+    pub fn getAddress() -> Address {
+        return callerAddress!()  // or however you determine the token's address
+    }
+
+
+    // Approve a spender to transfer tokens on behalf of the owner
+    // @using(updateFields = true)
+    // pub fn approve(spender: Address, amount: U256) -> () {
+    //     allowances[callerAddress!()][spender] = amount
+    // }
+
+    // // Transfer tokens from one address to another, with allowance
+    // @using(updateFields = true)
+    // pub fn transferFrom(from: Address, to: Address, amount: U256) -> () {
+    //     // Check if the sender has enough allowance
+    //     let allowance = allowances[from][callerAddress!()]
+    //     assert!(allowance >= amount, ErrorCodes.InsufficientAllowance)
+
+    //     // Check if the sender has enough tokens
+    //     assert!(balances[from] >= amount, ErrorCodes.InsufficientBalance)
+
+    //     // Perform the transfer
+    //     balances[from] = balances[from] - amount
+    //     balances[to] = balances[to] + amount
+
+    //     // Update the allowance
+    //     allowances[from][callerAddress!()] = allowance - amount
+
+    //     // Emit the transfer event
+    //     emit Transfer(from, to, amount)
+    // }
 }
+

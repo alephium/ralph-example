@@ -1,5 +1,4 @@
 import "std/fungible_token_interface"
-// import "./lp_token"
 
 Contract LiquidityPool(
     token0: IFungibleToken,
@@ -47,18 +46,26 @@ Contract LiquidityPool(
         let share1 = amount1 * lpToken.totalSupply() / reserve1
         
         // Return the minimum to maintain pool ratio
-        return Math.min(share0, share1)
+        let mut share = 0
+        if (share0 < share1) {
+            share = share0
+        }
+        if (share1 < share0) {
+            share = share1
+        }
+        return share
     }
 
     // Deposit assets into the liquidity pool
-    @using(assetsInContract = true, updateFields = true, checkExternalCaller = false)
+    // @using(assetsInContract = true, preapprovedAssets = true)
+    @using(preapprovedAssets=true, assetsInContract=true)
     pub fn deposit(amount0: U256, amount1: U256, minLPTokens: U256) -> () {
         // Validate deposit amounts
         assert!(amount0 > 0 && amount1 > 0, ErrorCodes.InvalidDepositAmount)
 
         // Transfer tokens to pool
-        transferTokenToSelf!(callerAddress!(), token0.selfTokenId!(), amount0)
-        transferTokenToSelf!(callerAddress!(), token1.selfTokenId!(), amount1)
+        transferTokenToSelf!(callerAddress!(), selfTokenId!(), amount0)
+        transferTokenToSelf!(callerAddress!(), selfTokenId!(), amount1)
 
         // Calculate LP tokens to mint
         let lpTokens = calculatePoolShares(amount0, amount1)
@@ -76,7 +83,7 @@ Contract LiquidityPool(
     }
 
     // Withdraw assets from liquidity pool
-    @using(assetsInContract = true, updateFields = true, checkExternalCaller = false)
+    @using(assetsInContract=true)
     pub fn withdraw(lpTokenAmount: U256, minAmount0: U256, minAmount1: U256) -> () {
         // Validate LP token amount
         assert!(lpTokenAmount > 0, ErrorCodes.InsufficientLPTokens)
@@ -93,8 +100,8 @@ Contract LiquidityPool(
         assert!(amount0 >= minAmount0 && amount1 >= minAmount1, ErrorCodes.InsufficientLiquidity)
 
         // Transfer tokens back to user
-        transferTokenFromSelf!(callerAddress!(), token0.selfTokenId!(), amount0)
-        transferTokenFromSelf!(callerAddress!(), token1.selfTokenId!(), amount1)
+        transferTokenFromSelf!(callerAddress!(), selfTokenId!(), amount0)
+        transferTokenFromSelf!(callerAddress!(), selfTokenId!(), amount1)
 
         // Update reserves
         reserve0 = reserve0 - amount0
@@ -106,6 +113,6 @@ Contract LiquidityPool(
 
     // Getters for pool state
     pub fn getReserves() -> (U256, U256) {
-        return [reserve0, reserve1]
+        return reserve0, reserve1
     }
 }
