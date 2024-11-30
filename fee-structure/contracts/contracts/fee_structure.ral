@@ -1,0 +1,36 @@
+Contract Trading(
+    liquidityPool: LiquidityPool,
+    oracle: IOracle
+) {
+    event Trade(trader: Address, fromToken: ByteVec, toToken: ByteVec, amount: U256)
+    
+    // Perform a token swap with dynamic fee calculation
+    @using(updateFields = true, checkExternalCaller = false)
+    pub fn swap(
+        fromToken: IFungibleToken, 
+        toToken: IFungibleToken, 
+        amount: U256
+    ) -> U256 {
+        let caller = callerAddress!()
+        
+        // Get current prices from oracle
+        let fromPrice = oracle.getPrice(fromToken.selfTokenId!())
+        let toPrice = oracle.getPrice(toToken.selfTokenId!())
+        
+        // Calculate swap amount considering current market rates
+        let feeRate = liquidityPool.calculateDynamicFeeRate()
+        let fee = amount * feeRate / 10000  // Convert basis points to percentage
+        let swapAmount = amount - fee
+        
+        // Transfer tokens
+        fromToken.transferFrom!(caller, liquidityPool.selfAddress!(), amount)
+        toToken.transfer!(caller, swapAmount)
+        
+        // Accumulate fees in the liquidity pool
+        liquidityPool.accumulatedFees += fee
+        
+        emit Trade(caller, fromToken.selfTokenId!(), toToken.selfTokenId!(), swapAmount)
+        
+        return swapAmount
+    }
+}

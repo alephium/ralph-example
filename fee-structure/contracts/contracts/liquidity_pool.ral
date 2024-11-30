@@ -1,0 +1,117 @@
+import "std/fungible_token_interface"
+
+struct DIAOracleValue {
+    mut value: U256,
+    mut timestamp: U256
+  }
+  
+Interface IDIAOracle {
+  pub fn getValue(key: ByteVec) -> DIAOracleValue
+}
+
+// Advanced Liquidity Pool with Dynamic Fee Structure
+Contract LiquidityPool(
+    mut token0: IFungibleToken,
+    mut token1: IFungibleToken,
+    oracle: IDIAOracle,
+    mut totalLiquidity: U256,
+    mut feeRate: U256, // Base fee rate
+    mut accumulatedFees: U256
+) {
+    // Events for tracking key actions
+    event LiquidityAdded(provider: Address, amount0: U256, amount1: U256)
+    event LiquidityRemoved(provider: Address, amount0: U256, amount1: U256)
+    event FeesDistributed(totalFees: U256)
+
+    // Mapping to track liquidity providers and their shares
+    mapping providerShares: Map[Address, U256]
+
+    // Dynamic fee calculation based on trading volume and market volatility
+    pub fn calculateDynamicFeeRate() -> U256 {
+        let token0Price = oracle.getPrice(token0.selfTokenId!())
+        let token1Price = oracle.getPrice(token1.selfTokenId!())
+        
+        // Example dynamic fee logic
+        // Higher volatility increases fee rate
+        let priceDelta = if (token0Price > token1Price) 
+            token0Price - token1Price 
+        else 
+            token1Price - token0Price
+
+        let baseRate = 30 // 0.3%
+        let dynamicIncrease = priceDelta / (10 ** token0.getDecimals!())
+        
+        return baseRate + dynamicIncrease
+    }
+
+    // Add liquidity to the pool
+    @using(updateFields = true, checkExternalCaller = false)
+    pub fn addLiquidity(amount0: U256, amount1: U256) -> () {
+        let caller = callerAddress!()
+        
+        // Transfer tokens to pool
+        token0.transferFrom!(caller, selfAddress!(), amount0)
+        token1.transferFrom!(caller, selfAddress!(), amount1)
+        
+        // Calculate and update liquidity share
+        let liquidityShare = calculateLiquidityShare(amount0, amount1)
+        providerShares[caller] = providerShares[caller] + liquidityShare
+        totalLiquidity += liquidityShare
+
+        emit LiquidityAdded(caller, amount0, amount1)
+    }
+
+    // Remove liquidity from the pool
+    @using(updateFields = true, checkExternalCaller = false)
+    pub fn removeLiquidity(shares: U256) -> () {
+        let caller = callerAddress!()
+        assert!(providerShares[caller] >= shares, "Insufficient shares")
+
+        // Calculate proportional token amounts to withdraw
+        let (amount0, amount1) = calculateWithdrawalAmounts(shares)
+        
+        // Transfer tokens back to provider
+        token0.transfer!(caller, amount0)
+        token1.transfer!(caller, amount1)
+
+        // Update liquidity tracking
+        providerShares[caller] -= shares
+        totalLiquidity -= shares
+
+        emit LiquidityRemoved(caller, amount0, amount1)
+    }
+
+    // Distribute accumulated fees to liquidity providers
+    @using(updateFields = true, checkExternalCaller = false)
+    pub fn distributeFees() -> () {
+        let currentFees = accumulatedFees
+        
+        // Distribute fees proportionally
+        for (provider, shares) in providerShares {
+            let providerShare = (shares / totalLiquidity) * currentFees
+            
+            // Logic to distribute fees (simplified)
+            token0.transfer!(provider, providerShare / 2)
+            token1.transfer!(provider, providerShare / 2)
+        }
+
+        accumulatedFees = 0
+        emit FeesDistributed(currentFees)
+    }
+
+    // Internal function to calculate liquidity share
+    fn calculateLiquidityShare(amount0: U256, amount1: U256) -> U256 {
+        // Simplified liquidity calculation
+        // Could be more complex in a real-world scenario
+        return (amount0 + amount1) / 2
+    }
+
+    // Internal function to calculate withdrawal amounts
+    fn calculateWithdrawalAmounts(shares: U256) -> (U256, U256) {
+        let proportion = shares / totalLiquidity
+        return (
+            token0.balance!() * proportion, 
+            token1.balance!() * proportion
+        )
+    }
+}
