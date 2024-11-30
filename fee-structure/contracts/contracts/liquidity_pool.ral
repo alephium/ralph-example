@@ -7,6 +7,7 @@ struct DIAOracleValue {
   
 Interface IDIAOracle {
   pub fn getValue(key: ByteVec) -> DIAOracleValue
+  pub fn getPrice(tokenId: ByteVec) -> U256
 }
 
 // Advanced Liquidity Pool with Dynamic Fee Structure
@@ -24,7 +25,7 @@ Contract LiquidityPool(
     event FeesDistributed(totalFees: U256)
 
     // Mapping to track liquidity providers and their shares
-    mapping providerShares: Map[Address, U256]
+    mapping[Address, U256] providerShares
 
     // Dynamic fee calculation based on trading volume and market volatility
     pub fn calculateDynamicFeeRate() -> U256 {
@@ -45,7 +46,7 @@ Contract LiquidityPool(
     }
 
     // Add liquidity to the pool
-    @using(updateFields = true, checkExternalCaller = false)
+    // @using(updateFields = true, checkExternalCaller = false)
     pub fn addLiquidity(amount0: U256, amount1: U256) -> () {
         let caller = callerAddress!()
         
@@ -56,15 +57,16 @@ Contract LiquidityPool(
         // Calculate and update liquidity share
         let liquidityShare = calculateLiquidityShare(amount0, amount1)
         providerShares[caller] = providerShares[caller] + liquidityShare
-        totalLiquidity += liquidityShare
+        totalLiquidity = totalLiquidity + liquidityShare
 
         emit LiquidityAdded(caller, amount0, amount1)
     }
 
     // Remove liquidity from the pool
-    @using(updateFields = true, checkExternalCaller = false)
+    // @using(updateFields = true, checkExternalCaller = false)
     pub fn removeLiquidity(shares: U256) -> () {
         let caller = callerAddress!()
+
         assert!(providerShares[caller] >= shares, "Insufficient shares")
 
         // Calculate proportional token amounts to withdraw
@@ -75,14 +77,14 @@ Contract LiquidityPool(
         token1.transfer!(caller, amount1)
 
         // Update liquidity tracking
-        providerShares[caller] -= shares
-        totalLiquidity -= shares
+        providerShares[caller] = providerShares[caller] - shares
+        totalLiquidity = totalLiquidity - shares
 
         emit LiquidityRemoved(caller, amount0, amount1)
     }
 
     // Distribute accumulated fees to liquidity providers
-    @using(updateFields = true, checkExternalCaller = false)
+    // @using(updateFields = true, checkExternalCaller = false)
     pub fn distributeFees() -> () {
         let currentFees = accumulatedFees
         

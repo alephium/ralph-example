@@ -1,6 +1,6 @@
 Contract Trading(
     liquidityPool: LiquidityPool,
-    oracle: IOracle
+    oracle: IDIAOracle
 ) {
     event Trade(trader: Address, fromToken: ByteVec, toToken: ByteVec, amount: U256)
     
@@ -27,7 +27,7 @@ Contract Trading(
         toToken.transfer!(caller, swapAmount)
         
         // Accumulate fees in the liquidity pool
-        liquidityPool.accumulatedFees += fee
+        liquidityPool.accumulatedFees = liquidityPool.accumulatedFees + fee
         
         emit Trade(caller, fromToken.selfTokenId!(), toToken.selfTokenId!(), swapAmount)
         
