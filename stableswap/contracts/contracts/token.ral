@@ -1,4 +1,4 @@
-Contract StableSwap(initialA: U256, futureA: U256, initialATime: U256, futureATime: U256, balances: [U256; 3]) {
+Contract StableSwap(initialA: U256, futureA: U256, initialATime: U256, futureATime: U256, balances: [U256; 3], rates: [U256; 3]) {
     const N_COINS = 3
     const FEE_DENOMINATOR = 10 ** 10
     const LENDING_PRECISION = 10 ** 18
@@ -101,8 +101,9 @@ Contract StableSwap(initialA: U256, futureA: U256, initialATime: U256, futureATi
         return y
     }
 
+    // Normalize balances
     fn xp(pBalances: [U256; N_COINS]) -> [U256; N_COINS] {
-        let mut result = [0; N_COINS]
+        let mut result = rates
         for (let mut i = 0; i < N_COINS; i = i + 1) {
             result[i] = result[i] * pBalances[i] / LENDING_PRECISION
         }
@@ -111,7 +112,6 @@ Contract StableSwap(initialA: U256, futureA: U256, initialATime: U256, futureATi
 
     pub fn exchange(i: U256, j: U256, dx: U256, min_dy: U256) -> U256 {
         let fee = 1000
-        let rates = [1000000000000000000, 1000000000000000000000000000000, 1000000000000000000000000000000]
 
         let oldBalances = balances
         let xp = xp(oldBalances)
@@ -119,13 +119,12 @@ Contract StableSwap(initialA: U256, futureA: U256, initialATime: U256, futureATi
         let x = xp[i] + (dx_w_fee * rates[i] / PRECISION)
         let y = getY(i, j, x, xp)
         let mut dy = xp[j] - y - 1
-        let dy_fee = dy * 0 / 1
-        let dy_admin_fee = dy_fee * fee / FEE_DENOMINATOR
-         dy = (dy - dy_fee) * PRECISION / rates[j]
+        let dy_fee = dy * fee / FEE_DENOMINATOR
+        dy = (dy - dy_fee) * PRECISION / rates[j]
         assert!(dy >= min_dy, 1)
         let mut newBalances = oldBalances
         newBalances[i] = oldBalances[i] + dx_w_fee
-        newBalances[j] = oldBalances[j] - dy - dy_admin_fee
+        newBalances[j] = oldBalances[j] - dy
         return dy
     }
 

@@ -44,6 +44,7 @@ export namespace StableSwapTypes {
     initialATime: bigint;
     futureATime: bigint;
     balances: [bigint, bigint, bigint];
+    rates: [bigint, bigint, bigint];
   };
 
   export type State = ContractState<Fields>;
@@ -219,7 +220,7 @@ export const StableSwap = new Factory(
   Contract.fromJson(
     StableSwapContractJson,
     "",
-    "afa3c5bffb9c52dd47f46dfdef872ccba77d8c66072050534a41612932846451",
+    "9a7a46cba784afb430a9ad83b7d5089d7f7cb0ba6b2fc0e9128b3d79d6151572",
     []
   )
 );
