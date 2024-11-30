@@ -74,12 +74,15 @@ Contract StableSwap(initialA: U256, futureA: U256, initialATime: U256, futureATi
                 p_x = x
                 s_ = s_ + p_x
                 c = c * d / (p_x * N_COINS)
+                
             } else if (p_i != j) {
+                p_x = xp[p_i]
                 s_ = s_ + p_x
                 c = c * d / (p_x * N_COINS)
             } else {
                 // continue
             }
+
         }
         c = c * d / (ann * N_COINS)
         let b = s_ + d / ann

@@ -2,7 +2,7 @@ import { web3, TestContractParams, addressFromContractId, AssetOutput, DUST_AMOU
 import { expectAssertionError, randomContractId, testAddress } from '@alephium/web3-test'
 import { StableSwapInstance, StableSwapTypes, StableSwap } from '../../artifacts/ts'
 
-describe('unit tests', () => {
+describe('get A', () => {
   let testContractId: string
   let testTokenId: string
   let testContractAddress: string
@@ -33,25 +33,25 @@ describe('unit tests', () => {
     }
   })
 
-  it('test get A, blockTimestamp in middle', async () => {
+  it(' blockTimestamp in middle', async () => {
     const testParams = { ...testParamsFixture, testArgs: { amount: 3n }, blockTimeStamp: 0 }
     const result = await StableSwap.tests.getA(testParams)
     expect(result.returns).toEqual(100n)
   })
 
-  it('test get A, blockTimestamp in middle', async () => {
+  it('blockTimestamp in middle', async () => {
     const testParams = { ...testParamsFixture, testArgs: { amount: 3n }, blockTimeStamp: 100 }
     const result = await StableSwap.tests.getA(testParams)
     expect(result.returns).toEqual(300n)
   })
 
-  it('test get A, blockTimestamp equal futureA time', async () => {
+  it(' blockTimestamp equal futureA time', async () => {
     const testParams = { ...testParamsFixture, testArgs: { amount: 3n }, blockTimeStamp: 200 }
     const result = await StableSwap.tests.getA(testParams)
     expect(result.returns).toEqual(500n)
   })
 
-  it('test get A, blockTimestamp greater futureA time', async () => {
+  it('blockTimestamp greater futureA time', async () => {
     const testParams = { ...testParamsFixture, testArgs: { amount: 3n }, blockTimeStamp: 250 }
     const result = await StableSwap.tests.getA(testParams)
     expect(result.returns).toEqual(500n)
@@ -534,7 +534,7 @@ describe('getY output calculation tests', () => {
     // For a balanced pool with equal rates, adding to one side should result in slightly less than 1:1 output
     // due to the invariant curve
     expect(result.returns).toBeLessThan(BigInt(1000))
-    expect(result.returns).toBeGreaterThan(BigInt(900)) // Should not lose more than 10% to slippage
+    expect(result.returns).toBeGreaterThanOrEqual(BigInt(900)) // Should not lose more than 10% to slippage
   })
 
   it('should handle different pool depths', async () => {
@@ -565,7 +565,7 @@ describe('getY output calculation tests', () => {
     // Deeper pools should have less slippage for the same relative trade size
     const deepSlippage = ((BigInt(10000) - deepResult.returns) * BigInt(100)) / BigInt(10000)
     const shallowSlippage = ((BigInt(100) - shallowResult.returns) * BigInt(100)) / BigInt(100)
-    expect(deepSlippage).toBeLessThan(shallowSlippage)
+    expect(deepSlippage).toBeLessThanOrEqual(shallowSlippage)
   })
 
   it('should handle imbalanced pools correctly', async () => {

@@ -13,9 +13,9 @@
   "infos": {
     "StableSwap": {
       "sourceFile": "token.ral",
-      "sourceCodeHash": "6135958827fc1af1d7e47040057a4033e567cf8d5c90543f68325e56deb52472",
+      "sourceCodeHash": "9111e86bb256581e9e62418853e22329e03e978c98881dbdb0236074fb178c4d",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "9a7a46cba784afb430a9ad83b7d5089d7f7cb0ba6b2fc0e9128b3d79d6151572"
+      "codeHashDebug": "ea34c050c968743f8613ceca6f87a59101c4aa84539ed6753e97bfa02fdb235d"
     }
   }
 }
