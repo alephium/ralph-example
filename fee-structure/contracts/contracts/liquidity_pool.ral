@@ -7,7 +7,6 @@ struct DIAOracleValue {
   
 Interface IDIAOracle {
   pub fn getValue(key: ByteVec) -> DIAOracleValue
-  pub fn getPrice(tokenId: ByteVec) -> U256
 }
 
 // Advanced Liquidity Pool with Dynamic Fee Structure
@@ -29,8 +28,8 @@ Contract LiquidityPool(
 
     // Dynamic fee calculation based on trading volume and market volatility
     pub fn calculateDynamicFeeRate() -> U256 {
-        let token0Price = oracle.getPrice(token0.selfTokenId!())
-        let token1Price = oracle.getPrice(token1.selfTokenId!())
+        let token0Price = oracle.getValue(token0.selfTokenId!()).value
+        let token1Price = oracle.getValue(token1.selfTokenId!()).value
         
         // Example dynamic fee logic
         // Higher volatility increases fee rate
