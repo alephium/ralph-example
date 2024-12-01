@@ -21,11 +21,11 @@ describe('get A', () => {
         futureA: BigInt(500),
         initialATime: BigInt(0),
         futureATime: BigInt(200),
-        balances: [BigInt(1000), BigInt(1000), BigInt(1000)], // Smaller, simpler balances
+        balances: [BigInt(1000), BigInt(1000), BigInt(1000)],
         rates: [
-          BigInt('1000000000000000000'), // 1:1
-          BigInt('1000000000000000000000000000000'), // 1:1e12
-          BigInt('1000000000000000000000000000000') // 1:1e12
+          BigInt('1000000000000000000'),
+          BigInt('1000000000000000000000000000000'),
+          BigInt('1000000000000000000000000000000')
         ]
       },
       testArgs: { amount: 1n },
@@ -33,7 +33,7 @@ describe('get A', () => {
     }
   })
 
-  it(' blockTimestamp in middle', async () => {
+  it('blockTimestamp in middle', async () => {
     const testParams = { ...testParamsFixture, testArgs: { amount: 3n }, blockTimeStamp: 0 }
     const result = await StableSwap.tests.getA(testParams)
     expect(result.returns).toEqual(100n)
@@ -45,7 +45,7 @@ describe('get A', () => {
     expect(result.returns).toEqual(300n)
   })
 
-  it(' blockTimestamp equal futureA time', async () => {
+  it('blockTimestamp equal futureA time', async () => {
     const testParams = { ...testParamsFixture, testArgs: { amount: 3n }, blockTimeStamp: 200 }
     const result = await StableSwap.tests.getA(testParams)
     expect(result.returns).toEqual(500n)
@@ -78,7 +78,7 @@ describe('exchange function tests', () => {
     testTokenId = testContractId
     testContractAddress = addressFromContractId(testContractId)
 
-    const PRECISION = 1000000000000000000n // 1e18
+    const PRECISION = 1000000000000000000n
 
     testParamsFixture = {
       address: testContractAddress,
@@ -91,22 +91,14 @@ describe('exchange function tests', () => {
         futureA: BigInt(500),
         initialATime: BigInt(0),
         futureATime: BigInt(200),
-        balances: [
-          BigInt(1000) * PRECISION, // Scale balances to match precision
-          BigInt(1000) * PRECISION,
-          BigInt(1000) * PRECISION
-        ],
-        rates: [
-          PRECISION, // 1.0 in PRECISION units
-          PRECISION,
-          PRECISION
-        ]
+        balances: [BigInt(1000) * PRECISION, BigInt(1000) * PRECISION, BigInt(1000) * PRECISION],
+        rates: [PRECISION, PRECISION, PRECISION]
       },
       testArgs: {
         i: 0n,
         j: 1n,
-        dx: BigInt(100) * PRECISION, // Scale input amount to match precision
-        min_dy: BigInt(90) * PRECISION // Scale minimum output to match precision
+        dx: BigInt(100) * PRECISION,
+        min_dy: BigInt(90) * PRECISION
       },
       inputAssets: [
         {
@@ -119,11 +111,7 @@ describe('exchange function tests', () => {
 
   it('should successfully exchange tokens with sufficient output', async () => {
     const result = await StableSwap.tests.exchange(testParamsFixture)
-
-    // Calculate expected output considering 0.1% fee
     const expectedOutput = (testParamsFixture.testArgs.dx * 999n) / 1000n
-
-    // Check if output is within acceptable range
     expect(result.returns).toBeGreaterThanOrEqual(testParamsFixture.testArgs.min_dy)
     expect(result.returns).toBeLessThanOrEqual(expectedOutput)
   })
@@ -133,7 +121,7 @@ describe('exchange function tests', () => {
       ...testParamsFixture,
       testArgs: {
         ...testParamsFixture.testArgs,
-        min_dy: testParamsFixture.testArgs.dx // Set minimum output equal to input
+        min_dy: testParamsFixture.testArgs.dx
       }
     }
 
@@ -141,7 +129,7 @@ describe('exchange function tests', () => {
   })
 
   it('should handle different token decimal places correctly', async () => {
-    const PRECISION = 1000000000000000000n // 1e18
+    const PRECISION = 1000000000000000000n
     const testParams = {
       ...testParamsFixture,
       initialFields: {
@@ -151,49 +139,18 @@ describe('exchange function tests', () => {
           bigint,
           bigint
         ],
-        rates: [
-          PRECISION, // 1.0
-          PRECISION * 1000n, // 1000.0
-          PRECISION / 1000n // 0.001
-        ] as [bigint, bigint, bigint]
+        rates: [PRECISION, PRECISION * 1000n, PRECISION / 1000n] as [bigint, bigint, bigint]
       },
       testArgs: {
         ...testParamsFixture.testArgs,
         dx: BigInt(100) * PRECISION,
-        min_dy: BigInt(0) // Allow any output for testing
+        min_dy: BigInt(0)
       }
     }
 
     const result = await StableSwap.tests.exchange(testParams)
     expect(result.returns).toBeGreaterThan(0n)
   })
-
-  // it('should calculate fees correctly', async () => {
-  //   const PRECISION = 1000000000000000000n // 1e18
-  //   const FEE = 10000000n // 0.1% fee
-  //   const FEE_DENOMINATOR = 10000000000n // Fee denominator
-
-  //   const dx = BigInt(1000) * PRECISION
-  //   const testParams = {
-  //     ...testParamsFixture,
-  //     testArgs: {
-  //       ...testParamsFixture.testArgs,
-  //       dx: dx,
-  //       min_dy: 0n
-  //     }
-  //   }
-
-  //   const result = await StableSwap.tests.exchange(testParams)
-
-  //   // Expected output calculation considering the exact fee formula
-  //   // dy_fee = dy * FEE / FEE_DENOMINATOR
-  //   // final_dy = dy - dy_fee
-  //   const expectedOutputApprox = (dx * (FEE_DENOMINATOR - FEE)) / FEE_DENOMINATOR
-  //   const tolerance = dx / 100n // 1% tolerance for numerical approximations
-
-  //   expect(result.returns).toBeGreaterThan(expectedOutputApprox - tolerance)
-  //   expect(result.returns).toBeLessThan(expectedOutputApprox + tolerance)
-  // })
 })
 
 describe('xp normalization tests', () => {
@@ -221,9 +178,9 @@ describe('xp normalization tests', () => {
         futureATime: BigInt(200),
         balances: [BigInt(1000), BigInt(1000), BigInt(1000)],
         rates: [
-          BigInt('1000000000000000000'), // 1:1
-          BigInt('1000000000000000000000000000000'), // 1:1e12
-          BigInt('1000000000000000000000000000000') // 1:1e12
+          BigInt('1000000000000000000'),
+          BigInt('1000000000000000000000000000000'),
+          BigInt('1000000000000000000000000000000')
         ]
       },
       testArgs: {
@@ -247,7 +204,7 @@ describe('xp normalization tests', () => {
     }
 
     const result = await StableSwap.tests.xp(testParams)
-    expect(result.returns[0]).toEqual(BigInt(1000)) // 1000 * 1e18 / 1e18 = 1000
+    expect(result.returns[0]).toEqual(BigInt(1000))
   })
 
   it('should normalize balances correctly with 1:1e12 rate', async () => {
@@ -259,7 +216,6 @@ describe('xp normalization tests', () => {
     }
 
     const result = await StableSwap.tests.xp(testParams)
-    // 1000 * 1e30 / 1e18 = 1000 * 1e12
     expect(result.returns[1]).toEqual(BigInt(1000) * BigInt(10) ** BigInt(12))
   })
 
@@ -272,9 +228,9 @@ describe('xp normalization tests', () => {
     }
 
     const result = await StableSwap.tests.xp(testParams)
-    expect(result.returns[0]).toEqual(BigInt(1000)) // 1000 * 1e18 / 1e18
-    expect(result.returns[1]).toEqual(BigInt(2000) * BigInt(10) ** BigInt(12)) // 2000 * 1e30 / 1e18
-    expect(result.returns[2]).toEqual(BigInt(3000) * BigInt(10) ** BigInt(12)) // 3000 * 1e30 / 1e18
+    expect(result.returns[0]).toEqual(BigInt(1000))
+    expect(result.returns[1]).toEqual(BigInt(2000) * BigInt(10) ** BigInt(12))
+    expect(result.returns[2]).toEqual(BigInt(3000) * BigInt(10) ** BigInt(12))
   })
 })
 
