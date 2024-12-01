@@ -48,14 +48,14 @@ export class BidInfo {
   }
 }
 
-export async function deployDataFeed(ownerWallet: Address, fee: number) {
+export async function deployDataFeed(ownerWallet: Address, fee: bigint) {
   return await WeatherDataFeed.deploy(defaultSigner, {
     initialFields: {
       ownerId: binToHex(contractIdFromAddress(ownerWallet)),
       authorizedOraclesCount: BigInt(0),
       lastRequestId: '',
       lastTimestamp: BigInt(0),
-      fee: BigInt(fee),
+      fee: fee,
       feeWallet: ownerWallet
     }
   })
@@ -108,16 +108,16 @@ export async function makeRequest(
   dataFeed: WeatherDataFeedInstance,
   lat: number,
   lon: number,
-  fee: number
+  fee: bigint
 ) {
   return await MakeRequest.execute(signer, {
     initialFields: {
       dataFeed: dataFeed.contractId,
       lat: BigInt(lat),
       lon: BigInt(lon),
-      fee: BigInt(fee)
+      fee: fee
     },
-    attoAlphAmount: BigInt(fee) + ONE_ALPH * 2n
+    attoAlphAmount: fee + ONE_ALPH * 2n
   })
 }
 

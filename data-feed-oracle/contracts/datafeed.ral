@@ -43,6 +43,10 @@ Contract WeatherDataFeed(
         authorizedOraclesCount = authorizedOraclesCount - 1
     }
 
+    pub fn checkOracle(oracle: Address) -> Bool {
+        return authorizedOracles[oracle]
+    }
+
     @using(preapprovedAssets = true, checkExternalCaller = false)
     pub fn makeRequest(lat: U256, lon: U256) -> ByteVec {
         let caller = callerAddress!()
