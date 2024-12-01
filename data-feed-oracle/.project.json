@@ -11,17 +11,41 @@
     "skipAbstractContractCheck": false
   },
   "infos": {
+    "AddOracle": {
+      "sourceFile": "scripts.ral",
+      "sourceCodeHash": "38d7d6b6b3ebfd5fbb85dcfd13997014d597f200a2a3b881f5374aed2c071ef0",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "CompleteRequest": {
+      "sourceFile": "scripts.ral",
+      "sourceCodeHash": "38d7d6b6b3ebfd5fbb85dcfd13997014d597f200a2a3b881f5374aed2c071ef0",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "MakeRequest": {
+      "sourceFile": "scripts.ral",
+      "sourceCodeHash": "38d7d6b6b3ebfd5fbb85dcfd13997014d597f200a2a3b881f5374aed2c071ef0",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "RemoveOracle": {
+      "sourceFile": "scripts.ral",
+      "sourceCodeHash": "38d7d6b6b3ebfd5fbb85dcfd13997014d597f200a2a3b881f5374aed2c071ef0",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
     "Request": {
       "sourceFile": "datafeed.ral",
-      "sourceCodeHash": "9fbcd4df18de1b73335a56f48147776929bdfe93a5ff4345f9442575afde46a9",
+      "sourceCodeHash": "88d4376f91ade6cfb7829df3f2e942d39274fd39dba9a16e5986ca70b27aabeb",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },
     "WeatherDataFeed": {
       "sourceFile": "datafeed.ral",
-      "sourceCodeHash": "9fbcd4df18de1b73335a56f48147776929bdfe93a5ff4345f9442575afde46a9",
-      "bytecodeDebugPatch": "=6-2=1-3+8=2-2+8e=1-1+0f=1-1=2-1+b24=1+ec=11-1+6=60+7a7e0214696e73657274206174206d617020706174683a2000=33-1+5=60+7a7e021472656d6f7665206174206d617020706174683a2000=31-1+9=86+7a7e0214696e73657274206174206d617020706174683a2000=550",
-      "codeHashDebug": "593b020a866f54826dc779eee12000f268eabb6819fb0fc3d101bb144affccc9"
+      "sourceCodeHash": "88d4376f91ade6cfb7829df3f2e942d39274fd39dba9a16e5986ca70b27aabeb",
+      "bytecodeDebugPatch": "=6-2+48=2-2+8e=2-2+f7=2-2+b3=2-2+ed=11-1+6=60+7a7e0214696e73657274206174206d617020706174683a2000=33-1+5=60+7a7e021472656d6f7665206174206d617020706174683a2000=31-1+a=88+7a7e0214696e73657274206174206d617020706174683a2000=550",
+      "codeHashDebug": "1639cc99f7b2dc0a96705f77a9ab644b01c340b3c0dbb98c3a3269e6fd1319ef"
     }
   }
 }

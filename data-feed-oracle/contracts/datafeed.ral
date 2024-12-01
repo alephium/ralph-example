@@ -48,7 +48,7 @@ Contract WeatherDataFeed(
         let caller = callerAddress!()
 
         // Create a unique request ID
-        let requestId = toByteVec!(lat) ++ toByteVec!(lon) ++ toByteVec!(blockTimeStamp!()) ++ toByteVec!(caller)
+        let requestId = blake2b!(toByteVec!(lat) ++ toByteVec!(lon) ++ toByteVec!(blockTimeStamp!()) ++ toByteVec!(caller))
 
         // Initialize the request
         requests.insert!(caller, requestId, Request {
