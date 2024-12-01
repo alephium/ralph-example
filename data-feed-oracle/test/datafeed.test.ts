@@ -1,8 +1,17 @@
 import { Address, EventSubscribeOptions, groupOfAddress, sleep } from '@alephium/web3'
 import { WeatherDataFeedInstance, WeatherDataFeedTypes } from '../artifacts/ts'
-import { addOracle, alph, deployDataFeed, makeRequest, randomP2PKHAddress, removeOracle } from './utils'
+import {
+  addOracle,
+  alph,
+  completeRequest,
+  deployDataFeed,
+  makeRequest,
+  randomP2PKHAddress,
+  removeOracle
+} from './utils'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
 import { getSigners, testAddress, getSigner } from '@alephium/web3-test'
+// import blake from 'blakejs'
 
 describe('test data feed', () => {
   const groupIndex = groupOfAddress(testAddress)
@@ -15,7 +24,6 @@ describe('test data feed', () => {
   let requestId: any
 
   beforeEach(async () => {
-    const now = Date.now()
     users = await getSigners(5, alph(1000), groupIndex)
     owner = await getSigner(alph(1000), groupIndex)
     dataFeed = (await deployDataFeed(owner.address, fee)).contractInstance
@@ -100,5 +108,60 @@ describe('test data feed', () => {
     subscription.unsubscribe()
 
     await checkRequest(dataFeed, requestId, 40, 70, false, '')
+  }, 30000)
+
+  test('datafeed:complete oracle request', async () => {
+    // Add Oracle
+    const oracle = users[1]
+    await addOracle(owner, dataFeed, oracle.address)
+
+    // Make Request
+    const user = users[2]
+    const fee = (await dataFeed.fetchState()).fields.fee
+    const newRequestEvents: Array<WeatherDataFeedTypes.NewRequestEvent> = []
+    const subscribeOptions = createSubscribeOptions(newRequestEvents)
+    const subscription = dataFeed.subscribeNewRequestEvent(subscribeOptions)
+
+    await makeRequest(user, dataFeed, 100, 120, fee)
+
+    await sleep(3000)
+
+    newRequestEvents.forEach((event) => {
+      expect(event.fields.lat).toEqual(100)
+      expect(event.fields.lon).toEqual(120)
+      requestId = event.fields.requestId
+    })
+
+    subscription.unsubscribe()
+
+    // Complete Request
+    const completeRequestEvent: Array<WeatherDataFeedTypes.RequestCompletedEvent> = []
+    const subscribeOptionsV2 = createSubscribeOptions(completeRequestEvent)
+    const subscriptionV2 = dataFeed.subscribeRequestCompletedEvent(subscribeOptionsV2)
+
+    const dummyTemp = '120C'
+    const publicKey = oracle.publicKey
+    const now = Date.now().toString()
+    const data = requestId + dummyTemp + now
+    const signature = await oracle.signMessage({
+      signerAddress: oracle.address,
+      message: data,
+      messageHasher: 'alephium'
+    })
+
+    await completeRequest(oracle, dataFeed, requestId, dummyTemp, publicKey, signature.signature, Number(now))
+
+    await sleep(3000)
+
+    expect(completeRequestEvent.length).toEqual(1)
+    completeRequestEvent.forEach((event) => {
+      expect(event.fields.requestId).toEqual(requestId)
+      expect(event.fields.temp).toEqual(dummyTemp)
+    })
+    expect(subscriptionV2.currentEventCount()).toEqual(completeRequestEvent.length)
+
+    subscriptionV2.unsubscribe()
+
+    await checkRequest(dataFeed, requestId, 100, 120, true, dummyTemp)
   }, 30000)
 })

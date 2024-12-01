@@ -83,7 +83,7 @@ Contract WeatherDataFeed(
 
         // Verify the transaction signature and provided data
         verifyTxSignature!(publicKey)
-        let data = blake2b!(requestId ++ temp ++ toByteVec!(timestamp))
+        let data = blake2b!(b`alephium` ++ requestId ++ temp ++ toByteVec!(timestamp))
         verifySecP256K1!(data, publicKey, signature)
 
         // Update the request
