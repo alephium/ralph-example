@@ -1,4 +1,4 @@
-Contract StableSwap(initialA: U256, futureA: U256, initialATime: U256, futureATime: U256, balances: [U256; 3], rates: [U256; 3]) {
+Contract StableSwap(initialA: U256, futureA: U256, initialATime: U256, futureATime: U256, mut balances: [U256; 3], rates: [U256; 3]) {
     const N_COINS = 3
     const FEE_DENOMINATOR = 10 ** 10
     const LENDING_PRECISION = 10 ** 18
@@ -113,8 +113,9 @@ Contract StableSwap(initialA: U256, futureA: U256, initialATime: U256, futureATi
         return result
     }
 
+    @using(updateFields = true, checkExternalCaller = false)
     pub fn exchange(i: U256, j: U256, dx: U256, min_dy: U256) -> U256 {
-        let fee = 1000
+        let fee = 10**7
 
         let oldBalances = balances
         let xp = xp(oldBalances)
@@ -128,6 +129,8 @@ Contract StableSwap(initialA: U256, futureA: U256, initialATime: U256, futureATi
         let mut newBalances = oldBalances
         newBalances[i] = oldBalances[i] + dx_w_fee
         newBalances[j] = oldBalances[j] - dy
+
+        balances = newBalances
         return dy
     }
 

@@ -220,7 +220,7 @@ export const StableSwap = new Factory(
   Contract.fromJson(
     StableSwapContractJson,
     "",
-    "ea34c050c968743f8613ceca6f87a59101c4aa84539ed6753e97bfa02fdb235d",
+    "f2e7f01c2c27781486310a479aa6977e1af238f4be92e4810bc3ce84ade5b24b",
     []
   )
 );

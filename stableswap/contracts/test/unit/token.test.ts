@@ -58,134 +58,143 @@ describe('get A', () => {
   })
 })
 
-// describe('exchange function tests', () => {
-//   let testContractId: string
-//   let testTokenId: string
-//   let testContractAddress: string
-//   let testParamsFixture: TestContractParams<
-//     StableSwapTypes.Fields,
-//     {
-//       i: bigint
-//       j: bigint
-//       dx: bigint
-//       min_dy: bigint
-//     }
-//   >
+describe('exchange function tests', () => {
+  let testContractId: string
+  let testTokenId: string
+  let testContractAddress: string
+  let testParamsFixture: TestContractParams<
+    StableSwapTypes.Fields,
+    {
+      i: bigint
+      j: bigint
+      dx: bigint
+      min_dy: bigint
+    }
+  >
 
-//   beforeAll(async () => {
-//     web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
-//     testContractId = randomContractId()
-//     testTokenId = testContractId
-//     testContractAddress = addressFromContractId(testContractId)
+  beforeAll(async () => {
+    web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
+    testContractId = randomContractId()
+    testTokenId = testContractId
+    testContractAddress = addressFromContractId(testContractId)
 
-//     testParamsFixture = {
-//       address: testContractAddress,
-//       initialAsset: {
-//         alphAmount: 10n ** 18n,
-//         tokens: [{ id: testTokenId, amount: 10n }]
-//       },
-//       initialFields: {
-//         initialA: BigInt(100),
-//         futureA: BigInt(500),
-//         initialATime: BigInt(0),
-//         futureATime: BigInt(200),
-//         balances: [
-//           BigInt(1000), // Base balance of 1000
-//           BigInt(1000), // Base balance of 1000
-//           BigInt(1000) // Base balance of 1000
-//         ],
-//         // [1000000000000000000, 1000000000000000000000000000000, 1000000000000000000000000000000]
-//         rates: [
-//           BigInt('1000000000000000000'),
-//           BigInt('1000000000000000000000000000000'),
-//           BigInt('1000000000000000000000000000000')
-//         ]
-//       },
-//       testArgs: {
-//         i: 0n,
-//         j: 1n,
-//         dx: BigInt(100), // Exchange 100 units
-//         min_dy: BigInt(90) // Minimum 90 units (10% slippage)
-//       },
-//       inputAssets: [
-//         {
-//           address: testAddress,
-//           asset: { alphAmount: 10n ** 18n }
-//         }
-//       ]
-//     }
-//   })
+    const PRECISION = 1000000000000000000n // 1e18
 
-//   it('should successfully exchange tokens with sufficient output', async () => {
-//     const result = await StableSwap.tests.exchange(testParamsFixture)
-//     expect(result.returns).toBeGreaterThanOrEqual(testParamsFixture.testArgs.min_dy)
-//     expect(result.returns).toBeLessThan(testParamsFixture.testArgs.dx)
-//   })
+    testParamsFixture = {
+      address: testContractAddress,
+      initialAsset: {
+        alphAmount: 10n ** 18n,
+        tokens: [{ id: testTokenId, amount: 10n }]
+      },
+      initialFields: {
+        initialA: BigInt(100),
+        futureA: BigInt(500),
+        initialATime: BigInt(0),
+        futureATime: BigInt(200),
+        balances: [
+          BigInt(1000) * PRECISION, // Scale balances to match precision
+          BigInt(1000) * PRECISION,
+          BigInt(1000) * PRECISION
+        ],
+        rates: [
+          PRECISION, // 1.0 in PRECISION units
+          PRECISION,
+          PRECISION
+        ]
+      },
+      testArgs: {
+        i: 0n,
+        j: 1n,
+        dx: BigInt(100) * PRECISION, // Scale input amount to match precision
+        min_dy: BigInt(90) * PRECISION // Scale minimum output to match precision
+      },
+      inputAssets: [
+        {
+          address: testAddress,
+          asset: { alphAmount: 10n ** 18n }
+        }
+      ]
+    }
+  })
 
-//   it('should fail when output amount is less than minimum', async () => {
-//     const testParams = {
-//       ...testParamsFixture,
-//       testArgs: {
-//         ...testParamsFixture.testArgs,
-//         minDy: testParamsFixture.testArgs.dx
-//       }
-//     }
+  it('should successfully exchange tokens with sufficient output', async () => {
+    const result = await StableSwap.tests.exchange(testParamsFixture)
 
-//     await expectAssertionError(StableSwap.tests.exchange(testParams), testContractAddress, 1)
-//   })
+    // Calculate expected output considering 0.1% fee
+    const expectedOutput = (testParamsFixture.testArgs.dx * 999n) / 1000n
 
-//   it('should handle different token decimal places correctly', async () => {
-//     const testParams = {
-//       ...testParamsFixture,
-//       initialFields: {
-//         ...testParamsFixture.initialFields,
-//         balances: [
-//           BigInt(1000), // Base amount
-//           BigInt(100000), // 100x more decimals
-//           BigInt(10) // 1/100x less decimals
-//         ] as [bigint, bigint, bigint]
-//       }
-//     }
+    // Check if output is within acceptable range
+    expect(result.returns).toBeGreaterThanOrEqual(testParamsFixture.testArgs.min_dy)
+    expect(result.returns).toBeLessThanOrEqual(expectedOutput)
+  })
 
-//     const result = await StableSwap.tests.exchange(testParams)
-//     expect(result.returns).toBeGreaterThan(0n)
-//   })
+  it('should fail when output amount is less than minimum', async () => {
+    const testParams = {
+      ...testParamsFixture,
+      testArgs: {
+        ...testParamsFixture.testArgs,
+        min_dy: testParamsFixture.testArgs.dx // Set minimum output equal to input
+      }
+    }
 
-//   it('should calculate fees correctly', async () => {
-//     const dx = BigInt(1000)
-//     const testParams = {
-//       ...testParamsFixture,
-//       testArgs: {
-//         ...testParamsFixture.testArgs,
-//         dx: dx,
-//         min_dy: 0n
-//       }
-//     }
+    await expectAssertionError(StableSwap.tests.exchange(testParams), testContractAddress, 1)
+  })
 
-//     const result = await StableSwap.tests.exchange(testParams)
+  it('should handle different token decimal places correctly', async () => {
+    const PRECISION = 1000000000000000000n // 1e18
+    const testParams = {
+      ...testParamsFixture,
+      initialFields: {
+        ...testParamsFixture.initialFields,
+        balances: [BigInt(1000) * PRECISION, BigInt(1000) * PRECISION, BigInt(1000) * PRECISION] as [
+          bigint,
+          bigint,
+          bigint
+        ],
+        rates: [
+          PRECISION, // 1.0
+          PRECISION * 1000n, // 1000.0
+          PRECISION / 1000n // 0.001
+        ] as [bigint, bigint, bigint]
+      },
+      testArgs: {
+        ...testParamsFixture.testArgs,
+        dx: BigInt(100) * PRECISION,
+        min_dy: BigInt(0) // Allow any output for testing
+      }
+    }
 
-//     // Expected output should be approximately 99.9% of input (0.1% fee)
-//     const expectedOutputApprox = (dx * BigInt(999)) / BigInt(1000)
-//     const tolerance = BigInt(1) // Smaller tolerance for smaller numbers
+    const result = await StableSwap.tests.exchange(testParams)
+    expect(result.returns).toBeGreaterThan(0n)
+  })
 
-//     expect(result.returns).toBeGreaterThan(expectedOutputApprox - tolerance)
-//     expect(result.returns).toBeLessThan(expectedOutputApprox + tolerance)
-//   })
+  // it('should calculate fees correctly', async () => {
+  //   const PRECISION = 1000000000000000000n // 1e18
+  //   const FEE = 10000000n // 0.1% fee
+  //   const FEE_DENOMINATOR = 10000000000n // Fee denominator
 
-//   // it('should maintain constant sum of balances after exchange', async () => {
-//   //   const result = await StableSwap.tests.exchange(testParamsFixture)
+  //   const dx = BigInt(1000) * PRECISION
+  //   const testParams = {
+  //     ...testParamsFixture,
+  //     testArgs: {
+  //       ...testParamsFixture.testArgs,
+  //       dx: dx,
+  //       min_dy: 0n
+  //     }
+  //   }
 
-//   //   const newBalances = result.outputAssets.map((asset: AssetOutput) => asset.amount)
-//   //   const oldBalances = testParamsFixture.initialFields.balances
+  //   const result = await StableSwap.tests.exchange(testParams)
 
-//   //   const oldSum = oldBalances.reduce((a, b) => a + b, 0n)
-//   //   const newSum = newBalances.reduce((a, b) => a + b, 0n)
-//   //   const tolerance = BigInt(1) // Smaller tolerance for smaller numbers
+  //   // Expected output calculation considering the exact fee formula
+  //   // dy_fee = dy * FEE / FEE_DENOMINATOR
+  //   // final_dy = dy - dy_fee
+  //   const expectedOutputApprox = (dx * (FEE_DENOMINATOR - FEE)) / FEE_DENOMINATOR
+  //   const tolerance = dx / 100n // 1% tolerance for numerical approximations
 
-//   //   expect(newSum).toBeGreaterThan(oldSum - tolerance)
-//   //   expect(newSum).toBeLessThan(oldSum + tolerance)
-//   // })
-// })
+  //   expect(result.returns).toBeGreaterThan(expectedOutputApprox - tolerance)
+  //   expect(result.returns).toBeLessThan(expectedOutputApprox + tolerance)
+  // })
+})
 
 describe('xp normalization tests', () => {
   let testContractId: string
