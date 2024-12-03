@@ -37,15 +37,15 @@
     },
     "Request": {
       "sourceFile": "datafeed.ral",
-      "sourceCodeHash": "af53a3ae5d6cc56b5e2e8930f42ac1017391ec915af69b937fa2777c7d9fc5f6",
+      "sourceCodeHash": "93c840c9b108a37ea9855a2bd4d3fa65b658eb6f70b65be870da58cc53c2aa14",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },
     "WeatherDataFeed": {
       "sourceFile": "datafeed.ral",
-      "sourceCodeHash": "af53a3ae5d6cc56b5e2e8930f42ac1017391ec915af69b937fa2777c7d9fc5f6",
+      "sourceCodeHash": "93c840c9b108a37ea9855a2bd4d3fa65b658eb6f70b65be870da58cc53c2aa14",
       "bytecodeDebugPatch": "=6-2=1-3+8=2-1+8=3-2+b0=2+1=1-1=2-2+e0421a=11-1+6=60+7a7e0214696e73657274206174206d617020706174683a2000=33-1+5=60+7a7e021472656d6f7665206174206d617020706174683a2000=99-1+a=88+7a7e0214696e73657274206174206d617020706174683a2000=572",
-      "codeHashDebug": "bfe9daa9f6e62aed78164bb2231b6ee77cdf5ea9080e46c9d730a6163242a203"
+      "codeHashDebug": "0b1a9579c47879181a37d875bb1cf08967288b5d9bc1199c1a984618904f8247"
     }
   }
 }

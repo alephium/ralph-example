@@ -1,4 +1,14 @@
-import { Address, EventSubscribeOptions, groupOfAddress, sleep } from '@alephium/web3'
+import {
+  Address,
+  binToHex,
+  contractIdFromAddress,
+  EventSubscribeOptions,
+  groupOfAddress,
+  sleep,
+  addressFromPublicKey,
+  codec,
+  AddressType
+} from '@alephium/web3'
 import { WeatherDataFeedInstance, WeatherDataFeedTypes } from '../artifacts/ts'
 import {
   addOracle,
@@ -33,7 +43,7 @@ describe('test data feed', () => {
 
   async function checkOracle(dataFeed: WeatherDataFeedInstance, oracle: Address, expected: boolean) {
     const result = await dataFeed.view.checkOracle({ args: { oracle } })
-    expect(result.returns).toEqual(BigInt(expected))
+    expect(result.returns).toEqual(expected)
   }
 
   async function checkOracleRemoved(dataFeed: WeatherDataFeedInstance, oracle: Address, expected: boolean) {
@@ -98,8 +108,8 @@ describe('test data feed', () => {
 
     expect(newRequestEvents.length).toEqual(1)
     newRequestEvents.forEach((event) => {
-      expect(event.fields.lat).toEqual(40)
-      expect(event.fields.lon).toEqual(70)
+      expect(event.fields.lat).toEqual(40n)
+      expect(event.fields.lon).toEqual(70n)
       requestId = event.fields.requestId
     })
     expect(subscription.currentEventCount()).toEqual(newRequestEvents.length)
@@ -107,7 +117,7 @@ describe('test data feed', () => {
 
     subscription.unsubscribe()
 
-    await checkRequest(dataFeed, requestId, 40, 70, false, '')
+    await checkRequest(dataFeed, requestId, 40, 70, false, '0000000000')
   }, 30000)
 
   test('datafeed:complete oracle request', async () => {
@@ -127,8 +137,8 @@ describe('test data feed', () => {
     await sleep(3000)
 
     newRequestEvents.forEach((event) => {
-      expect(event.fields.lat).toEqual(100)
-      expect(event.fields.lon).toEqual(120)
+      expect(event.fields.lat).toEqual(100n)
+      expect(event.fields.lon).toEqual(120n)
       requestId = event.fields.requestId
     })
 

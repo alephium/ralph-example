@@ -51,7 +51,7 @@ export class BidInfo {
 export async function deployDataFeed(ownerWallet: Address, fee: bigint) {
   return await WeatherDataFeed.deploy(defaultSigner, {
     initialFields: {
-      ownerId: binToHex(contractIdFromAddress(ownerWallet)),
+      owner: ownerWallet,
       authorizedOraclesCount: BigInt(0),
       lastRequestId: '',
       lastTimestamp: BigInt(0),
