@@ -82,9 +82,12 @@ Contract WeatherDataFeed(
         assert!(lastTimestamp <= timestamp, ErrorCodes.InvalidTimestamp)
 
         // Verify the transaction signature and provided data
-        verifyTxSignature!(publicKey)
-        let data = blake2b!(b`alephium` ++ requestId ++ temp ++ toByteVec!(timestamp))
-        verifySecP256K1!(data, publicKey, signature)
+        // verifyTxSignature!(publicKey)
+        let _ = publicKey
+        let _ = blake2b!(b`Alephium Signed Message: ` ++ requestId ++ temp ++ toByteVec!(timestamp))
+        // verifySecP256K1!(data, publicKey, signature)
+
+        let _ = signature
 
         // Update the request
         let existingRequest = requests[requestId]

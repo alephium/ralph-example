@@ -18,8 +18,7 @@ import {
   binToHex,
   groupOfAddress,
   hexToBinUnsafe,
-  web3,
-  contractIdFromAddress
+  web3
 } from '@alephium/web3'
 import { randomBytes } from 'crypto'
 import * as base58 from 'bs58'
@@ -130,6 +129,7 @@ export async function completeRequest(
   signature: string,
   timestamp: number
 ) {
+  console.log(publicKey)
   return await CompleteRequest.execute(signer, {
     initialFields: {
       dataFeed: dataFeed.contractId,

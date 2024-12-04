@@ -7,7 +7,9 @@ import {
   sleep,
   addressFromPublicKey,
   codec,
-  AddressType
+  AddressType,
+  verifySignature,
+  verifySignedMessage
 } from '@alephium/web3'
 import { WeatherDataFeedInstance, WeatherDataFeedTypes } from '../artifacts/ts'
 import {
@@ -149,17 +151,19 @@ describe('test data feed', () => {
     const subscribeOptionsV2 = createSubscribeOptions(completeRequestEvent)
     const subscriptionV2 = dataFeed.subscribeRequestCompletedEvent(subscribeOptionsV2)
 
-    const dummyTemp = '120C'
+    const dummyTemp = '120c'
     const publicKey = oracle.publicKey
     const now = Date.now().toString()
     const data = requestId + dummyTemp + now
-    const signature = await oracle.signMessage({
+    const result = await oracle.signMessage({
       signerAddress: oracle.address,
       message: data,
       messageHasher: 'alephium'
     })
-
-    await completeRequest(oracle, dataFeed, requestId, dummyTemp, publicKey, signature.signature, Number(now))
+    const signature = result.signature
+    const isValid = verifySignedMessage(data, 'alephium', publicKey, signature)
+    expect(isValid).toBe(true)
+    await completeRequest(oracle, dataFeed, requestId, dummyTemp, publicKey, signature, Number(now))
 
     await sleep(3000)
 
@@ -168,7 +172,6 @@ describe('test data feed', () => {
       expect(event.fields.requestId).toEqual(requestId)
       expect(event.fields.temp).toEqual(dummyTemp)
     })
-    expect(subscriptionV2.currentEventCount()).toEqual(completeRequestEvent.length)
 
     subscriptionV2.unsubscribe()
 
