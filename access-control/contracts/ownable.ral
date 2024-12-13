@@ -1,0 +1,27 @@
+Contract OwnerControl() {
+    enum Role {
+        OWNER = 0,
+        MOD = 1,
+        ELDER = 2
+    }
+
+    struct OwnershipInfo {
+        mut owner: Address,
+        mut proposedOwner: Address 
+    }
+
+    struct RoleBasedAccess {
+        mapping[Address, Role] rolesMapping
+        mapping[Role, Role] roleAdminsMapping
+    }
+
+    struct TimeLockInfo {
+        mapping[ByteVec, U256] timestamps
+    }
+
+    struct ContractStorage {
+        mut ownership: OwnershipInfo
+        mut roles: RoleBasedAccess
+        mut timeLock: TimeLockInfo
+    }
+}
