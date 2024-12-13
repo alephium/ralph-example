@@ -1,16 +1,4 @@
-import {
-  Address,
-  binToHex,
-  contractIdFromAddress,
-  EventSubscribeOptions,
-  groupOfAddress,
-  sleep,
-  addressFromPublicKey,
-  codec,
-  AddressType,
-  verifySignature,
-  verifySignedMessage
-} from '@alephium/web3'
+import { Address, EventSubscribeOptions, groupOfAddress, sleep, verifySignature, sign, utils } from '@alephium/web3'
 import { WeatherDataFeedInstance, WeatherDataFeedTypes } from '../artifacts/ts'
 import {
   addOracle,
@@ -23,7 +11,7 @@ import {
 } from './utils'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
 import { getSigners, testAddress, getSigner } from '@alephium/web3-test'
-// import blake from 'blakejs'
+import { blake2b } from 'blakejs'
 
 describe('test data feed', () => {
   const groupIndex = groupOfAddress(testAddress)
@@ -150,31 +138,22 @@ describe('test data feed', () => {
     const completeRequestEvent: Array<WeatherDataFeedTypes.RequestCompletedEvent> = []
     const subscribeOptionsV2 = createSubscribeOptions(completeRequestEvent)
     const subscriptionV2 = dataFeed.subscribeRequestCompletedEvent(subscribeOptionsV2)
-
     const dummyTemp = '120c'
-    const publicKey = oracle.publicKey
     const now = Date.now().toString()
-    const data = requestId + dummyTemp + now
-    const result = await oracle.signMessage({
-      signerAddress: oracle.address,
-      message: data,
-      messageHasher: 'alephium'
-    })
-    const signature = result.signature
-    const isValid = verifySignedMessage(data, 'alephium', publicKey, signature)
+
+    const dataHash = requestId
+    const signature = sign(dataHash, oracle.privateKey)
+    const isValid = verifySignature(dataHash, oracle.publicKey, signature)
     expect(isValid).toBe(true)
-    await completeRequest(oracle, dataFeed, requestId, dummyTemp, publicKey, signature, Number(now))
 
+    await completeRequest(oracle, dataFeed, requestId, dummyTemp, oracle.publicKey, signature, Number(now))
     await sleep(3000)
-
     expect(completeRequestEvent.length).toEqual(1)
     completeRequestEvent.forEach((event) => {
       expect(event.fields.requestId).toEqual(requestId)
       expect(event.fields.temp).toEqual(dummyTemp)
     })
-
     subscriptionV2.unsubscribe()
-
     await checkRequest(dataFeed, requestId, 100, 120, true, dummyTemp)
   }, 30000)
 })

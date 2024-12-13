@@ -129,7 +129,6 @@ export async function completeRequest(
   signature: string,
   timestamp: number
 ) {
-  console.log(publicKey)
   return await CompleteRequest.execute(signer, {
     initialFields: {
       dataFeed: dataFeed.contractId,
