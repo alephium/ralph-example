@@ -1,0 +1,123 @@
+{
+  "version": "v3.8.5",
+  "name": "OwnerControl",
+  "bytecode": "02070e4027403c405a4071409640b7010000000103d3c7497323a0000201000101000ad31b2c73fcb40000450d7b1600a1001600a101010001010008d35eb6ba75b40000450d7b1600a10101000101000dd342a4056db4a001450e7b16004c03a001a1004a02caa10101000000000ad38066b350b40000450d7bcaa100caa10101000202010dd3ba5c17700c0d0d140a5f5f6d61705f5f305f5f16004744cb01011601410201000101010ad3e25c60910c0d0d140a5f5f6d61705f5f315f5f160044cb010102",
+  "codeHash": "706df26ebb28d5cac482059a1a9674903986a853a9dbc2a01c5333a12d30c4d5",
+  "fieldsSig": {
+    "names": [
+      "owner",
+      "proposedOwner"
+    ],
+    "types": [
+      "Address",
+      "Address"
+    ],
+    "isMutable": [
+      true,
+      true
+    ]
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "owner",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "Address"
+      ]
+    },
+    {
+      "name": "transferOwnership",
+      "paramNames": [
+        "proposed_owner"
+      ],
+      "paramTypes": [
+        "Address"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "proposeNewOwner",
+      "paramNames": [
+        "proposed_owner"
+      ],
+      "paramTypes": [
+        "Address"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "acceptOwnership",
+      "paramNames": [
+        "res"
+      ],
+      "paramTypes": [
+        "Bool"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "renounceOwnership",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    },
+    {
+      "name": "hasRole",
+      "paramNames": [
+        "address",
+        "role"
+      ],
+      "paramTypes": [
+        "Address",
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": [
+        "Bool"
+      ]
+    },
+    {
+      "name": "getRoleAdmin",
+      "paramNames": [
+        "role"
+      ],
+      "paramTypes": [
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    }
+  ],
+  "constants": [],
+  "enums": [],
+  "mapsSig": {
+    "names": [
+      "rolesMapping",
+      "roleAdminsMapping"
+    ],
+    "types": [
+      "Map[Address,ByteVec]",
+      "Map[ByteVec,ByteVec]"
+    ]
+  }
+}
