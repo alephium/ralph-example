@@ -1,0 +1,86 @@
+const ONE = 1e18
+
+struct Metadata {
+  claimedAmountAfterTransfer: U256,
+  claimedBalance: U256
+}
+
+enum Ramp {
+  Cliff = 0
+  Linear = 1
+}
+
+struct Milestone {
+  mut timestamp: U256,
+  mut ramp: U256,
+  mut percentage: U256
+}
+
+Contract TokenVesting(
+  manager: Address,
+  mut milestonesCount: U256,
+  mut lastReachedMilestone: U256,
+  mut totalClaimed: U256,
+  mut claimableAmount: U256,
+  mut totalAmount: U256
+){
+  mapping[U256, Milestone] milestones
+  mapping[Address, Metadata] metadata
+  event Claim(account: Address, amount: U256)
+  
+  event MilestoneReached(index: U256)
+
+  enum ErrorCodes {
+    InvalidArg = 0
+    MilestoneArrayEmpty = 1
+    LastPercentageMustBe100 = 2
+    OnlyLastPercentageCanBe100 = 3
+    TimestampsNotSorted = 4
+    PercentagesNotSorted = 5
+    MoreThanTwoEqualPercentages = 6
+    EqualPercentagesOnlyAllowedBeforeLinear = 7
+  }
+
+  // max milestones is 50
+  pub fn initialize(milestonesArr: [Milestone; 50]) -> () {
+    let _ = milestonesArr
+  }
+
+  @using(preapprovedAssets = true, updateFields = true)
+  fn checkMilestones(milestonesArr: [Milestone; 50]) -> () {
+    assert!(len!(milestonesArr) > 0, ErrorCodes.MilestoneArrayEmpty)
+
+    let mut current = milestonesArr[0]
+    let mut twoInARow = false
+
+    let milestonesLen = len!(milestonesArr)
+
+    for (let mut index = 0; index < milestonesLen ; index = index + 1) {
+      if(index != 0){
+        let previous = current
+        current = milestonesArr[index]
+
+        assert!(previous.timestamp <= current.timestamp, ErrorCodes.TimestampsNotSorted)
+        assert!(previous.percentage < current.percentage, ErrorCodes.PercentagesNotSorted)
+        
+        if(twoInARow){
+          assert!(previous.percentage != current.percentage, ErrorCodes.MoreThanTwoEqualPercentages)
+          assert!(current.ramp == Ramp.Linear, ErrorCodes.EqualPercentagesOnlyAllowedBeforeLinear)
+
+        }
+        twoInARow = previous.percentage == current.percentage
+      }
+
+      milestones.insert!(callerAddress!(), index, current)
+
+      if (index == milestonesLen - 1){
+        assert!(current.percentage != ONE, ErrorCodes.LastPercentageMustBe100)
+      }else{
+        assert!(current.percentage == ONE, ErrorCodes.OnlyLastPercentageCanBe100)
+      }
+    }
+
+    milestonesCount = milestonesLen
+  }
+
+}
