@@ -9,7 +9,8 @@ Contract Staking(
     mut startTime: U256,
     mut duration: U256,
     mut earlyUnstakePenaltyPercent: U256,
-    mut owner_: Address
+    mut owner_: Address,
+    mut poolPerformanceMultiplier: U256
 ) extends StakingAccountFactory(tokenId, rewardsTokenId, stakingAccountTemplateId), StakingTimeBond(startTime, duration, earlyUnstakePenaltyPercent, owner_) {
     ////////////////////////
     // Events
@@ -19,13 +20,17 @@ Contract Staking(
     event Unstaked(staker: Address, amount: U256)
     event ClaimedRewards(staker: Address, amount: U256)
     event RewardRateUpdated(rewardRate: U256)
+    event PoolPerformanceUpdated(oldMultiplier: U256, newMultiplier: U256)
+    event RewardsCompounded(staker: Address, amount: U256)
 
     ////////////////////////
     // Error Codes
     ////////////////////////
 
     enum ErrorCodes {
-        PoolNotStarted = 0
+        PoolNotStarted = 0,
+        NoRewardsToCompound = 1,
+        ConversionFailed = 2
     }
 
     ////////////////////////
@@ -36,10 +41,19 @@ Contract Staking(
         let rewardPerTokenPaid = account.getRewardPerTokenPaid()
         let currentRewardPerToken = calculateRewardPerToken()
         let oldRewards = account.getRewards()
+        let stakeDuration = blockTimeStamp!() - account.getStakingStartTime()
 
-        let earnedRewards = ((staked * (currentRewardPerToken - rewardPerTokenPaid)) / 1e18) + oldRewards
+        let durationMultiplier = if (stakeDuration > 30 days) {
+            1e18 + 1e17 // 1.1x for 30+ days
+        } else if (stakeDuration > 7 days) {
+            1e18 + 5e16 // 1.05x for 7+ days
+        } else {
+            1e18
+        }
 
-        return earnedRewards
+        let baseEarnedRewards = ((staked * (currentRewardPerToken - rewardPerTokenPaid)) / 1e18) + oldRewards
+        
+        return (baseEarnedRewards * poolPerformanceMultiplier * durationMultiplier) / (1e18 * 1e18)
     }
 
     fn updateStakerReward(account: StakingAccount) -> () {
@@ -60,7 +74,8 @@ Contract Staking(
             return rewardPerTokenStored
         }
 
-        return rewardPerTokenStored + ((blockTimeStamp!() - lastUpdateTime) * rewardRate * 1e18) / totalAmountStaked
+        let baseReward = ((blockTimeStamp!() - lastUpdateTime) * rewardRate * 1e18) / totalAmountStaked
+        return rewardPerTokenStored + baseReward
     }
 
     @using(assetsInContract = true)
@@ -137,6 +152,22 @@ Contract Staking(
         emit ClaimedRewards(staker, amount)
     }
 
+    @using(updateFields = true, checkExternalCaller = false)
+    pub fn compoundRewards() -> () {
+        let staker = callerAddress!()
+        let stakingAccount = getStakingAccount(staker)
+        
+        // Calculate and update rewards
+        updateStakerReward(stakingAccount)
+        let rewardsToCompound = stakingAccount.getRewards()
+        assert!(rewardsToCompound > 0, ErrorCodes.NoRewardsToCompound)
+        
+        // Convert rewards to staking tokens (through reward token)
+        stakingAccount.convertAndStakeRewards{selfAddress!() -> rewardsTokenId: rewardsToCompound}()
+        
+        emit RewardsCompounded(staker, rewardsToCompound)
+    }
+
     ////////////////////////
     // Admin Functions
     ////////////////////////
@@ -154,5 +185,15 @@ Contract Staking(
         onlyOwner(callerAddress!())
 
         migrate!(newBytecode)
+    }
+
+    @using(updateFields = true)
+    pub fn updatePoolPerformance(newMultiplier: U256) -> () {
+        onlyOwner(callerAddress!())
+        assert!(newMultiplier > 0, ErrorCodes.InvalidMultiplier)
+        
+        let oldMultiplier = poolPerformanceMultiplier
+        poolPerformanceMultiplier = newMultiplier
+        emit PoolPerformanceUpdated(oldMultiplier, newMultiplier)
     }
 }

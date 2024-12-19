@@ -5,7 +5,8 @@ Contract StakingAccount(
     parentContractAddress: Address,
     mut amountStaked: U256,
     mut rewardPerTokenPaid: U256,
-    mut rewards: U256
+    mut rewards: U256,
+    mut stakingStartTime: U256
 ) {
     enum StakingAccountErrorCodes {
         UnauthorizedAccess = 20
@@ -36,6 +37,10 @@ Contract StakingAccount(
         return rewards
     }
 
+    pub fn getStakingStartTime() -> U256 {
+        return stakingStartTime
+    }
+
     @using(updateFields = true)
     pub fn setRewards(newRewards: U256, newRewardPerToken: U256) -> () {
         let caller = callerAddress!()
@@ -51,6 +56,11 @@ Contract StakingAccount(
         let caller = callerAddress!()
 
         checkCaller!(caller == parentContractAddress, StakingAccountErrorCodes.UnauthorizedAccess)
+        
+        if (amountStaked == 0) {
+            stakingStartTime = blockTimeStamp!()
+        }
+        
         transferTokenToSelf!(staker, tokenId, amount)
 
         amountStaked = amountStaked + amount
@@ -104,6 +114,29 @@ Contract StakingAccount(
         transferToken!(caller, staker, rewardsTokenId, amount)
         rewards = 0
 
+        return amount
+    }
+
+    @using(preapprovedAssets = true, updateFields = true)
+    pub fn convertAndStakeRewards(rewardsAmount: U256) -> () {
+        let caller = callerAddress!()
+        checkCaller!(caller == parentContractAddress, StakingAccountErrorCodes.UnauthorizedAccess)
+        
+        // Convert rewards to staking tokens
+        let convertedAmount = convertRewardsToStakingTokens(rewardsAmount)
+        
+        // Auto-stake the converted amount
+        if (amountStaked == 0) {
+            stakingStartTime = blockTimeStamp!()
+        }
+        
+        amountStaked = amountStaked + convertedAmount
+        rewards = 0
+    }
+
+    fn convertRewardsToStakingTokens(amount: U256) -> U256 {
+        // Implement conversion logic based on your tokenomics
+        // This is a simplified 1:1 conversion
         return amount
     }
 }

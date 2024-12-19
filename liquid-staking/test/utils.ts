@@ -1,7 +1,7 @@
 import { expectAssertionError, testAddress, testPrivateKey } from '@alephium/web3-test'
-import { 
-  Staking, 
-  StakingInstance, 
+import {
+  Staking,
+  StakingInstance,
   StakingAccount,
   TestToken,
   GetToken,
@@ -12,12 +12,12 @@ import {
   UpdateStartTime
 } from '../artifacts/ts'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
-import { 
-  ALPH_TOKEN_ID, 
-  Address, 
-  DUST_AMOUNT, 
-  ONE_ALPH, 
-  SignerProvider, 
+import {
+  ALPH_TOKEN_ID,
+  Address,
+  DUST_AMOUNT,
+  ONE_ALPH,
+  SignerProvider,
   groupOfAddress,
   web3,
   waitForTxConfirmation,
@@ -92,9 +92,9 @@ export async function deployStaking(
   rewardRate: bigint
 ) {
   const { stakingToken, rewardsToken } = await deployTestTokens(1000000n)
-  
+
   const accountTemplate = await deployStakingAccountTemplate(
-    stakingToken.contractInstance.contractId, 
+    stakingToken.contractInstance.contractId,
     rewardsToken.contractInstance.contractId
   )
 
@@ -123,8 +123,8 @@ export async function transferTokenTo(to: Address, tokenId: string, amount: bigi
     defaultSigner.signAndSubmitTransferTx({
       signerAddress: testAddress,
       destinations: [
-        { 
-          address: to, 
+        {
+          address: to,
           attoAlphAmount: ONE_ALPH,
           tokens: [{ id: tokenId, amount: amount }]
         }
@@ -262,7 +262,7 @@ export async function setRewardRateFailed(
 
 export async function checkStakingAccount(
   staking: StakingInstance,
-  staker: Address, 
+  staker: Address,
   expectedAmount: bigint
 ) {
   const groupIndex = groupOfAddress(staker)
@@ -287,4 +287,10 @@ export async function getRewards(staking: StakingInstance, staker: Address): Pro
   const stakingAccount = StakingAccount.at(addressFromContractId(accountId))
   const state = await stakingAccount.fetchState()
   return state.fields.rewards
+}
+
+export async function calculateExpectedReward(stakedAmount: bigint, duration: number): Promise<bigint> {
+  // Base reward calculation
+  const baseReward = (stakedAmount * BigInt(duration) * 100n) / (10n ** 18n) // 100n is base reward rate
+  return baseReward
 } 
