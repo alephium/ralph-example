@@ -1,0 +1,66 @@
+Contract LendingProtocol(
+    owner: Address
+) extends LendingProtocolAccountFactory(), Authorization(owner) {
+
+    ////////////////////////
+    // Variables
+    ////////////////////////
+    const POOL_LENGTH = 1000000000
+    let mut supported_assets: Array[Address, POOL_LENGTH] = [#0; POOL_LENGTH]
+    mapping[Address , U256] pool_supply
+
+    ////////////////////////
+    // Events
+    ////////////////////////
+
+    event Borrow(_address: Address, _token: Address, _amount:U256)
+    event AccounCreation(_address: Address, token: Address)
+
+    ////////////////////////
+    // Error Codes
+    ////////////////////////
+
+    enum ErrorCodes {
+        INVALID_AMOUNT = 0
+        NO_COLLATERAL = 1
+        INVALID_TOKEN = 2
+    }
+
+    ////////////////////////
+    // Public Functions
+    ////////////////////////
+
+    pub fn tokenExists(token: Address)
+
+    @using(preapprovedAssets = true, updateFields = true)
+    pub fn borrow(token: Address, collateralToken: Address, amount: U256) -> () {
+        let _address = callerAddress!()
+
+        assert!(lendingProtocolAccountExists(_address, collateralToken))
+        assert!(amount > 0, ErrorCodes.INVALID_AMOUNT)
+        
+        
+        emit Borrow(_address, token, amount)
+    }
+
+
+    pub fn upgrade(newBytecode: ByteVec) -> () {
+        onlyOwner(callerAddress!())
+
+        migrate!(newBytecode)
+    }
+}
+
+TxScript Borrow(lendingProtocol: LendingProtocol, token: Address, collateralToken: Address,amount: U256) {
+    let _address = callerAddress!()
+    let tokenId = lendingProtocol.getTokenId()
+    let lendingProtocolAccExists = lendingProtocol.lendingProtocolAccountExists(_address)
+
+    if (lendingProtocolAccExists) {
+        lendingProtocol.deposit{_address -> tokenId: amount}(amount)
+    } else {
+        lendingProtocol.deposit{_address -> tokenId: amount, ALPH: 1 alph}(amount)
+    }
+}
+
+
