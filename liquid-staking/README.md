@@ -44,10 +44,13 @@ Contract RewardSystem(
 ### Setup
 
 ```bash
+# change to the liquid-staking directory
+cd liquid-staking
+
 # Install dependencies
 npm install
 
-# Start local devnet
+# Start local devnet (using official Alephium image)
 npm run devnet
 
 # Build contracts

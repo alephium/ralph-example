@@ -1,6 +1,25 @@
-+ .devnet/
-+ artifacts/
-+ cache/
-+ node_modules/
-+ coverage/
-+ dist/ 
+# Node dependencies
+node_modules/
+package-lock.json
+
+# Alephium local files
+.alephium/
+artifacts/
+
+# IDE files
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Environment variables
+.env
+.env.local
+
+# Build outputs
+dist/
+build/
+
+# Test coverage
+coverage/
