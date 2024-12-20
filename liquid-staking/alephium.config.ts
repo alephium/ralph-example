@@ -15,4 +15,4 @@ export default {
         typescript: true,
         project: "."
     }
-} as Configuration 
+} as Configuration

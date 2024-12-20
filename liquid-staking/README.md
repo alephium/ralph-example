@@ -1,6 +1,6 @@
 # Alephium Liquid Staking Reward System
 
-A reward system implementation for liquid staking on Alephium blockchain, featuring time-weighted rewards, performance multipliers, and compound rewards.
+A reward system implementation for liquid staking on Alephium blockchain with time-weighted rewards and performance multipliers.
 
 ## Features
 
@@ -11,40 +11,44 @@ A reward system implementation for liquid staking on Alephium blockchain, featur
 - 🔄 Compound rewards
 - ⚖️ Fair reward distribution
 
-## Architecture
+## Contract Overview
 
-```mermaid
-graph TD
-    A[Staker] -->|Stakes Tokens| B[Reward System]
-    B -->|Calculates Rewards| C[Time Multiplier]
-    B -->|Adjusts| D[Pool Performance]
-    B -->|Compounds| E[Rewards]
-    E -->|Updates| F[Staker Account]
+The reward system implements:
+
+```ralph
+Contract RewardSystem(
+    tokenId: ByteVec,
+    rewardTokenId: ByteVec,
+    mut baseRewardRate: U256,
+    mut poolPerformanceMultiplier: U256,
+    owner: Address
+)
 ```
 
-## Getting Started
+### Key Functions
+
+- `stake(amount: U256)`: Stake tokens
+- `withdraw(amount: U256)`: Withdraw staked tokens
+- `claimRewards()`: Claim accumulated rewards
+- `compoundRewards()`: Compound rewards into stake
+- `updatePoolPerformance(newMultiplier: U256)`: Update pool performance multiplier
+
+## Development
 
 ### Prerequisites
 
 - Node.js v16+
 - Docker
-- npm or yarn
+- npm
 
-### Installation
+### Setup
 
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd liquid-staking
-
 # Install dependencies
 npm install
 
-# Start the devnet (Interactive mode)
+# Start local devnet
 npm run devnet
-
-# Or in detached mode
-npm run devnet:detached
 
 # Build contracts
 npm run build
@@ -53,70 +57,22 @@ npm run build
 npm test
 ```
 
-### Development Commands
+### Testing
+
+Tests cover:
+
+- Staking functionality
+- Time-weighted multipliers
+- Reward calculations
+- Pool performance adjustments
+- Access control
 
 ```bash
-# Watch mode for contract compilation
-npm run build:watch
-
-# View devnet logs
-npm run devnet:logs
-
-# Stop devnet
-npm run devnet:stop
-
-# Clean up devnet
-npm run devnet:clean
-
-# Run tests with CI configuration
-npm run test:ci
-```
-
-## Contract Structure
-
-### RewardSystem.ral
-
-Main contract handling reward calculations and distribution:
-
-- Time-weighted multipliers
-- Pool performance adjustments
-- Compound rewards logic
-
-```solidity
-Contract RewardSystem(
-    tokenId: ByteVec,
-    rewardTokenId: ByteVec,
-    mut baseRewardRate: U256,
-    mut poolPerformanceMultiplier: U256
-)
-```
-
-## Testing
-
-The project includes comprehensive tests covering:
-
-- Base reward calculations
-- Time-weighted multipliers
-- Pool performance adjustments
-- Compound rewards
-- Edge cases
-
-```bash
+# Run all tests
 npm test
-```
 
-## Docker Configuration
-
-The project includes Docker support for development:
-
-```yaml
-version: "3.8"
-services:
-  devnet:
-    image: alephium/dev-env:latest
-    ports:
-      - "22973:22973"
-      - "127.0.0.1:15973:15973"
+# Run specific test file
+npm test reward_system.test.ts
 ```
 
 ## Project Structure
@@ -124,40 +80,9 @@ services:
 ```
 liquid-staking/
 ├── contracts/
-│   ├── reward_system.ral       # Main reward contract
-│   └── test/
-│       └── test_token.ral      # Test token contract
+│   └── reward_system.ral     # Main reward contract
 ├── test/
-│   ├── reward_system.test.ts   # Reward system tests
-│   └── utils.ts                # Test utilities
-├── scripts/
-│   └── deploy_reward_system.ts # Deployment script
-└── docker-compose.yml          # Docker configuration
+│   ├── reward_system.test.ts # Contract tests
+│   └── utils.ts              # Test utilities
+└── alephium.config.ts        # Project configuration
 ```
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## Development Workflow
-
-1. Start the devnet:
-
-   ```bash
-   npm run devnet:detached
-   ```
-
-2. Build and watch for changes:
-
-   ```bash
-   npm run build:watch
-   ```
-
-3. Run tests in another terminal:
-   ```bash
-   npm test
-   ```
