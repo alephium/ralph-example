@@ -1,0 +1,7 @@
+Interface RewardCalculator {
+    pub fn calculateReward(
+        stakedAmount: U256,
+        stakingDuration: U256,
+        performanceMultiplier: U256
+    ) -> U256
+} 

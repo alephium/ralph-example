@@ -1,0 +1,95 @@
+Contract RewardSystem(
+    tokenId: ByteVec,
+    rewardTokenId: ByteVec,
+    mut baseRewardRate: U256,
+    mut poolPerformanceMultiplier: U256
+) {
+    const PRECISION = 1_000_000_000_000_000_000 // 1e18
+    
+    struct StakerInfo {
+        mut stakedAmount: U256
+        mut stakingStartTime: U256
+        mut lastUpdateTime: U256
+        mut pendingRewards: U256
+    }
+    
+    mapping(Address => StakerInfo) mut stakerInfos
+    
+    event RewardsClaimed(staker: Address, amount: U256)
+    event RewardsCompounded(staker: Address, amount: U256)
+    event PoolPerformanceUpdated(oldMultiplier: U256, newMultiplier: U256)
+    
+    enum ErrorCodes {
+        NoRewardsToClaim = 0
+        InvalidMultiplier = 1
+    }
+
+    fn calculateTimeMultiplier(stakingDuration: U256) -> U256 {
+        if (stakingDuration > 30 days) {
+            return PRECISION + PRECISION / 10 // 1.1x
+        } else if (stakingDuration > 7 days) {
+            return PRECISION + PRECISION / 20 // 1.05x
+        }
+        return PRECISION
+    }
+
+    fn calculateRewards(staker: Address) -> U256 {
+        let info = stakerInfos[staker]
+        let duration = blockTimeStamp!() - info.lastUpdateTime
+        let timeMultiplier = calculateTimeMultiplier(blockTimeStamp!() - info.stakingStartTime)
+        
+        let baseReward = (info.stakedAmount * duration * baseRewardRate) / PRECISION
+        let poolAdjustedReward = (baseReward * poolPerformanceMultiplier) / PRECISION
+        return (poolAdjustedReward * timeMultiplier) / PRECISION
+    }
+
+    @using(updateFields = true)
+    pub fn stake(amount: U256) -> () {
+        let staker = callerAddress!()
+        let mut info = stakerInfos[staker]
+        
+        if (info.stakedAmount == 0) {
+            info.stakingStartTime = blockTimeStamp!()
+        }
+        
+        info.stakedAmount = info.stakedAmount + amount
+        info.lastUpdateTime = blockTimeStamp!()
+        stakerInfos[staker] = info
+    }
+
+    @using(updateFields = true, assetsInContract = true)
+    pub fn claimRewards() -> () {
+        let staker = callerAddress!()
+        let mut info = stakerInfos[staker]
+        let rewards = calculateRewards(staker)
+        assert!(rewards > 0, ErrorCodes.NoRewardsToClaim)
+        
+        info.lastUpdateTime = blockTimeStamp!()
+        info.pendingRewards = 0
+        stakerInfos[staker] = info
+        
+        transferTokenFromSelf!(staker, rewardTokenId, rewards)
+        emit RewardsClaimed(staker, rewards)
+    }
+
+    @using(updateFields = true)
+    pub fn compoundRewards() -> () {
+        let staker = callerAddress!()
+        let mut info = stakerInfos[staker]
+        let rewards = calculateRewards(staker)
+        
+        info.stakedAmount = info.stakedAmount + rewards
+        info.lastUpdateTime = blockTimeStamp!()
+        stakerInfos[staker] = info
+        
+        emit RewardsCompounded(staker, rewards)
+    }
+
+    @using(updateFields = true)
+    pub fn updatePoolPerformance(newMultiplier: U256) -> () {
+        assert!(newMultiplier > 0, ErrorCodes.InvalidMultiplier)
+        let oldMultiplier = poolPerformanceMultiplier
+        poolPerformanceMultiplier = newMultiplier
+        emit PoolPerformanceUpdated(oldMultiplier, newMultiplier)
+    }
+} 
