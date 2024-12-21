@@ -1,0 +1,87 @@
+{
+  "fullNodeVersion": "v3.9.0",
+  "compilerOptionsUsed": {
+    "ignoreUnusedConstantsWarnings": false,
+    "ignoreUnusedVariablesWarnings": false,
+    "ignoreUnusedFieldsWarnings": false,
+    "ignoreUnusedPrivateFunctionsWarnings": false,
+    "ignoreUpdateFieldsCheckWarnings": false,
+    "ignoreCheckExternalCallerWarnings": false,
+    "ignoreUnusedFunctionReturnWarnings": false,
+    "skipAbstractContractCheck": false
+  },
+  "infos": {
+    "AddOracle": {
+      "sourceFile": "scripts.ral",
+      "sourceCodeHash": "161d08ac1c8aa36b72f645a258991bcf004976d600f700dfe8061ecb5ca14de3",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "AncillaryData": {
+      "sourceFile": "datafeed.ral",
+      "sourceCodeHash": "7a47884227c87d0cdc6a359e29ea1179d2930e4feb5c33dce13fd6b7be394186",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "ApproveToken": {
+      "sourceFile": "scripts.ral",
+      "sourceCodeHash": "161d08ac1c8aa36b72f645a258991bcf004976d600f700dfe8061ecb5ca14de3",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "CompleteRequest": {
+      "sourceFile": "scripts.ral",
+      "sourceCodeHash": "161d08ac1c8aa36b72f645a258991bcf004976d600f700dfe8061ecb5ca14de3",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "IFungibleToken": {
+      "sourceFile": "..\\node_modules\\@alephium\\web3\\std\\fungible_token_interface.ral",
+      "sourceCodeHash": "62910bf11e1eeb6cb2fd468626ff606a9b06306b2b81590c3b10f6deb5966bde",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "MakeRequest": {
+      "sourceFile": "scripts.ral",
+      "sourceCodeHash": "161d08ac1c8aa36b72f645a258991bcf004976d600f700dfe8061ecb5ca14de3",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "ProposePrice": {
+      "sourceFile": "scripts.ral",
+      "sourceCodeHash": "161d08ac1c8aa36b72f645a258991bcf004976d600f700dfe8061ecb5ca14de3",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "RemoveOracle": {
+      "sourceFile": "scripts.ral",
+      "sourceCodeHash": "161d08ac1c8aa36b72f645a258991bcf004976d600f700dfe8061ecb5ca14de3",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "Request": {
+      "sourceFile": "datafeed.ral",
+      "sourceCodeHash": "7a47884227c87d0cdc6a359e29ea1179d2930e4feb5c33dce13fd6b7be394186",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "Token": {
+      "sourceFile": "token.ral",
+      "sourceCodeHash": "31da4da8fb6c30b3cc60c6da86790758bda7d5620164c0fbfa20469f3a534542",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "03cbbd308bd80bfe297a4bc92ee1db1f4803983033792c0ec9d4b69220ad4d3e"
+    },
+    "TokenFactory": {
+      "sourceFile": "token_factory.ral",
+      "sourceCodeHash": "e4a7384bb6125cdf5a23fc3b3b979d9a1f9a3e85746f592c1b6a6ee9dfe9cf8b",
+      "bytecodeDebugPatch": "=6-2+69=11-1+f=114+16087e0240204372656174656420746f6b656e20636f6e747261637420776974682049443a2000=6",
+      "codeHashDebug": "dc5e2968a9cbada3c13e298932547a0e1a84766db741b66f3178b6adb39c7702"
+    },
+    "WeatherDataFeed": {
+      "sourceFile": "datafeed.ral",
+      "sourceCodeHash": "7a47884227c87d0cdc6a359e29ea1179d2930e4feb5c33dce13fd6b7be394186",
+      "bytecodeDebugPatch": "=12+8=1-1=2-2+cc=2-2+ee=2+5=1-1=1-4+2=1-2+2=2-3+32=2-1+a3=2-2+87=2-1=1+c=1+52=1-2+45=2+4=2+5=2-1+bf=1+6=1-3+e=135-1+6=60+7a7e0214696e73657274206174206d617020706174683a2000=33-1+5=60+7a7e021472656d6f7665206174206d617020706174683a2000=299-1+d=192+7a7e0214696e73657274206174206d617020706174683a2000=2023-1+5=37-1+a=38+7a7e021472656d6f7665206174206d617020706174683a2000=44+7a7e0214696e73657274206174206d617020706174683a2000=52",
+      "codeHashDebug": "378f373c790df4c39c7ec2e41a94d70a8c9fae6a0b99c9e74fa78dad0077ad49"
+    }
+  }
+}
