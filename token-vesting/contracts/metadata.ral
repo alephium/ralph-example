@@ -1,0 +1,46 @@
+Contract Metadata(
+  vesting: TokenVesting, 
+  address: Address, 
+  mut lockedAmount: U256,
+  claimedAmountAfterTransfer: U256,
+  claimedBalance: U256
+) {
+  const InvalidCaller = 0
+  const InsufficientBalance = 1
+
+  pub fn getAddress() -> Address {
+    return address
+  }
+
+  @using(assetsInContract = true, preapprovedAssets = true, updateFields = true)
+  pub fn unlockToken(amount: U256) -> () {
+    checkCaller!(callerContractId!() == contractId!(vesting), InvalidCaller)
+    assert!(lockedAmount >= amount, InsufficientBalance)
+    transferTokenToSelf!(address, ALPH, amount)
+    lockedAmount = lockedAmount - amount
+    if(lockedAmount == 0){
+      destroySelf!(address)
+    }
+  }
+
+  pub fn claimedAmount() -> U256 {
+    return claimedAmountAfterTransfer
+  }
+
+  pub fn claimed() -> U256 {
+    return claimedBalance
+  }
+
+  // @using(assetsInContract = true)
+  // pub fn withdraw() -> () {
+  //   checkCaller!(callerContractId!() == contractId!(auction), InvalidCaller)
+  //   destroySelf!(address)
+  // }
+
+  // @using(assetsInContract = true)
+  // pub fn auctionEnd(to: Address, amount: U256) -> () {
+  //   checkCaller!(callerContractId!() == contractId!(auction), InvalidCaller)
+  //   transferTokenFromSelf!(to, ALPH, amount)
+  //   destroySelf!(address)
+  // }
+}

@@ -1,10 +1,5 @@
 const ONE = 1e18
 
-struct Metadata {
-  claimedAmountAfterTransfer: U256,
-  claimedBalance: U256
-}
-
 enum Ramp {
   Cliff = 0
   Linear = 1
@@ -17,21 +12,28 @@ struct Milestone {
 }
 
 Contract TokenVesting(
+  metadataTemplateId: ByteVec,
   manager: Address,
   mut milestonesCount: U256,
-  mut lastReachedMilestone: U256,
-  mut totalClaimed: U256,
-  mut claimableAmount: U256,
-  mut totalAmount: U256
+  // mut lastReachedMilestone: U256,
+  // mut totalClaimed: U256,
+  // mut claimableAmount: U256,
+  mut balance: U256,
+  mut totalLocked: U256,
+  mut recipients: U256
 ){
   mapping[U256, Milestone] milestones
-  mapping[Address, Metadata] metadata
-  event Claim(account: Address, amount: U256)
+
+  event Claim(recipient: Address, amount: U256)
   
   event MilestoneReached(index: U256)
 
+  event NewRecipientAdded(recipient: Address, amount: U256)
+  
+  event NewRecipientsAdded(totalRecipients: U256, totalAmount: U256)
+
   enum ErrorCodes {
-    InvalidArg = 0
+    InvalidCaller = 0
     MilestoneArrayEmpty = 1
     LastPercentageMustBe100 = 2
     OnlyLastPercentageCanBe100 = 3
@@ -39,15 +41,18 @@ Contract TokenVesting(
     PercentagesNotSorted = 5
     MoreThanTwoEqualPercentages = 6
     EqualPercentagesOnlyAllowedBeforeLinear = 7
+    InsufficientAlph = 8
+    AlreadyHasLock = 9
+    InvalidInputArrays = 10
+    InvalidTotalAmount = 11
   }
 
   // max milestones is 50
-  pub fn initialize(milestonesArr: [Milestone; 50]) -> () {
-    let _ = milestonesArr
-  }
-
   @using(preapprovedAssets = true, updateFields = true)
-  fn checkMilestones(milestonesArr: [Milestone; 50]) -> () {
+  pub fn initialize(milestonesArr: [Milestone; 50]) -> () {
+    let caller = callerAddress!()
+    checkCaller!(caller == manager, ErrorCodes.InvalidCaller)
+
     assert!(len!(milestonesArr) > 0, ErrorCodes.MilestoneArrayEmpty)
 
     let mut current = milestonesArr[0]
@@ -66,7 +71,6 @@ Contract TokenVesting(
         if(twoInARow){
           assert!(previous.percentage != current.percentage, ErrorCodes.MoreThanTwoEqualPercentages)
           assert!(current.ramp == Ramp.Linear, ErrorCodes.EqualPercentagesOnlyAllowedBeforeLinear)
-
         }
         twoInARow = previous.percentage == current.percentage
       }
@@ -79,8 +83,52 @@ Contract TokenVesting(
         assert!(current.percentage == ONE, ErrorCodes.OnlyLastPercentageCanBe100)
       }
     }
-
     milestonesCount = milestonesLen
   }
 
+  @using(preapprovedAssets = true, updateFields = true)
+  pub fn addRecipient(recipient: Address, amount: U256) -> () {
+    let caller = callerAddress!()
+    checkCaller!(caller == manager, ErrorCodes.InvalidCaller)
+    
+    createSub{caller -> ALPH : amount + 1 alph}(caller, recipient, amount)
+    
+    recipients = recipients + 1
+    balance = balance + amount
+    totalLocked = totalLocked + amount
+    emit NewRecipientAdded(recipient, amount)
+  }
+
+  @using(preapprovedAssets = true, updateFields = true)
+  pub fn addRecipients(addresses: [Address; 100], amounts: [U256; 100], totalAmount: U256) -> () {
+    let caller = callerAddress!()
+    checkCaller!(caller == manager, ErrorCodes.InvalidCaller)
+    assert!(len!(addresses) == len!(amounts), ErrorCodes.InvalidInputArrays)
+
+    totalLocked = totalLocked + totalAmount
+    balance = balance + totalAmount
+    let addresesLen = len!(addresses)
+    recipients = recipients + addresesLen
+    let mut totalAmountCheck = 0
+
+    for (let mut index = 0; index < addresesLen; index = index + 1) {
+      let currAddress = addresses[index]
+      let currAmount = amounts[index]
+      totalAmountCheck = totalAmountCheck + currAmount
+      createSub{caller -> ALPH : currAmount + 1 alph}(caller, currAddress, currAmount)
+    }
+
+    assert!(totalAmountCheck == totalAmount, ErrorCodes.InvalidTotalAmount)
+    emit NewRecipientsAdded(addresesLen, totalAmount)
+  }
+
+  @using(preapprovedAssets = true)
+  fn createSub(caller: Address, recipient: Address, amount: U256) -> () {
+    let path = toByteVec!(recipient)
+    let metadataContractId = subContractId!(path)
+    assert!(!contractExists!(metadataContractId), ErrorCodes.AlreadyHasLock)
+    assert!(tokenRemaining!(caller, ALPH) >= amount + 1 alph, ErrorCodes.InsufficientAlph)
+    let (encodedImmFields, encodedMutFields) = Metadata.encodeFields!(selfContract!(), recipient, amount, 0, 0)
+    let _ = copyCreateSubContract!{caller -> ALPH : amount + 1 alph}(path, metadataTemplateId, encodedImmFields, encodedMutFields)
+  }
 }
