@@ -14,13 +14,10 @@ struct Milestone {
 Contract TokenVesting(
   metadataTemplateId: ByteVec,
   manager: Address,
-  mut milestonesCount: U256,
-  // mut lastReachedMilestone: U256,
-  // mut totalClaimed: U256,
-  // mut claimableAmount: U256,
-  mut balance: U256,
-  mut totalLocked: U256,
-  mut recipients: U256
+  mut totalMilestones: U256,
+  mut totalAmountLocked: U256,
+  mut totalAmountUnlocked: U256,
+  mut totalRecipients: U256
 ){
   mapping[U256, Milestone] milestones
 
@@ -45,6 +42,7 @@ Contract TokenVesting(
     AlreadyHasLock = 9
     InvalidInputArrays = 10
     InvalidTotalAmount = 11
+    MetadataNotExists = 12
   }
 
   // max milestones is 50
@@ -83,7 +81,7 @@ Contract TokenVesting(
         assert!(current.percentage == ONE, ErrorCodes.OnlyLastPercentageCanBe100)
       }
     }
-    milestonesCount = milestonesLen
+    totalMilestones = milestonesLen
   }
 
   @using(preapprovedAssets = true, updateFields = true)
@@ -93,9 +91,8 @@ Contract TokenVesting(
     
     createSub{caller -> ALPH : amount + 1 alph}(caller, recipient, amount)
     
-    recipients = recipients + 1
-    balance = balance + amount
-    totalLocked = totalLocked + amount
+    totalRecipients = totalRecipients + 1
+    totalAmountLocked = totalAmountLocked + amount
     emit NewRecipientAdded(recipient, amount)
   }
 
@@ -105,10 +102,9 @@ Contract TokenVesting(
     checkCaller!(caller == manager, ErrorCodes.InvalidCaller)
     assert!(len!(addresses) == len!(amounts), ErrorCodes.InvalidInputArrays)
 
-    totalLocked = totalLocked + totalAmount
-    balance = balance + totalAmount
+    totalAmountLocked = totalAmountLocked + totalAmount
     let addresesLen = len!(addresses)
-    recipients = recipients + addresesLen
+    totalRecipients = totalRecipients + addresesLen
     let mut totalAmountCheck = 0
 
     for (let mut index = 0; index < addresesLen; index = index + 1) {
@@ -122,13 +118,79 @@ Contract TokenVesting(
     emit NewRecipientsAdded(addresesLen, totalAmount)
   }
 
+  @using(preapprovedAssets = true, updateFields = true)
+  pub fn claim() -> () {
+    let caller = callerAddress!()
+    let metadata = getMetadata(caller)
+
+    checkCaller!(caller == metadata.getAddress(), ErrorCodes.InvalidCaller)
+
+    let currClaimIndex = metadata.getClaimIndex()
+    let (percentage, claimableIndex) = getClaimableRecord(currClaimIndex)
+    let amount = metadata.getLockedAmount() * percentage / ONE
+    
+    metadata.unlockToken(amount, claimableIndex)
+    
+    totalAmountUnlocked = totalAmountUnlocked + amount
+    emit Claim(caller, amount)
+  }
+
+  pub fn getClaimableAmount(address: Address) -> U256 {
+    let metadata = getMetadata(address)
+    let claimIndex = metadata.getClaimIndex()
+    let (percentage, _) = getClaimableRecord(claimIndex)
+    let amount = metadata.getLockedAmount() * percentage / ONE
+    return amount
+  }
+
+  pub fn amountLeftInContract () -> U256 {
+    return totalAmountLocked - totalAmountUnlocked
+  }
+
+  pub fn getMilestoneData (index: U256) -> Milestone {
+    return milestones[index]
+  }
+
+  fn getClaimableRecord(startIndex: U256) -> (U256, U256) {
+    let mut previous = milestones[startIndex]
+    let mut percentage = previous.percentage
+    let mut claimableIndex = startIndex
+
+    if(previous.timestamp > blockTimeStamp!()){
+      return 0, claimableIndex
+    }
+
+    for (let mut index = startIndex + 1; index < totalMilestones; index = index + 1){
+      let current = milestones[index]
+      if (current.timestamp > blockTimeStamp!()){
+        return percentage, claimableIndex
+      }
+
+      if (current.ramp == Ramp.Linear) {
+        percentage = percentage + ((blockTimeStamp!() - previous.timestamp) * (current.percentage - previous.percentage))
+            / (current.timestamp - previous.timestamp)
+      }
+
+      claimableIndex = claimableIndex + 1
+      previous = current
+    }
+
+    return percentage, claimableIndex
+  }
+
   @using(preapprovedAssets = true)
   fn createSub(caller: Address, recipient: Address, amount: U256) -> () {
     let path = toByteVec!(recipient)
     let metadataContractId = subContractId!(path)
     assert!(!contractExists!(metadataContractId), ErrorCodes.AlreadyHasLock)
     assert!(tokenRemaining!(caller, ALPH) >= amount + 1 alph, ErrorCodes.InsufficientAlph)
-    let (encodedImmFields, encodedMutFields) = Metadata.encodeFields!(selfContract!(), recipient, amount, 0, 0)
+    let (encodedImmFields, encodedMutFields) = Metadata.encodeFields!(selfContract!(), recipient, amount, 0, 0, 0)
     let _ = copyCreateSubContract!{caller -> ALPH : amount + 1 alph}(path, metadataTemplateId, encodedImmFields, encodedMutFields)
+  }
+
+  fn getMetadata(address: Address) -> Metadata {
+    let metadataContractId = subContractId!(toByteVec!(address))
+    assert!(contractExists!(metadataContractId), ErrorCodes.MetadataNotExists)
+    return Metadata(metadataContractId)
   }
 }
