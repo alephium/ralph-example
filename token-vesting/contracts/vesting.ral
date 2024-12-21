@@ -11,6 +11,12 @@ struct Milestone {
   mut percentage: U256
 }
 
+struct UserMetadata {
+  lockedAmount: U256,
+  totalClaimed: U256,
+  lastClaimTimestamp: U256
+}
+
 Contract TokenVesting(
   metadataTemplateId: ByteVec,
   manager: Address,
@@ -143,7 +149,16 @@ Contract TokenVesting(
     return amount
   }
 
-  pub fn amountLeftInContract () -> U256 {
+  pub fn getUserMetadata(address: Address) -> UserMetadata {
+    let metadata = getMetadata(address)
+    return UserMetadata { 
+      lockedAmount: metadata.getLockedAmount(), 
+      totalClaimed: metadata.getTotalClaimed(),
+      lastClaimTimestamp: metadata.getLastClaimedTime()
+    }
+  }
+
+  pub fn getAmountLeftInContract () -> U256 {
     return totalAmountLocked - totalAmountUnlocked
   }
 
