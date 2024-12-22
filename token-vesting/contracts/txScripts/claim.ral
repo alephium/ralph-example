@@ -1,0 +1,3 @@
+TxScript Claim(vestingContract: TokenVesting) {
+  vestingContract.claim{callerAddress!() -> ALPH: 1 alph}()
+}

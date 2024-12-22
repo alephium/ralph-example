@@ -7,10 +7,27 @@
     "ignoreUnusedPrivateFunctionsWarnings": false,
     "ignoreUpdateFieldsCheckWarnings": false,
     "ignoreCheckExternalCallerWarnings": false,
-    "ignoreUnusedFunctionReturnWarnings": false,
-    "skipAbstractContractCheck": false
+    "ignoreUnusedFunctionReturnWarnings": false
   },
   "infos": {
+    "AddRecipient": {
+      "sourceFile": "txScripts/addRecipient.ral",
+      "sourceCodeHash": "383df2f2b0fc7fccb57a546512b1d836ee03d7ab697c8ee82814591a0d101beb",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "AddRecipients": {
+      "sourceFile": "txScripts/addRecipients.ral",
+      "sourceCodeHash": "9e59e1a14e1602319f935e9e5abb6b7a80cbc1dd90af6f09351fc4763e211357",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "Claim": {
+      "sourceFile": "txScripts/claim.ral",
+      "sourceCodeHash": "14d166358beebdeac06a5e7602dc4731aab712096a93fde7d9f62eb246300c88",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
     "GetToken": {
       "sourceFile": "test/get_token.ral",
       "sourceCodeHash": "422128094e7c46cf6e7e079fe0c257d12b943e335ce3fed2f0833bb660afb59b",
@@ -20,6 +37,12 @@
     "IFungibleToken": {
       "sourceFile": "../node_modules/@alephium/web3/std/fungible_token_interface.ral",
       "sourceCodeHash": "62910bf11e1eeb6cb2fd468626ff606a9b06306b2b81590c3b10f6deb5966bde",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "Initialize": {
+      "sourceFile": "txScripts/initialize.ral",
+      "sourceCodeHash": "d85e91587aed63c8b86fabd6100901b5ac202f0820ea78c1d426e95ed95bd1ca",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },
@@ -46,6 +69,12 @@
       "sourceCodeHash": "cb0edc6b15b0fc8b17edd46516631d475acc3d58f4de38587c10d563c7c29f5f",
       "bytecodeDebugPatch": "=6-2+52=2-1=1+2=2-2+7d=2-6+ec=3-1+0=2+5=1-1=2-2+654799=2-2+6c=2-2+84=2+d=1-1=2-2+f1=17-1+9=1294-2+60=208+7a7e0214696e73657274206174206d617020706174683a2000=119-1+c=3398",
       "codeHashDebug": "aa351cd451c59b51bbb1286295e1514e8351aefba3d36c16d12b8c40899ec48b"
+    },
+    "UpdateLastReachedMilestone": {
+      "sourceFile": "txScripts/updateLastReachedMilestone.ral",
+      "sourceCodeHash": "88b233f48c37c0fee9a3e8eeead15315a631a4fef92bb45d4a2bb00d78ba047c",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
     },
     "UserMetadata": {
       "sourceFile": "vesting.ral",

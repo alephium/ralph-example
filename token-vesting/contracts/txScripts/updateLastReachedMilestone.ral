@@ -1,0 +1,3 @@
+TxScript UpdateLastReachedMilestone(vestingContract: TokenVesting, startIndex: U256) {
+  vestingContract.updateLastReachedMilestone(startIndex)
+}

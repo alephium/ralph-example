@@ -1,6 +1,6 @@
 import { expectAssertionError, testAddress, testPrivateKey } from '@alephium/web3-test'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
-import { GetToken, Metadata, TestToken } from '../artifacts/ts'
+import { GetToken, Metadata, TestToken, TokenVesting } from '../artifacts/ts'
 import {
   web3,
   ALPH_TOKEN_ID,
@@ -31,21 +31,20 @@ export async function deployMetadataTemplate() {
   })
 }
 
-export async function deployTestToken(totalSupply: bigint) {
-  const testToken = await TestToken.deploy(defaultSigner, {
+export async function deployVestingContract(manager: Address, startTime: number) {
+  const metadataTemplate = await deployMetadataTemplate()
+  return await TokenVesting.deploy(defaultSigner, {
     initialFields: {
-      totalSupply: totalSupply
-    },
-    issueTokenAmount: totalSupply
+      metadataTemplateId: metadataTemplate.contractInstance.contractId,
+      manager,
+      startTime: BigInt(startTime),
+      totalMilestones: 0n,
+      totalAmountLocked: 0n,
+      totalAmountUnlocked: 0n,
+      totalRecipients: 0n,
+      lastReachedMilestone: 0n
+    }
   })
-  await GetToken.execute(defaultSigner, {
-    initialFields: {
-      token: testToken.contractInstance.contractId,
-      amount: totalSupply
-    },
-    attoAlphAmount: DUST_AMOUNT
-  })
-  return testToken
 }
 
 export function randomP2PKHAddress(groupIndex = 0): string {
