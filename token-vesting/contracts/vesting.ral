@@ -14,7 +14,7 @@ struct Milestone {
 struct UserMetadata {
   lockedAmount: U256,
   totalClaimed: U256,
-  lastClaimTimestamp: U256
+  lastProcessedTimestamp: U256
 }
 
 Contract TokenVesting(
@@ -125,14 +125,14 @@ Contract TokenVesting(
     checkCaller!(caller == metadata.getAddress(), ErrorCodes.InvalidCaller)
 
     let currClaimIndex = metadata.getClaimIndex()
-    let lastClaimTimestamp = metadata.getLastClaimedTime()
+    let lastProcessedTimestamp = metadata.getLastProcessedTime()
 
     updateLastReachedMilestone(lastReachedMilestone)
     
-    let (percentage, claimIndex, currClaimTimestamp) = getClaimableRecord(currClaimIndex, lastClaimTimestamp)
+    let (percentage, claimIndex, currProcessedTimestamp) = getClaimableRecord(currClaimIndex, lastProcessedTimestamp)
     let amount = metadata.getLockedAmount() * percentage / ONE
     
-    metadata.unlockToken(amount, claimIndex, currClaimTimestamp)
+    metadata.unlockToken(amount, claimIndex, currProcessedTimestamp)
     
     totalAmountUnlocked = totalAmountUnlocked + amount
     emit Claim(caller, amount)
@@ -141,8 +141,8 @@ Contract TokenVesting(
   pub fn getClaimableAmount(address: Address) -> U256 {
     let metadata = getMetadata(address)
     let claimIndex = metadata.getClaimIndex()
-    let lastClaimTimeStamp = metadata.getLastClaimedTime()
-    let (percentage, _, _) = getClaimableRecord(claimIndex, lastClaimTimeStamp)
+    let lastProcessedTimestamp = metadata.getLastProcessedTime()
+    let (percentage, _, _) = getClaimableRecord(claimIndex, lastProcessedTimestamp)
     let amount = metadata.getLockedAmount() * percentage / ONE
     return amount
   }
@@ -152,7 +152,7 @@ Contract TokenVesting(
     return UserMetadata { 
       lockedAmount: metadata.getLockedAmount(), 
       totalClaimed: metadata.getTotalClaimed(),
-      lastClaimTimestamp: metadata.getLastClaimedTime()
+      lastProcessedTimestamp: metadata.getLastProcessedTime()
     }
   }
 
@@ -201,13 +201,13 @@ Contract TokenVesting(
     }
   }
 
-  fn getClaimableRecord(userClaimIndex: U256, lastClaimTimestamp: U256) -> (U256, U256, U256) {
+  fn getClaimableRecord(userClaimIndex: U256, userLastProcessedTime: U256) -> (U256, U256, U256) {
     let mut prevMilestone = milestones[lastReachedMilestone]
     let mut percentage = 0
     let mut claimIndex = userClaimIndex
-    let mut lastProcessedTimestamp = lastClaimTimestamp
+    let mut lastProcessedTimestamp = userLastProcessedTime
 
-    if(userClaimIndex > lastReachedMilestone) {
+    if(claimIndex > lastReachedMilestone) {
       return 0, claimIndex, lastProcessedTimestamp
     }
 

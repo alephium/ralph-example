@@ -4,7 +4,7 @@ Contract Metadata(
   lockedAmount: U256,
   mut totalClaimed: U256,
   mut claimIndex: U256,
-  mut lastClaimTimestamp: U256
+  mut lastProcessedTimestamp: U256
 ) {
   const InvalidCaller = 0
   const InsufficientBalance = 1
@@ -19,7 +19,7 @@ Contract Metadata(
     assert!(lockedAmount - totalClaimed >= amount, InsufficientBalance)
     transferTokenFromSelf!(address, ALPH, amount)
     totalClaimed = totalClaimed + amount
-    lastClaimTimestamp = lastClaimTimeStamp
+    lastProcessedTimestamp = lastClaimTimeStamp
     claimIndex = claimIndexUpdate
     if(lockedAmount - totalClaimed == 0){
       destroySelf!(address)
@@ -38,7 +38,7 @@ Contract Metadata(
     return claimIndex
   }
 
-  pub fn getLastClaimedTime() -> U256 {
-    return lastClaimTimestamp
+  pub fn getLastProcessedTime() -> U256 {
+    return lastProcessedTimestamp
   }
 }
