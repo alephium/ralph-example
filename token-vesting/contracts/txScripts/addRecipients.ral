@@ -1,3 +1,3 @@
-TxScript AddRecipients(vestingContract: TokenVesting, addresses: [Address; 100], amounts: [U256; 100], totalAmount: U256 ) {
-  vestingContract.addRecipients{callerAddress!() -> ALPH: totalAmount + 100 alph}(addresses, amounts, totalAmount)
+TxScript AddRecipients(vestingContract: TokenVesting, addresses: [Address; 5], amounts: [U256; 5], totalAmount: U256 ) {
+  vestingContract.addRecipients{callerAddress!() -> ALPH: totalAmount * 2 + 5 alph}(addresses, amounts, totalAmount)
 }

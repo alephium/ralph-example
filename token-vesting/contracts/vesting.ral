@@ -45,16 +45,15 @@ Contract TokenVesting(
     TimestampsNotSorted = 4
     PercentagesNotSorted = 5
     InvalidRampSet = 6
-    InsufficientAlph = 8
-    AlreadyHasLock = 9
-    InvalidInputArrays = 10
-    InvalidTotalAmount = 11
-    MetadataNotExists = 12
+    InsufficientAlph = 7
+    AlreadyHasLock = 8
+    InvalidTotalAmount = 9
+    MetadataNotExists = 10
   }
 
-  // max milestones is 50
+  // max milestones is 50, for testing i'm setting as 10
   @using(preapprovedAssets = true, updateFields = true)
-  pub fn initialize(milestonesArr: [Milestone; 50]) -> () {
+  pub fn initialize(milestonesArr: [Milestone; 10]) -> () {
     let caller = callerAddress!()
     checkCaller!(caller == manager, ErrorCodes.InvalidCaller)
 
@@ -78,9 +77,9 @@ Contract TokenVesting(
       milestones.insert!(callerAddress!(), index, current)
 
       if (index == milestonesLen - 1){
-        assert!(current.percentage != ONE, ErrorCodes.LastPercentageMustBe100)
+        assert!(current.percentage == ONE, ErrorCodes.LastPercentageMustBe100)
       }else{
-        assert!(current.percentage == ONE, ErrorCodes.OnlyLastPercentageCanBe100)
+        assert!(current.percentage != ONE, ErrorCodes.OnlyLastPercentageCanBe100)
       }
     }
     totalMilestones = milestonesLen
@@ -98,11 +97,11 @@ Contract TokenVesting(
     emit NewRecipientAdded(recipient, amount)
   }
 
+  // can take up to 100, but for testing we set as 5
   @using(preapprovedAssets = true, updateFields = true)
-  pub fn addRecipients(addresses: [Address; 100], amounts: [U256; 100], totalAmount: U256) -> () {
+  pub fn addRecipients(addresses: [Address; 5], amounts: [U256; 5], totalAmount: U256) -> () {
     let caller = callerAddress!()
     checkCaller!(caller == manager, ErrorCodes.InvalidCaller)
-    assert!(len!(addresses) == len!(amounts), ErrorCodes.InvalidInputArrays)
 
     totalAmountLocked = totalAmountLocked + totalAmount
     let addresesLen = len!(addresses)
@@ -165,6 +164,30 @@ Contract TokenVesting(
 
   pub fn getMilestoneData (index: U256) -> Milestone {
     return milestones[index]
+  }
+
+  pub fn getTotalMilestones () -> U256 {
+    return totalMilestones
+  }
+
+  pub fn getTotalLocked () -> U256 {
+    return totalAmountLocked
+  }
+
+  pub fn getTotalAmountStillLocked () -> U256 {
+    return totalAmountLocked - totalAmountUnlocked
+  }
+
+  pub fn getTotalAmountUnlocked () -> U256 {
+    return totalAmountUnlocked
+  }
+
+  pub fn getTotalRecipients () -> U256 {
+    return totalRecipients
+  }
+
+  pub fn getLastReachedTimestamps () -> U256 {
+    return lastReachedMilestone
   }
 
   @using(updateFields = true, checkExternalCaller = false)

@@ -20,6 +20,7 @@
     "@alephium/web3-wallet": "^1.8.0"
   },
   "devDependencies": {
+    "@types/bs58": "^4.0.4",
     "@types/jest": "^27.5.1",
     "@types/node": "^16.18.23",
     "@typescript-eslint/eslint-plugin": "^5.57.0",
