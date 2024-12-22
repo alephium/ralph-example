@@ -44,6 +44,7 @@ Contract TokenVesting(
     OnlyLastPercentageCanBe100 = 3
     TimestampsNotSorted = 4
     PercentagesNotSorted = 5
+    InvalidRampSet = 6
     InsufficientAlph = 8
     AlreadyHasLock = 9
     InvalidInputArrays = 10
@@ -71,6 +72,8 @@ Contract TokenVesting(
         assert!(previous.timestamp <= current.timestamp, ErrorCodes.TimestampsNotSorted)
         assert!(previous.percentage < current.percentage, ErrorCodes.PercentagesNotSorted)
       }
+
+      assert!(current.ramp == Ramp.Cliff || current.ramp == Ramp.Linear, ErrorCodes.InvalidRampSet)
 
       milestones.insert!(callerAddress!(), index, current)
 
