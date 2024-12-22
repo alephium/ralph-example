@@ -20,10 +20,12 @@ struct UserMetadata {
 Contract TokenVesting(
   metadataTemplateId: ByteVec,
   manager: Address,
+  startTime: U256,
   mut totalMilestones: U256,
   mut totalAmountLocked: U256,
   mut totalAmountUnlocked: U256,
-  mut totalRecipients: U256
+  mut totalRecipients: U256,
+  mut lastReachedMilestone: U256
 ){
   mapping[U256, Milestone] milestones
 
@@ -42,8 +44,6 @@ Contract TokenVesting(
     OnlyLastPercentageCanBe100 = 3
     TimestampsNotSorted = 4
     PercentagesNotSorted = 5
-    MoreThanTwoEqualPercentages = 6
-    EqualPercentagesOnlyAllowedBeforeLinear = 7
     InsufficientAlph = 8
     AlreadyHasLock = 9
     InvalidInputArrays = 10
@@ -60,7 +60,6 @@ Contract TokenVesting(
     assert!(len!(milestonesArr) > 0, ErrorCodes.MilestoneArrayEmpty)
 
     let mut current = milestonesArr[0]
-    let mut twoInARow = false
 
     let milestonesLen = len!(milestonesArr)
 
@@ -71,12 +70,6 @@ Contract TokenVesting(
 
         assert!(previous.timestamp <= current.timestamp, ErrorCodes.TimestampsNotSorted)
         assert!(previous.percentage < current.percentage, ErrorCodes.PercentagesNotSorted)
-        
-        if(twoInARow){
-          assert!(previous.percentage != current.percentage, ErrorCodes.MoreThanTwoEqualPercentages)
-          assert!(current.ramp == Ramp.Linear, ErrorCodes.EqualPercentagesOnlyAllowedBeforeLinear)
-        }
-        twoInARow = previous.percentage == current.percentage
       }
 
       milestones.insert!(callerAddress!(), index, current)
@@ -132,10 +125,14 @@ Contract TokenVesting(
     checkCaller!(caller == metadata.getAddress(), ErrorCodes.InvalidCaller)
 
     let currClaimIndex = metadata.getClaimIndex()
-    let (percentage, claimableIndex) = getClaimableRecord(currClaimIndex)
+    let lastClaimTimestamp = metadata.getLastClaimedTime()
+
+    updateLastReachedMilestone(lastReachedMilestone)
+    
+    let (percentage, claimIndex, currClaimTimestamp) = getClaimableRecord(currClaimIndex, lastClaimTimestamp)
     let amount = metadata.getLockedAmount() * percentage / ONE
     
-    metadata.unlockToken(amount, claimableIndex)
+    metadata.unlockToken(amount, claimIndex, currClaimTimestamp)
     
     totalAmountUnlocked = totalAmountUnlocked + amount
     emit Claim(caller, amount)
@@ -144,7 +141,8 @@ Contract TokenVesting(
   pub fn getClaimableAmount(address: Address) -> U256 {
     let metadata = getMetadata(address)
     let claimIndex = metadata.getClaimIndex()
-    let (percentage, _) = getClaimableRecord(claimIndex)
+    let lastClaimTimeStamp = metadata.getLastClaimedTime()
+    let (percentage, _, _) = getClaimableRecord(claimIndex, lastClaimTimeStamp)
     let amount = metadata.getLockedAmount() * percentage / ONE
     return amount
   }
@@ -166,31 +164,94 @@ Contract TokenVesting(
     return milestones[index]
   }
 
-  fn getClaimableRecord(startIndex: U256) -> (U256, U256) {
-    let mut previous = milestones[startIndex]
-    let mut percentage = previous.percentage
-    let mut claimableIndex = startIndex
-
-    if(previous.timestamp > blockTimeStamp!()){
-      return 0, claimableIndex
+  @using(updateFields = true, checkExternalCaller = false)
+  pub fn updateLastReachedMilestone(startIndex: U256) -> (){
+    let mut prevMilestone = milestones[startIndex]
+    
+    if (prevMilestone.timestamp > blockTimeStamp!()) {
+      return
     }
 
-    for (let mut index = startIndex + 1; index < totalMilestones; index = index + 1){
-      let current = milestones[index]
-      if (current.timestamp > blockTimeStamp!()){
-        return percentage, claimableIndex
+    let mut lastIndex = lastReachedMilestone
+
+    let mut loopComplete = false
+
+    let mut index = startIndex
+    while (index < totalMilestones && !loopComplete){
+      let currMilestone = milestones[index]
+
+      if (currMilestone.timestamp <= blockTimeStamp!()){
+        prevMilestone = currMilestone
+      }else{
+        if (index > lastIndex + 1){
+          lastIndex = index - 1
+        }
+        loopComplete = true
       }
 
-      if (current.ramp == Ramp.Linear) {
-        percentage = percentage + ((blockTimeStamp!() - previous.timestamp) * (current.percentage - previous.percentage))
-            / (current.timestamp - previous.timestamp)
-      }
-
-      claimableIndex = claimableIndex + 1
-      previous = current
+      index = index + 1
     }
 
-    return percentage, claimableIndex
+    if (!loopComplete && lastIndex < totalMilestones - 1){
+      lastIndex = totalMilestones - 1
+    }
+
+    if(lastIndex != lastReachedMilestone){
+      lastReachedMilestone = lastIndex
+    }
+  }
+
+  fn getClaimableRecord(userClaimIndex: U256, lastClaimTimestamp: U256) -> (U256, U256, U256) {
+    let mut prevMilestone = milestones[lastReachedMilestone]
+    let mut percentage = 0
+    let mut claimIndex = userClaimIndex
+    let mut lastProcessedTimestamp = lastClaimTimestamp
+
+    if(userClaimIndex > lastReachedMilestone) {
+      return 0, claimIndex, lastProcessedTimestamp
+    }
+
+    if(prevMilestone.timestamp > blockTimeStamp!() && prevMilestone.ramp != Ramp.Linear){
+      return 0, claimIndex, lastProcessedTimestamp
+    }
+
+    for (let mut index = lastReachedMilestone; index < totalMilestones; index = index + 1){
+      let currentMilestone = milestones[index]
+     
+      if (currentMilestone.timestamp > blockTimeStamp!()){
+        if (currentMilestone.ramp == Ramp.Linear) {
+
+          let mut startPoint = prevMilestone.timestamp
+          let mut startPercentage = prevMilestone.percentage
+
+          if(lastProcessedTimestamp < prevMilestone.timestamp){
+            if (index == 0 ){
+              lastProcessedTimestamp = startTime
+              startPoint = startTime
+              startPercentage = 0
+            }else{
+              lastProcessedTimestamp = prevMilestone.timestamp
+            }
+          }
+
+          let currTimestamp = blockTimeStamp!()
+          
+          percentage = percentage + ((currTimestamp - lastProcessedTimestamp) * (currentMilestone.percentage - startPercentage))
+              / (currentMilestone.timestamp - startPoint)
+
+          lastProcessedTimestamp = currTimestamp 
+        }
+
+        return percentage, claimIndex, lastProcessedTimestamp
+      }
+      
+      lastProcessedTimestamp = currentMilestone.timestamp
+      percentage = currentMilestone.percentage
+      claimIndex = lastReachedMilestone
+      prevMilestone = currentMilestone
+    }
+
+    return percentage, claimIndex, lastProcessedTimestamp
   }
 
   @using(preapprovedAssets = true)

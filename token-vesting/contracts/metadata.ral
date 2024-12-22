@@ -14,13 +14,13 @@ Contract Metadata(
   }
 
   @using(assetsInContract = true, updateFields = true)
-  pub fn unlockToken(amount: U256, claimableIndex: U256) -> () {
+  pub fn unlockToken(amount: U256, claimIndexUpdate: U256, lastClaimTimeStamp: U256) -> () {
     checkCaller!(callerContractId!() == contractId!(vesting), InvalidCaller)
     assert!(lockedAmount - totalClaimed >= amount, InsufficientBalance)
     transferTokenFromSelf!(address, ALPH, amount)
     totalClaimed = totalClaimed + amount
-    lastClaimTimestamp = blockTimeStamp!()
-    claimIndex = claimableIndex
+    lastClaimTimestamp = lastClaimTimeStamp
+    claimIndex = claimIndexUpdate
     if(lockedAmount - totalClaimed == 0){
       destroySelf!(address)
     }
