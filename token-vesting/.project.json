@@ -24,7 +24,7 @@
     },
     "Claim": {
       "sourceFile": "txScripts/claim.ral",
-      "sourceCodeHash": "14d166358beebdeac06a5e7602dc4731aab712096a93fde7d9f62eb246300c88",
+      "sourceCodeHash": "8c1189178124c67ac9e6a3056b412826599a43f90e1fcfbcd9b6d40dc956537b",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },
@@ -54,7 +54,7 @@
     },
     "Milestone": {
       "sourceFile": "vesting.ral",
-      "sourceCodeHash": "26dd2b4591eb283dc68671c7d55c936b47d9af5e1eec937a7bfd9b80081b9e12",
+      "sourceCodeHash": "cd080b71b4d78873b3640b2913f6a827a1e2171f8166ea7fe2886eac090b1a63",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },
@@ -66,9 +66,9 @@
     },
     "TokenVesting": {
       "sourceFile": "vesting.ral",
-      "sourceCodeHash": "26dd2b4591eb283dc68671c7d55c936b47d9af5e1eec937a7bfd9b80081b9e12",
-      "bytecodeDebugPatch": "=6-3+7=1-2=1-2+1b=3-2+5e=2+c=2-5=1-6+11=2-3=2-1=2+4=1-1=3-1+a=3-1+8=3-3=1-1=1-1+3a=1-1=1+3b=1+43c343=1-1+144a4=2-1+b=1+46144629=15-1+9=334-2+60=208+7a7e0214696e73657274206174206d617020706174683a2000=119-1+c=149-1+b=30+7e0140206c656e212861646472657373657329203d3d206c656e2128616d6f756e747329=2172",
-      "codeHashDebug": "d637ed72b90278feab9802303a55ff527b4c8889eaa2b45906857d62cf3eb453"
+      "sourceCodeHash": "cd080b71b4d78873b3640b2913f6a827a1e2171f8166ea7fe2886eac090b1a63",
+      "bytecodeDebugPatch": "=6-2+71=2-2+b1=2-2+3a=2+a=1-1=2+e=2-5=1-2+11=2-6+22=3-1+6=3-1+4=3-1+2=3-1+3=3+1=1+39f=1+3ad=1-2+480=2-2+98=2-2+f0=1+60=1-2=15-1+9=334-2+60=208+7a7e0214696e73657274206174206d617020706174683a2000=119-1+c=2352",
+      "codeHashDebug": "1f38773ae4aaf58cb2ea4463831b43ba6eb7e8d3f45c52f3f3923ee62dee073a"
     },
     "UpdateLastReachedMilestone": {
       "sourceFile": "txScripts/updateLastReachedMilestone.ral",
@@ -78,7 +78,7 @@
     },
     "UserMetadata": {
       "sourceFile": "vesting.ral",
-      "sourceCodeHash": "26dd2b4591eb283dc68671c7d55c936b47d9af5e1eec937a7bfd9b80081b9e12",
+      "sourceCodeHash": "cd080b71b4d78873b3640b2913f6a827a1e2171f8166ea7fe2886eac090b1a63",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     }

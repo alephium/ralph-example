@@ -119,7 +119,7 @@ Contract TokenVesting(
     emit NewRecipientsAdded(addresesLen, totalAmount)
   }
 
-  @using(preapprovedAssets = true, updateFields = true)
+  @using(updateFields = true)
   pub fn claim() -> () {
     let caller = callerAddress!()
     let metadata = getMetadata(caller)

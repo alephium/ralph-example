@@ -8,7 +8,9 @@ import {
   Address,
   subContractId,
   ONE_ALPH,
-  utils
+  utils,
+  sleep,
+  ALPH_TOKEN_ID
 } from '@alephium/web3'
 import {
   expectAssertionError,
@@ -25,14 +27,17 @@ import {
   addRecipient,
   addRecipients,
   alph,
+  balanceOf,
+  claim,
   deployVestingContract,
   generateMilestones,
   initialize,
   MilestoneInfo
 } from './utils'
 import * as base58 from 'bs58'
+import { ALPHTokenId } from '@alephium/web3/dist/src/codec'
 
-describe('test vesting', () => {
+describe('test vesting flow', () => {
   const groupIndex = groupOfAddress(testAddress)
 
   let tokenVesting: TokenVestingInstance
@@ -42,7 +47,7 @@ describe('test vesting', () => {
 
   beforeAll(async () => {
     const startTime = new Date().getTime()
-    milestones = generateMilestones(startTime, 10, 10, 0)
+    milestones = generateMilestones(startTime, 10, 0.5, 0)
     manager = await getSigner(alph(5000), groupIndex)
     tokenVesting = (await deployVestingContract(manager.address, startTime)).contractInstance
     users = await getSigners(6, alph(100), groupIndex)
@@ -77,14 +82,14 @@ describe('test vesting', () => {
     expect(state.fields.vesting).toEqual(tokenVesting.contractId)
   }
 
-  test('test: initialize vesting', async () => {
+  test('test: admin initialize vesting', async () => {
     // initialize with 10 milestones
     await initialize(manager, tokenVesting, milestones)
     const milestoneResult = await tokenVesting.view.getTotalMilestones()
     expect(milestoneResult.returns).toEqual(10n)
   }, 30000)
 
-  test('test: add single recipient', async () => {
+  test('test: admin add single recipient', async () => {
     const user1 = users[0]
     const lockedAmount = alph(100)
 
@@ -95,7 +100,7 @@ describe('test vesting', () => {
     await checkUserLockedAmount(user1, lockedAmount)
   }, 30000)
 
-  test('test: add multiple recipients', async () => {
+  test('test: admin add multiple recipients', async () => {
     const usersWallet = users.slice(1, 6)
     const addresses = usersWallet.map((user) => user.address)
     const amounts = [alph(110), alph(120), alph(130), alph(140), alph(150)]
@@ -114,4 +119,31 @@ describe('test vesting', () => {
       await checkUserLockedAmount(user, lockedAmount)
     }
   }, 30000)
+
+  test('test: user claim', async () => {
+    const user = users[0]
+    await sleep(30 * 1000)
+    const claimable = await tokenVesting.view.getClaimableAmount({ args: { address: user.address } })
+
+    await claim(user, tokenVesting)
+    await checkUserTotalClaimed(user, claimable.returns)
+
+    const lastReachedMilestone = await tokenVesting.view.getLastReachedTimestamps()
+    await checkUserClaimId(user, lastReachedMilestone.returns)
+  }, 300000)
+
+  test('test: multiple user claim', async () => {
+    await sleep(10 * 1000)
+    for (let i = 0; i < users.length; i++) {
+      const user = users[i]
+      const userState = await getUserMetadata(user)
+      const claimable = await tokenVesting.view.getClaimableAmount({ args: { address: user.address } })
+
+      await claim(user, tokenVesting)
+      await checkUserTotalClaimed(user, claimable.returns + userState.fields.totalClaimed)
+
+      const lastReachedMilestone = await tokenVesting.view.getLastReachedTimestamps()
+      await checkUserClaimId(user, lastReachedMilestone.returns)
+    }
+  }, 300000)
 })
