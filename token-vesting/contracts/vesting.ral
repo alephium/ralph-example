@@ -50,6 +50,7 @@ Contract TokenVesting(
     InvalidTotalAmount = 9
     MetadataNotExists = 10
     ClaimTimeNotReached = 11
+    AlreadyInitialized = 12
   }
 
   // max milestones is 50, for testing i'm setting as 10
@@ -57,6 +58,8 @@ Contract TokenVesting(
   pub fn initialize(milestonesArr: [Milestone; 10]) -> () {
     let caller = callerAddress!()
     checkCaller!(caller == manager, ErrorCodes.InvalidCaller)
+
+    assert!(totalMilestones == 0, ErrorCodes.AlreadyInitialized)
 
     assert!(len!(milestonesArr) > 0, ErrorCodes.MilestoneArrayEmpty)
 
@@ -269,8 +272,8 @@ Contract TokenVesting(
                   startPercentage = milestones[index - 1].percentage
                 }
 
-                if (lastProcessedTimestamp < milestones[index - 1].timestamp) {
-                    lastProcessedTimestamp = startPoint
+                if (lastProcessedTimestamp < startPoint) {
+                  lastProcessedTimestamp = startPoint
                 }
 
                 let currTimestamp = blockTimeStamp!()

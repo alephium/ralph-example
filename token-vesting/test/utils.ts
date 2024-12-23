@@ -17,7 +17,8 @@ import {
   ONE_ALPH,
   SignerProvider,
   groupOfAddress,
-  waitForTxConfirmation
+  waitForTxConfirmation,
+  sleep
 } from '@alephium/web3'
 import { randomBytes } from 'crypto'
 import * as base58 from 'bs58'
@@ -26,6 +27,7 @@ import axios from 'axios'
 web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
 export const ZERO_ADDRESS = 'tgx7VNFoP9DJiFMFgXXtafQZkUvyEdDHT9ryamHJYrjq'
 export const defaultSigner = new PrivateKeyWallet({ privateKey: testPrivateKey })
+export const groupIndex = groupOfAddress(testAddress)
 
 export interface MilestoneInfo {
   timestamp: bigint
@@ -98,6 +100,15 @@ export async function initialize(
   })
 }
 
+export async function initializeFailed(
+  signer: SignerProvider,
+  vestContract: TokenVestingInstance,
+  milestones: MilestoneInfo[],
+  errorCode: bigint
+) {
+  await expectAssertionError(initialize(signer, vestContract, milestones), vestContract.address, Number(errorCode))
+}
+
 export async function addRecipient(
   signer: SignerProvider,
   vestContract: TokenVestingInstance,
@@ -108,6 +119,20 @@ export async function addRecipient(
     initialFields: { vestingContract: vestContract.contractId, recipient, amount },
     attoAlphAmount: amount + 2n * ONE_ALPH
   })
+}
+
+export async function addRecipientFailed(
+  signer: SignerProvider,
+  vestContract: TokenVestingInstance,
+  recipient: Address,
+  amount: bigint,
+  errorCode: bigint
+) {
+  await expectAssertionError(
+    addRecipient(signer, vestContract, recipient, amount),
+    vestContract.address,
+    Number(errorCode)
+  )
 }
 
 export async function addRecipients(
@@ -163,11 +188,11 @@ export async function balanceOf(tokenId: string, address = testAddress): Promise
 export function generateMilestones(
   startTime: number,
   count: number,
-  intervalMinutes: number,
+  intervalSeconds: number,
   ramp: 0 | 1
 ): MilestoneInfo[] {
   const data: MilestoneInfo[] = []
-  const intervalMillis = intervalMinutes * 60 * 1000
+  const intervalMillis = intervalSeconds * 1000
 
   for (let i = 0; i < count; i++) {
     const interval = i + 1
@@ -187,15 +212,15 @@ export function generateMilestones(
 export function alph(amount: bigint | number): bigint {
   return BigInt(amount) * ONE_ALPH
 }
+export async function mineBlock() {
+  const nodeProvider = web3.getCurrentNodeProvider()
+  return await nodeProvider.miners.postMinersCpuMiningMineOneBlock({ fromGroup: groupIndex, toGroup: groupIndex })
+}
 
-export async function mineBlock(groupIndex: number) {
-  try {
-    const response = await axios.post(
-      `http://localhost:22973/miners/cpu-mining/mine-one-block?fromGroup=${groupIndex}&toGroup=${groupIndex}`,
-      null
-    )
-    console.log(response.data)
-  } catch (error: any) {
-    console.error('Error mining block:', error.response ? error.response.data : error.message)
+export async function mineBlocks(numBlocks: number, delay: number) {
+  // waitTime would be noOfBlocks * delay
+  for (let i = 0; i < numBlocks; i++) {
+    await mineBlock()
+    await sleep(delay)
   }
 }
