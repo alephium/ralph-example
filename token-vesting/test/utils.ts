@@ -8,7 +8,7 @@ import {
   Metadata,
   TokenVesting,
   TokenVestingInstance,
-  UpdateLastReachedMilestone
+  UpdateNextMilestoneIndex
 } from '../artifacts/ts'
 import {
   web3,
@@ -21,6 +21,7 @@ import {
 } from '@alephium/web3'
 import { randomBytes } from 'crypto'
 import * as base58 from 'bs58'
+import axios from 'axios'
 
 web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
 export const ZERO_ADDRESS = 'tgx7VNFoP9DJiFMFgXXtafQZkUvyEdDHT9ryamHJYrjq'
@@ -56,7 +57,7 @@ export async function deployVestingContract(manager: Address, startTime: number)
       totalAmountLocked: 0n,
       totalAmountUnlocked: 0n,
       totalRecipients: 0n,
-      lastReachedMilestone: 0n
+      nextMilestone: 0n
     }
   })
 }
@@ -127,12 +128,12 @@ export async function addRecipients(
   })
 }
 
-export async function updateLastMilestoneReached(
+export async function updateNextMilestoneIndex(
   signer: SignerProvider,
   vestContract: TokenVestingInstance,
   startIndex: bigint
 ) {
-  return await UpdateLastReachedMilestone.execute(signer, {
+  return await UpdateNextMilestoneIndex.execute(signer, {
     initialFields: {
       vestingContract: vestContract.contractId,
       startIndex: startIndex
@@ -146,6 +147,10 @@ export async function claim(signer: SignerProvider, vestContract: TokenVestingIn
       vestingContract: vestContract.contractId
     }
   })
+}
+
+export async function claimFailed(signer: SignerProvider, vestContract: TokenVestingInstance, errorCode: bigint) {
+  await expectAssertionError(claim(signer, vestContract), vestContract.address, Number(errorCode))
 }
 
 export async function balanceOf(tokenId: string, address = testAddress): Promise<bigint> {
@@ -165,7 +170,8 @@ export function generateMilestones(
   const intervalMillis = intervalMinutes * 60 * 1000
 
   for (let i = 0; i < count; i++) {
-    const timestamp = BigInt(startTime + i * intervalMillis)
+    const interval = i + 1
+    const timestamp = BigInt(startTime + interval * intervalMillis)
     const percentage = i === count - 1 ? 100 : (100 / count) * (i + 1)
 
     data.push({
@@ -180,4 +186,16 @@ export function generateMilestones(
 
 export function alph(amount: bigint | number): bigint {
   return BigInt(amount) * ONE_ALPH
+}
+
+export async function mineBlock(groupIndex: number) {
+  try {
+    const response = await axios.post(
+      `http://localhost:22973/miners/cpu-mining/mine-one-block?fromGroup=${groupIndex}&toGroup=${groupIndex}`,
+      null
+    )
+    console.log(response.data)
+  } catch (error: any) {
+    console.error('Error mining block:', error.response ? error.response.data : error.message)
+  }
 }

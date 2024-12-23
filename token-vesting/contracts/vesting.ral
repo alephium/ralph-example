@@ -25,7 +25,7 @@ Contract TokenVesting(
   mut totalAmountLocked: U256,
   mut totalAmountUnlocked: U256,
   mut totalRecipients: U256,
-  mut lastReachedMilestone: U256
+  mut nextMilestone: U256
 ){
   mapping[U256, Milestone] milestones
 
@@ -49,6 +49,7 @@ Contract TokenVesting(
     AlreadyHasLock = 8
     InvalidTotalAmount = 9
     MetadataNotExists = 10
+    ClaimTimeNotReached = 11
   }
 
   // max milestones is 50, for testing i'm setting as 10
@@ -126,14 +127,27 @@ Contract TokenVesting(
 
     checkCaller!(caller == metadata.getAddress(), ErrorCodes.InvalidCaller)
 
-    let currClaimIndex = metadata.getClaimIndex()
+    updateNextMilestoneIndex(nextMilestone)
+
+    let mut currClaimIndex = metadata.getClaimIndex()
+    if(currClaimIndex > 0){
+      currClaimIndex = currClaimIndex - 1
+    }
+    
     let lastProcessedTimestamp = metadata.getLastProcessedTime()
 
-    updateLastReachedMilestone(lastReachedMilestone)
-    
-    let (percentage, claimIndex, currProcessedTimestamp) = getClaimableRecord(currClaimIndex, lastProcessedTimestamp)
+    let userMilestones = milestones[currClaimIndex]
+
+    let (mut percentage, claimIndex, currProcessedTimestamp) = getClaimableRecord(currClaimIndex, lastProcessedTimestamp)
+
+    if(percentage != 0 && nextMilestone > 1){
+      percentage = percentage - userMilestones.percentage
+    }
+
     let amount = metadata.getLockedAmount() * percentage / ONE
-    
+
+    assert!(amount > 0, ErrorCodes.ClaimTimeNotReached)
+
     metadata.unlockToken(amount, claimIndex, currProcessedTimestamp)
     
     totalAmountUnlocked = totalAmountUnlocked + amount
@@ -142,9 +156,16 @@ Contract TokenVesting(
 
   pub fn getClaimableAmount(address: Address) -> U256 {
     let metadata = getMetadata(address)
-    let claimIndex = metadata.getClaimIndex()
+    let mut claimIndex = metadata.getClaimIndex()
+    if(claimIndex > 0){
+      claimIndex = claimIndex - 1
+    }
     let lastProcessedTimestamp = metadata.getLastProcessedTime()
-    let (percentage, _, _) = getClaimableRecord(claimIndex, lastProcessedTimestamp)
+    let userMilestones = milestones[claimIndex]
+    let (mut percentage, _, _) = getClaimableRecord(claimIndex, lastProcessedTimestamp)
+    if(percentage != 0 && nextMilestone != 0){
+      percentage = percentage - userMilestones.percentage
+    }
     let amount = metadata.getLockedAmount() * percentage / ONE
     return amount
   }
@@ -186,99 +207,91 @@ Contract TokenVesting(
     return totalRecipients
   }
 
-  pub fn getLastReachedTimestamps () -> U256 {
-    return lastReachedMilestone
+  pub fn getNextMilestone () -> U256 {
+    return nextMilestone
   }
 
   @using(updateFields = true, checkExternalCaller = false)
-  pub fn updateLastReachedMilestone(startIndex: U256) -> (){
-    let mut prevMilestone = milestones[startIndex]
-    
-    if (prevMilestone.timestamp > blockTimeStamp!()) {
-      return
-    }
+  pub fn updateNextMilestoneIndex(startIndex: U256) -> () {
+    let mut currentMilestone = milestones[startIndex]
 
-    let mut lastIndex = lastReachedMilestone
+    if (currentMilestone.timestamp > blockTimeStamp!()) {
+        return
+    }
 
     let mut loopComplete = false
-
     let mut index = startIndex
-    while (index < totalMilestones && !loopComplete){
-      let currMilestone = milestones[index]
 
-      if (currMilestone.timestamp <= blockTimeStamp!()){
-        prevMilestone = currMilestone
-      }else{
-        if (index > lastIndex + 1){
-          lastIndex = index - 1
+    while (index < totalMilestones && !loopComplete) {
+        let currMilestone = milestones[index]
+
+        if (currMilestone.timestamp <= blockTimeStamp!()) {
+            currentMilestone = currMilestone
+        } else {
+            if (index > nextMilestone) {
+                nextMilestone = index
+            }
+            loopComplete = true
         }
-        loopComplete = true
-      }
 
-      index = index + 1
+        index = index + 1
     }
 
-    if (!loopComplete && lastIndex < totalMilestones - 1){
-      lastIndex = totalMilestones - 1
-    }
-
-    if(lastIndex != lastReachedMilestone){
-      lastReachedMilestone = lastIndex
+    if (!loopComplete && nextMilestone < totalMilestones - 1) {
+        nextMilestone = totalMilestones - 1
     }
   }
 
   fn getClaimableRecord(userClaimIndex: U256, userLastProcessedTime: U256) -> (U256, U256, U256) {
-    let mut prevMilestone = milestones[lastReachedMilestone]
+    let mut milestoneIndex = nextMilestone
+    if(nextMilestone > 0){
+      milestoneIndex = nextMilestone - 1 
+    } 
+    let currentMilestone = milestones[milestoneIndex]
     let mut percentage = 0
     let mut claimIndex = userClaimIndex
     let mut lastProcessedTimestamp = userLastProcessedTime
 
-    if(claimIndex > lastReachedMilestone) {
-      return 0, claimIndex, lastProcessedTimestamp
+    if (currentMilestone.timestamp > blockTimeStamp!() && currentMilestone.ramp != Ramp.Linear) {
+      return percentage, claimIndex, lastProcessedTimestamp
     }
 
-    if(prevMilestone.timestamp > blockTimeStamp!() && prevMilestone.ramp != Ramp.Linear){
-      return 0, claimIndex, lastProcessedTimestamp
-    }
+    for (let mut index = milestoneIndex; index < totalMilestones; index = index + 1) {
+        let current = milestones[index]
 
-    for (let mut index = lastReachedMilestone; index < totalMilestones; index = index + 1){
-      let currentMilestone = milestones[index]
-     
-      if (currentMilestone.timestamp > blockTimeStamp!()){
-        if (currentMilestone.ramp == Ramp.Linear) {
+        if (current.timestamp > blockTimeStamp!()) {
+            if (current.ramp == Ramp.Linear) {
+                let mut startPoint = startTime
+                let mut startPercentage = 0
 
-          let mut startPoint = prevMilestone.timestamp
-          let mut startPercentage = prevMilestone.percentage
+                if(index != 0){
+                  startPoint = milestones[index - 1].timestamp
+                  startPercentage = milestones[index - 1].percentage
+                }
 
-          if(lastProcessedTimestamp < prevMilestone.timestamp){
-            if (index == 0 ){
-              lastProcessedTimestamp = startTime
-              startPoint = startTime
-              startPercentage = 0
-            }else{
-              lastProcessedTimestamp = prevMilestone.timestamp
+                if (lastProcessedTimestamp < milestones[index - 1].timestamp) {
+                    lastProcessedTimestamp = startPoint
+                }
+
+                let currTimestamp = blockTimeStamp!()
+                percentage = percentage
+                    + ((currTimestamp - lastProcessedTimestamp) * (current.percentage - startPercentage))
+                        / (current.timestamp - startPoint)
+
+                lastProcessedTimestamp = currTimestamp
             }
-          }
 
-          let currTimestamp = blockTimeStamp!()
-          
-          percentage = percentage + ((currTimestamp - lastProcessedTimestamp) * (currentMilestone.percentage - startPercentage))
-              / (currentMilestone.timestamp - startPoint)
-
-          lastProcessedTimestamp = currTimestamp 
+            return percentage, claimIndex, lastProcessedTimestamp
         }
 
-        return percentage, claimIndex, lastProcessedTimestamp
-      }
-      
-      lastProcessedTimestamp = currentMilestone.timestamp
-      percentage = currentMilestone.percentage
-      claimIndex = lastReachedMilestone
-      prevMilestone = currentMilestone
+        lastProcessedTimestamp = current.timestamp
+        percentage = current.percentage
+        claimIndex = nextMilestone
     }
 
     return percentage, claimIndex, lastProcessedTimestamp
   }
+
 
   @using(preapprovedAssets = true)
   fn createSub(caller: Address, recipient: Address, amount: U256) -> () {
