@@ -53,7 +53,7 @@ export namespace OwnerControlTypes {
       result: CallContractResult<Address>;
     };
     transferOwnership: {
-      params: CallContractParams<{ proposed_owner: Address }>;
+      params: CallContractParams<{ new_owner: Address }>;
       result: CallContractResult<null>;
     };
     proposeNewOwner: {
@@ -75,6 +75,34 @@ export namespace OwnerControlTypes {
     getRoleAdmin: {
       params: CallContractParams<{ role: HexString }>;
       result: CallContractResult<HexString>;
+    };
+    grantRole: {
+      params: CallContractParams<{ address: Address; role: HexString }>;
+      result: CallContractResult<null>;
+    };
+    revokeRole: {
+      params: CallContractParams<{ address: Address; role: HexString }>;
+      result: CallContractResult<null>;
+    };
+    createRole: {
+      params: CallContractParams<{ role: HexString }>;
+      result: CallContractResult<null>;
+    };
+    onlyOwner: {
+      params: Omit<CallContractParams<{}>, "args">;
+      result: CallContractResult<null>;
+    };
+    onlyRole: {
+      params: CallContractParams<{ role: HexString }>;
+      result: CallContractResult<null>;
+    };
+    queueOperation: {
+      params: CallContractParams<{ delay: bigint }>;
+      result: CallContractResult<boolean>;
+    };
+    cancelOperation: {
+      params: CallContractParams<{ id: bigint }>;
+      result: CallContractResult<null>;
     };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
@@ -99,7 +127,7 @@ export namespace OwnerControlTypes {
       result: SignExecuteScriptTxResult;
     };
     transferOwnership: {
-      params: SignExecuteContractMethodParams<{ proposed_owner: Address }>;
+      params: SignExecuteContractMethodParams<{ new_owner: Address }>;
       result: SignExecuteScriptTxResult;
     };
     proposeNewOwner: {
@@ -125,6 +153,40 @@ export namespace OwnerControlTypes {
       params: SignExecuteContractMethodParams<{ role: HexString }>;
       result: SignExecuteScriptTxResult;
     };
+    grantRole: {
+      params: SignExecuteContractMethodParams<{
+        address: Address;
+        role: HexString;
+      }>;
+      result: SignExecuteScriptTxResult;
+    };
+    revokeRole: {
+      params: SignExecuteContractMethodParams<{
+        address: Address;
+        role: HexString;
+      }>;
+      result: SignExecuteScriptTxResult;
+    };
+    createRole: {
+      params: SignExecuteContractMethodParams<{ role: HexString }>;
+      result: SignExecuteScriptTxResult;
+    };
+    onlyOwner: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
+    onlyRole: {
+      params: SignExecuteContractMethodParams<{ role: HexString }>;
+      result: SignExecuteScriptTxResult;
+    };
+    queueOperation: {
+      params: SignExecuteContractMethodParams<{ delay: bigint }>;
+      result: SignExecuteScriptTxResult;
+    };
+    cancelOperation: {
+      params: SignExecuteContractMethodParams<{ id: bigint }>;
+      result: SignExecuteScriptTxResult;
+    };
   }
   export type SignExecuteMethodParams<T extends keyof SignExecuteMethodTable> =
     SignExecuteMethodTable[T]["params"];
@@ -134,6 +196,7 @@ export namespace OwnerControlTypes {
   export type Maps = {
     rolesMapping?: Map<Address, HexString>;
     roleAdminsMapping?: Map<HexString, HexString>;
+    timestamps?: Map<bigint, bigint>;
   };
 }
 
@@ -169,7 +232,7 @@ class Factory extends ContractFactory<
     transferOwnership: async (
       params: TestContractParams<
         OwnerControlTypes.Fields,
-        { proposed_owner: Address },
+        { new_owner: Address },
         OwnerControlTypes.Maps
       >
     ): Promise<TestContractResult<null, OwnerControlTypes.Maps>> => {
@@ -233,6 +296,72 @@ class Factory extends ContractFactory<
     ): Promise<TestContractResult<HexString, OwnerControlTypes.Maps>> => {
       return testMethod(this, "getRoleAdmin", params, getContractByCodeHash);
     },
+    grantRole: async (
+      params: TestContractParams<
+        OwnerControlTypes.Fields,
+        { address: Address; role: HexString },
+        OwnerControlTypes.Maps
+      >
+    ): Promise<TestContractResult<null, OwnerControlTypes.Maps>> => {
+      return testMethod(this, "grantRole", params, getContractByCodeHash);
+    },
+    revokeRole: async (
+      params: TestContractParams<
+        OwnerControlTypes.Fields,
+        { address: Address; role: HexString },
+        OwnerControlTypes.Maps
+      >
+    ): Promise<TestContractResult<null, OwnerControlTypes.Maps>> => {
+      return testMethod(this, "revokeRole", params, getContractByCodeHash);
+    },
+    createRole: async (
+      params: TestContractParams<
+        OwnerControlTypes.Fields,
+        { role: HexString },
+        OwnerControlTypes.Maps
+      >
+    ): Promise<TestContractResult<null, OwnerControlTypes.Maps>> => {
+      return testMethod(this, "createRole", params, getContractByCodeHash);
+    },
+    onlyOwner: async (
+      params: Omit<
+        TestContractParams<
+          OwnerControlTypes.Fields,
+          never,
+          OwnerControlTypes.Maps
+        >,
+        "testArgs"
+      >
+    ): Promise<TestContractResult<null, OwnerControlTypes.Maps>> => {
+      return testMethod(this, "onlyOwner", params, getContractByCodeHash);
+    },
+    onlyRole: async (
+      params: TestContractParams<
+        OwnerControlTypes.Fields,
+        { role: HexString },
+        OwnerControlTypes.Maps
+      >
+    ): Promise<TestContractResult<null, OwnerControlTypes.Maps>> => {
+      return testMethod(this, "onlyRole", params, getContractByCodeHash);
+    },
+    queueOperation: async (
+      params: TestContractParams<
+        OwnerControlTypes.Fields,
+        { delay: bigint },
+        OwnerControlTypes.Maps
+      >
+    ): Promise<TestContractResult<boolean, OwnerControlTypes.Maps>> => {
+      return testMethod(this, "queueOperation", params, getContractByCodeHash);
+    },
+    cancelOperation: async (
+      params: TestContractParams<
+        OwnerControlTypes.Fields,
+        { id: bigint },
+        OwnerControlTypes.Maps
+      >
+    ): Promise<TestContractResult<null, OwnerControlTypes.Maps>> => {
+      return testMethod(this, "cancelOperation", params, getContractByCodeHash);
+    },
   };
 
   stateForTest(
@@ -249,8 +378,8 @@ class Factory extends ContractFactory<
 export const OwnerControl = new Factory(
   Contract.fromJson(
     OwnerControlContractJson,
-    "",
-    "706df26ebb28d5cac482059a1a9674903986a853a9dbc2a01c5333a12d30c4d5",
+    "=8-6+89=2-1+9=2-3+123=2-2+6a=2-2+8f=2-1+b=3-1+3742b=2-3+33f4350=1-2+3=1+5=1-3+3de=1-3=1-1=1-1+8=38+402=1-1=78+7a7e0214696e73657274206174206d617020706174683a2000=48+7a7e021472656d6f7665206174206d617020706174683a2000=61-1+6=29-1+c=40+7a7e021472656d6f7665206174206d617020706174683a2000=60+7a7e0214696e73657274206174206d617020706174683a2000=33-1+5=62+7a7e021472656d6f7665206174206d617020706174683a2000=171-1+e=194+7a7e0214696e73657274206174206d617020706174683a2000=25-1+d=194+7a7e021472656d6f7665206174206d617020706174683a2000=19-1+e=188+7a7e0214696e73657274206174206d617020706174683a2000=133-1+5=54+7a7e0214696e73657274206174206d617020706174683a2000=103-1+c=48+7a7e021472656d6f7665206174206d617020706174683a2000=6",
+    "dec4cf8d15bf0e9831b7468df2e5b8e9d60b12d1923117b1b1bc7e3d5c72210c",
     []
   )
 );
@@ -271,6 +400,11 @@ export class OwnerControlInstance extends ContractInstance {
       OwnerControl.contract,
       this.contractId,
       "roleAdminsMapping"
+    ),
+    timestamps: new RalphMap<bigint, bigint>(
+      OwnerControl.contract,
+      this.contractId,
+      "timestamps"
     ),
   };
 
@@ -356,6 +490,83 @@ export class OwnerControlInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    grantRole: async (
+      params: OwnerControlTypes.CallMethodParams<"grantRole">
+    ): Promise<OwnerControlTypes.CallMethodResult<"grantRole">> => {
+      return callMethod(
+        OwnerControl,
+        this,
+        "grantRole",
+        params,
+        getContractByCodeHash
+      );
+    },
+    revokeRole: async (
+      params: OwnerControlTypes.CallMethodParams<"revokeRole">
+    ): Promise<OwnerControlTypes.CallMethodResult<"revokeRole">> => {
+      return callMethod(
+        OwnerControl,
+        this,
+        "revokeRole",
+        params,
+        getContractByCodeHash
+      );
+    },
+    createRole: async (
+      params: OwnerControlTypes.CallMethodParams<"createRole">
+    ): Promise<OwnerControlTypes.CallMethodResult<"createRole">> => {
+      return callMethod(
+        OwnerControl,
+        this,
+        "createRole",
+        params,
+        getContractByCodeHash
+      );
+    },
+    onlyOwner: async (
+      params?: OwnerControlTypes.CallMethodParams<"onlyOwner">
+    ): Promise<OwnerControlTypes.CallMethodResult<"onlyOwner">> => {
+      return callMethod(
+        OwnerControl,
+        this,
+        "onlyOwner",
+        params === undefined ? {} : params,
+        getContractByCodeHash
+      );
+    },
+    onlyRole: async (
+      params: OwnerControlTypes.CallMethodParams<"onlyRole">
+    ): Promise<OwnerControlTypes.CallMethodResult<"onlyRole">> => {
+      return callMethod(
+        OwnerControl,
+        this,
+        "onlyRole",
+        params,
+        getContractByCodeHash
+      );
+    },
+    queueOperation: async (
+      params: OwnerControlTypes.CallMethodParams<"queueOperation">
+    ): Promise<OwnerControlTypes.CallMethodResult<"queueOperation">> => {
+      return callMethod(
+        OwnerControl,
+        this,
+        "queueOperation",
+        params,
+        getContractByCodeHash
+      );
+    },
+    cancelOperation: async (
+      params: OwnerControlTypes.CallMethodParams<"cancelOperation">
+    ): Promise<OwnerControlTypes.CallMethodResult<"cancelOperation">> => {
+      return callMethod(
+        OwnerControl,
+        this,
+        "cancelOperation",
+        params,
+        getContractByCodeHash
+      );
+    },
   };
 
   transact = {
@@ -401,6 +612,43 @@ export class OwnerControlInstance extends ContractInstance {
       params: OwnerControlTypes.SignExecuteMethodParams<"getRoleAdmin">
     ): Promise<OwnerControlTypes.SignExecuteMethodResult<"getRoleAdmin">> => {
       return signExecuteMethod(OwnerControl, this, "getRoleAdmin", params);
+    },
+    grantRole: async (
+      params: OwnerControlTypes.SignExecuteMethodParams<"grantRole">
+    ): Promise<OwnerControlTypes.SignExecuteMethodResult<"grantRole">> => {
+      return signExecuteMethod(OwnerControl, this, "grantRole", params);
+    },
+    revokeRole: async (
+      params: OwnerControlTypes.SignExecuteMethodParams<"revokeRole">
+    ): Promise<OwnerControlTypes.SignExecuteMethodResult<"revokeRole">> => {
+      return signExecuteMethod(OwnerControl, this, "revokeRole", params);
+    },
+    createRole: async (
+      params: OwnerControlTypes.SignExecuteMethodParams<"createRole">
+    ): Promise<OwnerControlTypes.SignExecuteMethodResult<"createRole">> => {
+      return signExecuteMethod(OwnerControl, this, "createRole", params);
+    },
+    onlyOwner: async (
+      params: OwnerControlTypes.SignExecuteMethodParams<"onlyOwner">
+    ): Promise<OwnerControlTypes.SignExecuteMethodResult<"onlyOwner">> => {
+      return signExecuteMethod(OwnerControl, this, "onlyOwner", params);
+    },
+    onlyRole: async (
+      params: OwnerControlTypes.SignExecuteMethodParams<"onlyRole">
+    ): Promise<OwnerControlTypes.SignExecuteMethodResult<"onlyRole">> => {
+      return signExecuteMethod(OwnerControl, this, "onlyRole", params);
+    },
+    queueOperation: async (
+      params: OwnerControlTypes.SignExecuteMethodParams<"queueOperation">
+    ): Promise<OwnerControlTypes.SignExecuteMethodResult<"queueOperation">> => {
+      return signExecuteMethod(OwnerControl, this, "queueOperation", params);
+    },
+    cancelOperation: async (
+      params: OwnerControlTypes.SignExecuteMethodParams<"cancelOperation">
+    ): Promise<
+      OwnerControlTypes.SignExecuteMethodResult<"cancelOperation">
+    > => {
+      return signExecuteMethod(OwnerControl, this, "cancelOperation", params);
     },
   };
 

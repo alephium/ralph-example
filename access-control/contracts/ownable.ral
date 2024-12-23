@@ -6,7 +6,7 @@ Contract OwnerControl(
     mapping[Address, ByteVec] rolesMapping
     mapping[ByteVec, ByteVec] roleAdminsMapping
 
-    mapping[ByteVec, U256] timestamps
+    mapping[U256, U256] timestamps
 
     pub fn owner() -> Address {
         return owner    
@@ -42,7 +42,7 @@ Contract OwnerControl(
 
     @using(checkExternalCaller = false, updateFields = true, preapprovedAssets = true)
     pub fn renounceOwnership() -> () {
-        assert!(callerAddress!() == owner(), 1)
+        assert!(callerAddress!() == owner, 1)
         rolesMapping.remove!(owner, owner)
         owner = nullContractAddress!()
         proposedOwner = nullContractAddress!()
@@ -77,15 +77,26 @@ Contract OwnerControl(
         roleAdminsMapping.insert!(callerAddress!(), rolesMapping[callerAddress!()], role)
     }
 
-    @using(checkExternalCaller = false, preapprovedAssets = true)
-    pub fn queueOperation(operationId: U256, delay: U256) -> () {
+    pub fn onlyOwner() -> () {
+        assert!(callerAddress!() == owner, 1)
+    }
 
+    pub fn onlyRole(role: ByteVec) -> () {
+        assert!(rolesMapping[callerAddress!()] == role, 1)
     }
 
     @using(checkExternalCaller = false, preapprovedAssets = true)
-    pub fn cancelOperation() -> () {
-
+    pub fn queueOperation(delay: U256) -> Bool {
+        let current = blockTimeStamp!()
+        timestamps.insert!(callerAddress!(), current, delay)
+        while (blockTimeStamp!() != current + delay) {
+            assert!(timestamps[current] == delay, 4)
+        }
+        return true
     }
 
-    
+    @using(checkExternalCaller = false, preapprovedAssets = true)
+    pub fn cancelOperation(id: U256) -> () {
+        timestamps.remove!(callerAddress!(), id)
+    }
 }
