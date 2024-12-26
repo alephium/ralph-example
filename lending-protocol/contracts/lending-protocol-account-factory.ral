@@ -1,4 +1,4 @@
-Abstract Contract LendingProtocolAccountFactory() {
+Abstract Contract LendingProtocolAccountFactory(lendingProtocolTemplateId: ByteVec) {
     enum ErrorCodes {
         DUPLICATE_ERROR = 422
     }
@@ -32,6 +32,7 @@ Abstract Contract LendingProtocolAccountFactory() {
         let path = getTemplateId(_address, _token)
         copyCreateSubContract!{caller -> ALPH: 0.1 alph}(
             path,
+            lendingProtocolTemplateId,
             encodedImmFields,
             encodedMutFields
         )
