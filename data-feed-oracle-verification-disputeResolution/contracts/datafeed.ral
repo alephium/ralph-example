@@ -37,15 +37,20 @@ Abstract Contract AncillaryData() {
 //the timerAddress should be zero when launch on mainnet
 Abstract Contract Testable(timerAddress: Address) {
     mapping[U256,U256] currentTime 
-
+    
     enum ErrorCodes {
         InvalidTimer = 7
     }
 
-    @using(checkExternalCaller = false)
-    pub fn setCurrentTime(time: U256) -> () {
+    @using(preapprovedAssets = true)
+    pub fn setCurrentTime(payer: Address, time: U256) -> () {
+        checkCaller!(payer == owner, ErrorCodes.InvalidCaller)
         assert!( timerAddress != nullContractAddress!(), ErrorCodes.InvalidTimer)
-        currentTime[0] = time
+        if (currentTime.contains!(0)){
+            currentTime[0] = time
+        }else{
+            currentTime.insert!(payer,0, time)
+        }
     }
     pub fn getCurrentTime() -> U256 {
         if (timerAddress != nullContractAddress!()) {
@@ -283,7 +288,7 @@ Contract WeatherDataFeed(
         return keccak256!( encodeToByteVec!(requestParams) )
     }
 
-    fn getState(requester: Address, identifier: ByteVec, timestamp: U256, ancillaryData: ByteVec, requestParams: Request) -> U256 {
+    pub fn getState(requester: Address, identifier: ByteVec, timestamp: U256, ancillaryData: ByteVec, requestParams: Request) -> U256 {
         // Note: This function does not check whether all of the _request parameter values are correct. For example,
         // the request.reward could be any value and it would not impact this function's return value. Therefore, it
         // is the caller's responsibility to check that _request matches with the expected ID corresponding to
@@ -298,7 +303,7 @@ Contract WeatherDataFeed(
         }
         
         if (requestParams.disputer == nullContractAddress!()){
-            if (requestParams.expirationTime < blockTimeStamp!()){
+            if (requestParams.expirationTime < getCurrentTime()){
                 return State.Expired
             }else{
                 return State.Proposed

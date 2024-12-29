@@ -1,4 +1,5 @@
 //import { describe, before, beforeEach } from 'mocha'
+import {assert} from 'chai'
 import{
     web3,
     groupOfAddress,
@@ -9,7 +10,7 @@ import{
 } from '@alephium/web3'
 import { testAddress, getSigner } from '@alephium/web3-test'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
-import { deployBondToken, makeRequest, proposePrice, transferToken } from './utils'
+import { deployBondToken, getCurrentTime, getState, makeRequest, proposePrice, setCurrentTime, StateEnum, transferToken } from './utils'
 
 /**data-feed-oracle test utils */
 import { addOracle, alph, deployDataFeed } from './utils'
@@ -39,7 +40,20 @@ describe('test data verification', () => {
 
     let bondTokenId;
 
+    let startTime;
+    let defaultExpiryTime;
+
+    let postProposalParams;
+
+    const verifyState = async (state, requester, identifier, requestTime, ancillaryData, request) => {
+      const stateFromContract = await getState(dataFeed, requester, identifier, requestTime, ancillaryData, request)
+      expect(stateFromContract).toEqual(state);
+    };
+  
+
     //precomputed values
+    const liveness = BigInt(7200); // 2 hours
+    
     const reward = alph(1);
     const totalDefaultBond = alph(2);
     const finalFee = alph(1);
@@ -47,11 +61,11 @@ describe('test data verification', () => {
 
     beforeAll(async function () {
       web3.setCurrentNodeProvider(configuration.networks.devnet.nodeUrl)
-      owner = await getSigner(alph(10000), groupIndex)
-      proposer = await getSigner(alph(1000), groupIndex)
-      disputer = await getSigner(alph(1000), groupIndex)
-      rando = await getSigner(alph(1000), groupIndex)
-      requester = await getSigner(alph(1000), groupIndex);
+      owner = await getSigner(alph(100), groupIndex)
+      proposer = await getSigner(alph(100), groupIndex)
+      disputer = await getSigner(alph(10), groupIndex)
+      rando = await getSigner(alph(10), groupIndex)
+      requester = await getSigner(alph(10), groupIndex);
 
       console.log(`owner: ${owner.address}`)
       console.log(`proposer: ${proposer.address}`)
@@ -59,18 +73,17 @@ describe('test data verification', () => {
       console.log(`rando: ${rando.address}`)
       console.log(`requester: ${requester.address}`)
 
-      //deploy oracle contract
-      dataFeed = (await deployDataFeed(owner.address, fee, requester.address )).contractInstance
-
-      oracle = await getSigner(alph(1000), groupIndex)
-      
+      //oracle = await getSigner(alph(1000), groupIndex)
       //await addOracle(owner, dataFeed, oracle.address);
+
+
     })
 
     beforeEach(async () => {
-        //bondTokenId =await deployBondToken( owner);
+        //deploy oracle contract
+        dataFeed = (await deployDataFeed(owner.address, fee, requester.address )).contractInstance
       
-        executor = await getSigner(alph(1000), groupIndex)
+        //executor = await getSigner(alph(10), groupIndex)
 
         //deploy governance contract
         //const governance = await deployGovernor(owner, Governance);
@@ -89,20 +102,35 @@ describe('test data verification', () => {
           bond: finalFee,
           customLiveness: "0"
         }
+
+        startTime = await getCurrentTime(dataFeed);
+        defaultExpiryTime = startTime + liveness;
+
+
+        postProposalParams = (
+          _requestParams,
+          _expirationTime = defaultExpiryTime.toString(),
+          _proposedPrice = correctPrice
+        ) => {
+          return { ..._requestParams, expirationTime: _expirationTime, proposer: proposer.address, proposedPrice: _proposedPrice };
+        };
     })
     //+ve case
     describe("Proposed data correctly", function () {
+      let ancillaryData = {"data": "0x"}
       beforeEach(async function () {
+
         await transferToken(owner, requester,  ONE_ALPH);
         //await collateral.methods.increaseAllowance(optimisticOracle.options.address, reward).send({ from: requester });
-        await makeRequest(requester, dataFeed, identifier, requestTime, {"data": "0x"},reward, 0n, 0n, fee)
+        await makeRequest(requester, dataFeed, identifier, requestTime, ancillaryData,reward, 0n, 0n, fee)
         
         await proposePrice(proposer, dataFeed, requester, identifier, requestTime, "0x", requestParams, correctPrice)
       });
 
       it("Settle expired proposal", async function () {
+        await setCurrentTime(owner, dataFeed, defaultExpiryTime-1n);
+        await verifyState(StateEnum.Proposed, requester.address, identifier, requestTime, ancillaryData, postProposalParams(requestParams));
         
-
       })
     });
 

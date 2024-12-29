@@ -57,3 +57,11 @@ TxScript ProposePrice(
 ){
     dataFeed.proposePrice{  proposer -> ALPH: 2 alph}(proposer,requester, identifier, timestamp, ancillaryData, requestParams, price)
 }
+
+TxScript SetCurrentTime(
+    payer: Address,
+    dataFeed: WeatherDataFeed,
+    time: U256
+){
+    dataFeed.setCurrentTime{payer -> ALPH: 0.1 alph}(payer, time)
+}

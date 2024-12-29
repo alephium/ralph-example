@@ -3,7 +3,7 @@ import { PrivateKeyWallet } from '@alephium/web3-wallet'
 import { web3, stringToHex ,MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT, Address, ONE_ALPH, subContractId, MAP_ENTRY_DEPOSIT, SignerProvider} from '@alephium/web3'
 import { WeatherDataFeed,WeatherDataFeedInstance,TokenFactory } from '../artifacts/ts'
 import { testPrivateKey } from '@alephium/web3-test'
-import { AddOracle,  MakeRequest, ProposePrice } from '../artifacts/ts/scripts'
+import { AddOracle, MakeRequest, ProposePrice, SetCurrentTime } from '../artifacts/ts/scripts'
 import configuration from '../alephium.config'
 
 
@@ -154,4 +154,50 @@ export async function addOracle(signer: SignerProvider, dataFeed: WeatherDataFee
 function jsonToByteVec(jsonStr: string | object) {
   const str = typeof jsonStr === 'string' ? jsonStr : JSON.stringify(jsonStr)
   return stringToHex(str)
+}
+
+export async function getCurrentTime(dataFeed: WeatherDataFeedInstance) {
+  /*
+  const currentTime = await  GetCurrentTime.execute(signer, {
+    initialFields: { dataFeed: dataFeed.contractId }
+  })
+
+  console.log(`currentTime: ${currentTime.txId}`)
+  */
+  const currentTime = await dataFeed.view.getCurrentTime();
+  console.log(`currentTime: ${currentTime.returns}`)
+  
+  return currentTime.returns
+}
+
+export async function setCurrentTime(signer: PrivateKeyWallet, dataFeed: WeatherDataFeedInstance, time: bigint) {
+  return await SetCurrentTime.execute(signer, {
+    initialFields: { payer: signer.address, dataFeed: dataFeed.contractId, time },
+    attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT
+  })
+}
+
+export async function getState(dataFeed: WeatherDataFeedInstance, requester: Address, identifier: string, requestTime: number, ancillaryData: string, request: any) {
+  const storeAncillaryData = jsonToByteVec(ancillaryData)
+  const stateFromContract = await dataFeed.view.getState({
+    args: { 
+      requester,
+      identifier,
+      timestamp: BigInt(requestTime), 
+      ancillaryData: storeAncillaryData, 
+      requestParams: request
+    }
+  })
+  console.log(`stateFromContract: ${stateFromContract.returns}`)
+  return Number(stateFromContract.returns)
+}
+
+
+export const StateEnum = {
+  Requested: 0,
+  Proposed: 1,   
+  Expired: 2,
+  Disputed: 3,
+  Resolved: 4,
+  Settled: 5
 }
