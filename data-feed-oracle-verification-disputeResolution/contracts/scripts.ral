@@ -17,7 +17,6 @@ TxScript MakeRequest(
     identifier: ByteVec,
     timestamp: U256,
     ancillaryData: ByteVec,
-    currency: Address,
     reward: U256,
     bond: U256,
     customLiveness: U256,
@@ -27,7 +26,6 @@ TxScript MakeRequest(
         identifier,
         timestamp,
         ancillaryData,
-        currency,
         reward,
         bond,
         customLiveness
@@ -45,16 +43,10 @@ TxScript CompleteRequest(
     dataFeed.completeRequest{callerAddress!() -> ALPH: 0.1 alph}(requestId, temp, publicKey, signature, timestamp)
 }
 
-TxScript ApproveToken( 
-    fromAddress: Address, 
-    token: ByteVec, 
-    amount: U256
-){
-    approveToken!(fromAddress, token, amount)
-}
 
 
 TxScript ProposePrice(
+    proposer: Address,
     dataFeed: WeatherDataFeed,
     requester: Address,
     identifier: ByteVec,
@@ -63,5 +55,5 @@ TxScript ProposePrice(
     requestParams: Request,
     price: I256
 ){
-    dataFeed.proposePrice{requester -> ALPH: 0.1 alph}(requester, identifier, timestamp, ancillaryData, requestParams, price)
+    dataFeed.proposePrice{  proposer -> ALPH: 2 alph}(proposer,requester, identifier, timestamp, ancillaryData, requestParams, price)
 }

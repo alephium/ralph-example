@@ -1,9 +1,9 @@
 import { Deployments } from '@alephium/cli'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
-import { web3, stringToHex ,MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT, Address, ONE_ALPH, SignerProvider, subContractId} from '@alephium/web3'
+import { web3, stringToHex ,MINIMAL_CONTRACT_DEPOSIT, DUST_AMOUNT, Address, ONE_ALPH, subContractId, MAP_ENTRY_DEPOSIT, SignerProvider} from '@alephium/web3'
 import { WeatherDataFeed,WeatherDataFeedInstance,TokenFactory } from '../artifacts/ts'
 import { testPrivateKey } from '@alephium/web3-test'
-import { AddOracle, ApproveToken, MakeRequest, ProposePrice } from '../artifacts/ts/scripts'
+import { AddOracle,  MakeRequest, ProposePrice } from '../artifacts/ts/scripts'
 import configuration from '../alephium.config'
 
 
@@ -25,20 +25,19 @@ export async function makeRequest(
     dataFeed: WeatherDataFeedInstance,
     identifier: string,
     timestamp: number,
-    ancillaryData: string,
-    currency: string,
+    ancillaryData: string | object,
     reward: bigint,
     bond: bigint,
     customLiveness: bigint,
     fee: bigint
   ) {
+    const storeAncillaryData = jsonToByteVec(ancillaryData)
     return await MakeRequest.execute(signer, {
       initialFields: {
         dataFeed: dataFeed.contractId,
         identifier: identifier,
         timestamp: BigInt(timestamp),
-        ancillaryData: ancillaryData,
-        currency: currency,
+        ancillaryData: storeAncillaryData,
         reward: reward,
         bond: bond,
         customLiveness: customLiveness,
@@ -51,7 +50,8 @@ export async function makeRequest(
 
 //referenced from https://github.com/alephium/ralph-example/pull/48, may merch later
 export async function deployDataFeed(ownerWallet: Address, fee: bigint, timerAddress: Address) {
-    return await WeatherDataFeed.deploy(defaultSigner, {
+    const oracle = await WeatherDataFeed.deploy(defaultSigner, {
+      initialAttoAlphAmount: ONE_ALPH * 20n ,
       initialFields: {
         owner: ownerWallet,
         authorizedOraclesCount: BigInt(0),
@@ -63,6 +63,8 @@ export async function deployDataFeed(ownerWallet: Address, fee: bigint, timerAdd
         timerAddress: timerAddress
       }
     })
+    console.log(`Oracle deployed with id: ${oracle.txId}`)
+    return oracle
 }
 
 export async function deployBondToken(signer: PrivateKeyWallet){
@@ -71,17 +73,25 @@ export async function deployBondToken(signer: PrivateKeyWallet){
     if (factory === undefined) {
         throw new Error(`The contract ${TokenFactory} is not deployed`)
     }
-    const bondToken = await factory.transact.createToken({
-        signer: signer,
-        attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT, // 0.1 ALPH for the minimum storage deposit for the new token, 0.001 ALPH for the dust amount of the token output
+    try{
+        const bondToken = await factory.transact.createToken({
+            signer: signer,
+            attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT, // 0.1 ALPH for the minimum storage deposit for the new token, 0.001 ALPH for the dust amount of the token output
         args: {
           symbol: stringToHex('BOND'),
           name: stringToHex('BOND'),
           decimals: 18n,
           totalSupply: 10n ** 9n * 10n ** 18n, // 1 billion
         }
-    }) 
-    return subContractId(factory.contractId, stringToHex('BOND'), (await signer.getSelectedAccount()).group) 
+        }) 
+    } catch (error) {
+        console.info("Token already deployed. Returning the existing token id.")
+    }
+
+    const tokenId = subContractId(factory.contractId, stringToHex('BOND'), (await signer.getSelectedAccount()).group) 
+    console.log(`Token deployed with id: ${tokenId}`)
+    return tokenId
+
 }
 
 /**
@@ -92,42 +102,34 @@ export async function deployBondToken(signer: PrivateKeyWallet){
  * @param amount 
  * @returns receiver's token balance
  */
-export async function transferToken( sender: PrivateKeyWallet, receiver:PrivateKeyWallet, tokenId: string, amount: bigint) {
-    await sender.signAndSubmitTransferTx({
-        signerAddress: sender.address,
-        destinations: [
-          { address: receiver.address, attoAlphAmount: DUST_AMOUNT, tokens: [{ id: tokenId, amount: amount }] }
-        ]
-    })
+export async function transferToken( sender: PrivateKeyWallet, receiver:PrivateKeyWallet, amount: bigint) {
+  console.log(`transferring ALPH from ${sender.address} to ${receiver.address} with amount ${amount}`)
+  await sender.signAndSubmitTransferTx({
+      signerAddress: sender.address,
+      destinations: [
+        { address: receiver.address, attoAlphAmount: amount }
+      ]
+  })
 
-    const { tokenBalances } = await web3.getCurrentNodeProvider().addresses.getAddressesAddressBalance(receiver.address)
-    return tokenBalances;
+  const { tokenBalances } = await web3.getCurrentNodeProvider().addresses.getAddressesAddressBalance(receiver.address)
+  return tokenBalances;
 }
 
-export async function approveToken(approver: PrivateKeyWallet, approvedTo : Address, token: string, amount: bigint) {
 
-  return await ApproveToken.execute(approver, {
-      initialFields: {
-        fromAddress: approvedTo,
-        token: token,
-        amount: amount
-      },
-      attoAlphAmount: DUST_AMOUNT
-    })
-}
-
-export async function proposePrice(signer: SignerProvider, dataFeed: WeatherDataFeedInstance, requester: PrivateKeyWallet, identifier: string, timestamp: number, ancillaryData: string, requestParams: any, price: bigint) {
+export async function proposePrice(signer: PrivateKeyWallet, dataFeed: WeatherDataFeedInstance, requester: PrivateKeyWallet, identifier: string, timestamp: number, ancillaryData: string, requestParams: any, price: bigint) {
+    const storeAncillaryData = jsonToByteVec(ancillaryData)
     return await ProposePrice.execute(signer, {
       initialFields: {
+        proposer: signer.address,
         dataFeed: dataFeed.contractId,
         requester: requester.address,
         identifier: identifier,
         timestamp: BigInt(timestamp),
-        ancillaryData: ancillaryData,
+        ancillaryData: storeAncillaryData,
         requestParams: requestParams,
         price: price
       },
-      attoAlphAmount: DUST_AMOUNT
+      attoAlphAmount: ONE_ALPH * 2n
     })
 }
 
@@ -136,8 +138,20 @@ export function alph(amount: bigint | number): bigint {
 }
 
 export async function addOracle(signer: SignerProvider, dataFeed: WeatherDataFeedInstance, oracle: Address) {
-  return await AddOracle.execute(signer, {
-    initialFields: { dataFeed: dataFeed.contractId, oracle },
-    attoAlphAmount: ONE_ALPH * 2n
-  })
+  try{
+    const addOracleTx = await AddOracle.execute(signer, {
+      initialFields: { dataFeed: dataFeed.contractId, oracle },
+      attoAlphAmount: ONE_ALPH * 2n
+    })
+    console.log(`addOracle tx id: ${addOracleTx.txId}`)
+    return addOracleTx
+  } catch (error) {
+    console.error(`Error adding oracle: ${error}`)
+    throw error
+  }
+}
+
+function jsonToByteVec(jsonStr: string | object) {
+  const str = typeof jsonStr === 'string' ? jsonStr : JSON.stringify(jsonStr)
+  return stringToHex(str)
 }

@@ -1,5 +1,5 @@
 {
-  "fullNodeVersion": "v3.11.0",
+  "fullNodeVersion": "v3.8.5",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
@@ -13,25 +13,19 @@
   "infos": {
     "AddOracle": {
       "sourceFile": "scripts.ral",
-      "sourceCodeHash": "161d08ac1c8aa36b72f645a258991bcf004976d600f700dfe8061ecb5ca14de3",
+      "sourceCodeHash": "ca7684121c1578e1c2e56aa75bd9bfa9422f009b2a1de630f1568a60d115f4b8",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },
     "AncillaryData": {
       "sourceFile": "datafeed.ral",
-      "sourceCodeHash": "f55678970b5363be7dddd0e7da6e463420ff157fc557abb831aeb3db9dcc4c4d",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": ""
-    },
-    "ApproveToken": {
-      "sourceFile": "scripts.ral",
-      "sourceCodeHash": "161d08ac1c8aa36b72f645a258991bcf004976d600f700dfe8061ecb5ca14de3",
+      "sourceCodeHash": "e975f7175c94916e0e54efbf221d45a78795cccfd5af121c41175160c761f457",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },
     "CompleteRequest": {
       "sourceFile": "scripts.ral",
-      "sourceCodeHash": "161d08ac1c8aa36b72f645a258991bcf004976d600f700dfe8061ecb5ca14de3",
+      "sourceCodeHash": "ca7684121c1578e1c2e56aa75bd9bfa9422f009b2a1de630f1568a60d115f4b8",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },
@@ -43,31 +37,31 @@
     },
     "MakeRequest": {
       "sourceFile": "scripts.ral",
-      "sourceCodeHash": "161d08ac1c8aa36b72f645a258991bcf004976d600f700dfe8061ecb5ca14de3",
+      "sourceCodeHash": "ca7684121c1578e1c2e56aa75bd9bfa9422f009b2a1de630f1568a60d115f4b8",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },
     "ProposePrice": {
       "sourceFile": "scripts.ral",
-      "sourceCodeHash": "161d08ac1c8aa36b72f645a258991bcf004976d600f700dfe8061ecb5ca14de3",
+      "sourceCodeHash": "ca7684121c1578e1c2e56aa75bd9bfa9422f009b2a1de630f1568a60d115f4b8",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },
     "RemoveOracle": {
       "sourceFile": "scripts.ral",
-      "sourceCodeHash": "161d08ac1c8aa36b72f645a258991bcf004976d600f700dfe8061ecb5ca14de3",
+      "sourceCodeHash": "ca7684121c1578e1c2e56aa75bd9bfa9422f009b2a1de630f1568a60d115f4b8",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },
     "Request": {
       "sourceFile": "datafeed.ral",
-      "sourceCodeHash": "f55678970b5363be7dddd0e7da6e463420ff157fc557abb831aeb3db9dcc4c4d",
+      "sourceCodeHash": "e975f7175c94916e0e54efbf221d45a78795cccfd5af121c41175160c761f457",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },
     "Testable": {
       "sourceFile": "datafeed.ral",
-      "sourceCodeHash": "f55678970b5363be7dddd0e7da6e463420ff157fc557abb831aeb3db9dcc4c4d",
+      "sourceCodeHash": "e975f7175c94916e0e54efbf221d45a78795cccfd5af121c41175160c761f457",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },
@@ -85,9 +79,9 @@
     },
     "WeatherDataFeed": {
       "sourceFile": "datafeed.ral",
-      "sourceCodeHash": "f55678970b5363be7dddd0e7da6e463420ff157fc557abb831aeb3db9dcc4c4d",
-      "bytecodeDebugPatch": "=20-3+f=1-2=2-1+3=3-2+59=1-3+1bd=1-2=1+8d=2-2+9d=2-2+0e=2-2+f2=2-2+07=2-2+8f=2-2+b0=1-3+610462a=2-2+b9=349-1+6=60+7a7e0214696e73657274206174206d617020706174683a2000=33-1+5=60+7a7e021472656d6f7665206174206d617020706174683a2000=299-1+d=192+7a7e0214696e73657274206174206d617020706174683a2000=2023-1+5=37-1+a=38+7a7e021472656d6f7665206174206d617020706174683a2000=44+7a7e0214696e73657274206174206d617020706174683a2000=52",
-      "codeHashDebug": "a7881611c2f3e2b04aeb08fe2701b084741ae3c7c45da17bb20d665155239798"
+      "sourceCodeHash": "e975f7175c94916e0e54efbf221d45a78795cccfd5af121c41175160c761f457",
+      "bytecodeDebugPatch": "=20-3+f=1-2=2-1+3=3+5941b=1-1=2-2+80=2-2+80=2-1=1+9=2-1+bf=2+d=1-2=2-3=2-1=3-1+1=2-2+c6=2-1+e=1+466d=349-1+6=60+7a7e0214696e73657274206174206d617020706174683a2000=33-1+5=60+7a7e021472656d6f7665206174206d617020706174683a2000=289-1+9=184+7a7e0214696e73657274206174206d617020706174683a2000=1893-1+4=37-1+a=38+7a7e021472656d6f7665206174206d617020706174683a2000=44+7a7e0214696e73657274206174206d617020706174683a2000=48",
+      "codeHashDebug": "414ff807544af24531e2bad6d2378cd4e704ce601564dd0cf5728d372beb4612"
     }
   }
 }

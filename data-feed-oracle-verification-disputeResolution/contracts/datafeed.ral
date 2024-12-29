@@ -3,7 +3,6 @@
 struct Request {
     proposer : Address,
     disputer : Address,
-    currency: Address,
     settled : Bool,
     proposedPrice: I256,
     resolvedPrice: I256,
@@ -87,13 +86,12 @@ Contract WeatherDataFeed(
     }
 
     enum State {
-        Invalid = 0
-        Requested = 1
-        Proposed = 2
-        Expired = 3
-        Disputed = 4
-        Resolved = 5
-        Settled = 6
+        Requested = 0
+        Proposed = 1   
+        Expired = 2
+        Disputed = 3
+        Resolved = 4
+        Settled = 5
     }
 
     @using(preapprovedAssets = true, updateFields = true)
@@ -133,7 +131,6 @@ Contract WeatherDataFeed(
         identifier: ByteVec,
         timestamp: U256,
         ancillaryData: ByteVec,
-        currency: Address,
         reward: U256,
         bond: U256,
         customLiveness: U256) -> U256 {
@@ -155,7 +152,6 @@ Contract WeatherDataFeed(
         let request = Request {
             proposer: nullContractAddress!(),
             disputer: nullContractAddress!(),
-            currency: currency, 
             settled: false,
             proposedPrice: 0i,
             resolvedPrice: 0i,
@@ -198,7 +194,6 @@ Contract WeatherDataFeed(
         let request = Request {
             proposer: existingRequest.proposer,
             disputer: existingRequest.disputer,
-            currency: existingRequest.currency,
             settled: true,
             proposedPrice: existingRequest.proposedPrice,
             resolvedPrice: existingRequest.resolvedPrice,
@@ -226,13 +221,13 @@ Contract WeatherDataFeed(
 
     @using(preapprovedAssets= true, checkExternalCaller = false, assetsInContract = true)
     pub fn proposePrice(
+        proposer: Address,
         requester: Address,
         identifier: ByteVec,
         timestamp: U256,
         ancillaryData: ByteVec,
         requestParams: Request,
         proposedPrice: I256) -> () {
-            let proposer = callerAddress!()
 
             assert!( proposer != nullContractAddress!(), ErrorCodes.InvalidCaller)
             
@@ -249,7 +244,6 @@ Contract WeatherDataFeed(
             let proposedRequest = Request { 
                 proposer: proposer, 
                 disputer: requestParams.disputer, 
-                currency: requestParams.currency,
                 settled: requestParams.settled, 
                 proposedPrice: proposedPrice, 
                 resolvedPrice: requestParams.resolvedPrice, 
@@ -260,7 +254,7 @@ Contract WeatherDataFeed(
                 customLiveness: requestParams.customLiveness
             }
 
-            storeRequest{proposer -> ALPH: 0.1 alph}(proposer, requestId, proposedRequest)
+            storeRequest{proposer -> ALPH: 2 alph}(proposer, requestId, proposedRequest)
 
             let totalBond = requestParams.bond + requestParams.finalFee
             if (totalBond > 0){
@@ -294,9 +288,6 @@ Contract WeatherDataFeed(
         // the request.reward could be any value and it would not impact this function's return value. Therefore, it
         // is the caller's responsibility to check that _request matches with the expected ID corresponding to
         // {requester, identifier, timestamp, ancillaryData} via validateRequestHash().
-        if ( requestParams.currency == nullContractAddress!()){
-            return State.Invalid
-        }
 
         if (requestParams.proposer == nullContractAddress!() ){
             return State.Requested

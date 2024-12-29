@@ -3,15 +3,18 @@ import{
     web3,
     groupOfAddress,
     addressFromContractId,
-    ONE_ALPH
+    ONE_ALPH,
+    ALPH_TOKEN_ID,
+    ZERO_ADDRESS
 } from '@alephium/web3'
 import { testAddress, getSigner } from '@alephium/web3-test'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
-import { approveToken, deployBondToken, makeRequest, proposePrice, transferToken } from './utils'
+import { deployBondToken, makeRequest, proposePrice, transferToken } from './utils'
 
 /**data-feed-oracle test utils */
 import { addOracle, alph, deployDataFeed } from './utils'
 import { WeatherDataFeedInstance } from '../artifacts/ts'
+import configuration from '../alephium.config'
 
 const rules = "https://bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi.ipfs.dweb.link/";
 const identifier = Buffer.from('ZODIAC', 'utf8').toString('hex');
@@ -19,7 +22,7 @@ const bond = alph(1000);
 
 describe('test data verification', () => {
     const groupIndex = groupOfAddress(testAddress);
-    const fee = alph(10);
+    const fee = alph(1);
 
     let owner: PrivateKeyWallet;
     let proposer: PrivateKeyWallet;
@@ -43,59 +46,57 @@ describe('test data verification', () => {
     const correctPrice = alph(-17);
 
     beforeAll(async function () {
-      web3.setCurrentNodeProvider('http://127.0.0.1:22973')
-      owner = await getSigner(alph(1000), groupIndex)
+      web3.setCurrentNodeProvider(configuration.networks.devnet.nodeUrl)
+      owner = await getSigner(alph(10000), groupIndex)
       proposer = await getSigner(alph(1000), groupIndex)
       disputer = await getSigner(alph(1000), groupIndex)
       rando = await getSigner(alph(1000), groupIndex)
       requester = await getSigner(alph(1000), groupIndex);
 
+      console.log(`owner: ${owner.address}`)
+      console.log(`proposer: ${proposer.address}`)
+      console.log(`disputer: ${disputer.address}`)
+      console.log(`rando: ${rando.address}`)
+      console.log(`requester: ${requester.address}`)
+
+      //deploy oracle contract
+      dataFeed = (await deployDataFeed(owner.address, fee, requester.address )).contractInstance
+
+      oracle = await getSigner(alph(1000), groupIndex)
+      
+      //await addOracle(owner, dataFeed, oracle.address);
     })
 
     beforeEach(async () => {
-        //deploy token factory
-
-
-        bondTokenId =await deployBondToken( owner);
-
+        //bondTokenId =await deployBondToken( owner);
+      
         executor = await getSigner(alph(1000), groupIndex)
-        oracle = await getSigner(alph(1000), groupIndex)
-        dataFeed = (await deployDataFeed(owner.address, fee, requester.address )).contractInstance
 
         //deploy governance contract
         //const governance = await deployGovernor(owner, Governance);
         
-        //deploy oracle contract
-        await addOracle(owner, dataFeed, oracle.address);
-
         requestTime = new Date().valueOf() ;
         requestParams = {
-          proposer: addressFromContractId('0'.repeat(64)),
-          disputer: addressFromContractId('0'.repeat(64)),
-          currency: collateral.contractId,
+          proposer: ZERO_ADDRESS,
+          disputer: ZERO_ADDRESS,
+          currency: ALPH_TOKEN_ID,
           settled: false,
           proposedPrice: "0",
           resolvedPrice: "0",
           expirationTime: "0",
           reward: reward,
           finalFee: finalFee,
-          requestSettings: {
-            bond: finalFee,
-            customLiveness: "0",
-            callbackOnPriceProposed: false,
-            callbackOnPriceDisputed: false,
-            callbackOnPriceSettled: false,
-          }
+          bond: finalFee,
+          customLiveness: "0"
         }
     })
     //+ve case
     describe("Proposed data correctly", function () {
       beforeEach(async function () {
-        await transferToken(owner, requester, bondTokenId, 10n);
+        await transferToken(owner, requester,  ONE_ALPH);
         //await collateral.methods.increaseAllowance(optimisticOracle.options.address, reward).send({ from: requester });
-        await makeRequest(requester, dataFeed, identifier, requestTime, "0x", bondTokenId, reward, 0n, 0n, fee)
+        await makeRequest(requester, dataFeed, identifier, requestTime, {"data": "0x"},reward, 0n, 0n, fee)
         
-        await approveToken(proposer, dataFeed.contractId, bondTokenId, totalDefaultBond);
         await proposePrice(proposer, dataFeed, requester, identifier, requestTime, "0x", requestParams, correctPrice)
       });
 
