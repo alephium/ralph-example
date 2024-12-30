@@ -13,6 +13,11 @@ struct Request {
     customLiveness: U256
 }
 
+struct Price {
+    isAvailable: Bool,
+    price: I256,
+    verifiedTime: U256
+}
 
 
 Abstract Contract AncillaryData() {
@@ -77,17 +82,22 @@ Contract WeatherDataFeed(
 ) extends AncillaryData(), Testable(timerAddress){
     mapping[Address, Bool] authorizedOracles
     mapping[ByteVec, Request] requests
+    mapping[ByteVec, Price] verifiedPrices
 
     //event NewRequest(requestId: ByteVec, identifier: ByteVec, timestamp: U256, ancillaryData: ByteVec, request: Request)
     event NewRequest(requestId: ByteVec, identifier: ByteVec, timestamp: U256, ancillaryData: ByteVec, request: ByteVec)
     event RequestCompleted(requestId: ByteVec, temp: ByteVec)
     event ProposePrice(requester: Address, identifier: ByteVec, timestamp: U256, ancillaryData: ByteVec, proposedRequest: ByteVec)
+    event Settle(requester: Address, identifier: ByteVec, timestamp: U256, ancillaryData: ByteVec, settledRequest: ByteVec)
+
 
     enum ErrorCodes {
         UnauthorizedOracle = 0
         InvalidCaller = 1
         InvalidTimestamp = 2
         MUSTBE_REQUESTED = 3
+        PriceNotAvailable = 4
+        NOT_SETTLEABLE = 5
     }
 
     enum State {
@@ -330,5 +340,67 @@ Contract WeatherDataFeed(
             requests.remove!(requester, requestId)
         }
         requests.insert!(requester, requestId, request)
+    }
+
+    pub fn settle( requester: Address, identifier: ByteVec, timestamp: U256, ancillaryData: ByteVec, requestParams: Request ) -> () {
+        let requestId = getId(identifier, timestamp, ancillaryData, requester);
+        validateRequestHash(requestId, requestParams)
+        let settledRequest = Request {
+            proposer: requestParams.proposer,
+            disputer: requestParams.disputer,
+            settled: true,
+            proposedPrice: requestParams.proposedPrice,
+            resolvedPrice: requestParams.resolvedPrice,
+            expirationTime: requestParams.expirationTime,
+            reward: requestParams.reward,
+            finalFee: requestParams.finalFee,
+            bond: requestParams.bond,
+            customLiveness: requestParams.customLiveness
+        }
+        
+        let state = getState(requester, identifier, timestamp, ancillaryData, requestParams)
+        if (state == State.Expired){
+            // In the expiry case, just pay back the proposer's bond and final fee along with the reward.
+            settledRequest.resolvedPrice = requestParams.proposedPrice
+            let payout = requestParams.bond + requestParams.finalFee + requestParams.reward
+            transferTokenFromSelf!( proposer, ALPH, payout);
+        } else if (state == State.Resolved){
+            // In the Resolved case, pay either the disputer or the proposer the entire payout (+ bond and reward).
+            let resolvedPrice = getPrice(identifier, timestamp, stampAncillaryData(ancillaryData, requester))
+            settledRequest.resolvedPrice = resolvedPrice
+
+            let disputeSuccess = settledRequest.resolvedPrice != requestParams.proposedPrice
+            
+            let payout = requestParams.bond + (requestParams.bond - computeBurnedBond(settledRequest)) + requestParams.finalFee + requestParams.reward
+            let mut rewardReceiver = requestParams.proposer
+            if (disputeSuccess){
+                rewardReceiver = requestParams.disputer
+            }
+            transferTokenFromSelf!( rewardReceiver, ALPH, payout);
+        } else {
+            panic!(ErrorCodes.NOT_SETTLEABLE)
+        }
+
+        storeRequest(requester, requestId, settledRequest)
+
+        emit Settle(requester, identifier, timestamp, ancillaryData, settledRequest)
+
+        //TODO: callback
+    }
+
+    // Gets a price that has already been resolved.
+    fn getPrice( identifier: ByteVec, timestamp: U256, ancillaryData: ByteVec) -> I256 {
+        let lookup = verifiedPrices[ encodePriceRequest(identifier, timestamp, ancillaryData)];
+        assert!(lookup.isAvailable, ErrorCodes.PriceNotAvailable);
+        return lookup.price;
+    }
+
+    fn encodePriceRequest(identifier: ByteVec, timestamp: U256, ancillaryData: ByteVec) -> ByteVec {
+        return keccak256(encodeToByteVec!(identifier) ++ encodeToByteVec!(timestamp) ++ ancillaryData)
+    }
+
+    fn computeBurnedBond(request: Request) -> U256 {
+        // burnedBond = floor(bond / 2)
+        return request.bond / 2
     }
 }
