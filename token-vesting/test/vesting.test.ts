@@ -1,6 +1,6 @@
 import { addressFromContractId, groupOfAddress, subContractId, utils, web3 } from '@alephium/web3'
 import { getSigner, getSigners, testAddress } from '@alephium/web3-test'
-import { Metadata, TokenVestingInstance } from '../artifacts/ts'
+import { Metadata, VestingInstance } from '../artifacts/ts'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
 import {
   addRecipient,
@@ -21,7 +21,7 @@ import {
 import * as base58 from 'bs58'
 
 describe('01 admin tests', () => {
-  let tokenVesting: TokenVestingInstance
+  let vesting: VestingInstance
   let manager: PrivateKeyWallet
   let users: PrivateKeyWallet[]
   let milestones: MilestoneInfo[]
@@ -32,14 +32,14 @@ describe('01 admin tests', () => {
     startTime = new Date().getTime()
     milestones = generateMilestones(startTime, 10, 10, 0)
     manager = await getSigner(alph(5000), groupIndex)
-    tokenVesting = (await deployVestingContract(manager.address, startTime)).contractInstance
+    vesting = (await deployVestingContract(manager.address, startTime)).contractInstance
     users = await getSigners(6, alph(100), groupIndex)
     amounts = [alph(100), alph(110), alph(120), alph(130), alph(140), alph(150)]
   }, 30000)
 
   async function getUserMetadata(user: PrivateKeyWallet) {
     const path = utils.binToHex(base58.decode(user.address))
-    const metadataContractId = subContractId(tokenVesting.contractId, path, groupIndex)
+    const metadataContractId = subContractId(vesting.contractId, path, groupIndex)
     const metadataContract = Metadata.at(addressFromContractId(metadataContractId))
     const state = await metadataContract.fetchState()
     return state
@@ -49,27 +49,27 @@ describe('01 admin tests', () => {
     const state = await getUserMetadata(user)
     expect(state.fields.lockedAmount).toEqual(lockedAmount)
     expect(state.fields.address).toEqual(user.address)
-    expect(state.fields.vesting).toEqual(tokenVesting.contractId)
+    expect(state.fields.vesting).toEqual(vesting.contractId)
   }
 
   test('test: admin initialize vesting', async () => {
     // initialize with 10 milestones
-    await initialize(manager, tokenVesting, milestones)
-    const milestoneResult = await tokenVesting.view.getTotalMilestones()
+    await initialize(manager, vesting, milestones)
+    const milestoneResult = await vesting.view.getTotalMilestones()
     expect(milestoneResult.returns).toEqual(10n)
   }, 30000)
 
   test('test: admin can initialize only once', async () => {
     // initialize with 10 milestones
-    await initializeFailed(manager, tokenVesting, milestones, 12n)
+    await initializeFailed(manager, vesting, milestones, 12n)
   }, 30000)
 
   test('test: admin add single recipient', async () => {
     const user1 = users[0]
     const lockedAmount = amounts[0]
 
-    await addRecipient(manager, tokenVesting, user1.address, lockedAmount)
-    const recipientsResult = await tokenVesting.view.getTotalRecipients()
+    await addRecipient(manager, vesting, user1.address, lockedAmount)
+    const recipientsResult = await vesting.view.getTotalRecipients()
     expect(recipientsResult.returns).toEqual(1n)
 
     await checkUserLockedAmount(user1, lockedAmount)
@@ -78,7 +78,7 @@ describe('01 admin tests', () => {
   test('test: admin cannot add same recipient twice', async () => {
     const user1 = users[0]
     const lockedAmount = amounts[0]
-    await addRecipientFailed(manager, tokenVesting, user1.address, lockedAmount, 8n)
+    await addRecipientFailed(manager, vesting, user1.address, lockedAmount, 8n)
   }, 30000)
 
   test('test: admin add multiple recipients', async () => {
@@ -87,11 +87,11 @@ describe('01 admin tests', () => {
     const remAmounts = amounts.slice(1, 6)
     const totalAmount = alph(650)
 
-    await addRecipients(manager, tokenVesting, addresses, remAmounts, totalAmount)
+    await addRecipients(manager, vesting, addresses, remAmounts, totalAmount)
 
-    const recipientsResult = await tokenVesting.view.getTotalRecipients()
+    const recipientsResult = await vesting.view.getTotalRecipients()
     expect(recipientsResult.returns).toEqual(6n)
-    const totalLockedResult = await tokenVesting.view.getTotalLocked()
+    const totalLockedResult = await vesting.view.getTotalLocked()
     expect(totalLockedResult.returns).toEqual(totalAmount + alph(100))
 
     for (let i = 0; i < usersWallet.length; i++) {
@@ -102,18 +102,18 @@ describe('01 admin tests', () => {
   }, 30000)
 
   test('test: can update next milestone if no claim', async () => {
-    const currentNextMilestoneRes = await tokenVesting.view.getNextMilestone()
+    const currentNextMilestoneRes = await vesting.view.getNextMilestone()
     // mine future blocks to complete first milestone
     await mineBlocks(10, 1000)
-    await updateNextMilestoneIndex(manager, tokenVesting, currentNextMilestoneRes.returns)
-    const updatedRecordRes = await tokenVesting.view.getNextMilestone()
+    await updateNextMilestoneIndex(manager, vesting, currentNextMilestoneRes.returns)
+    const updatedRecordRes = await vesting.view.getNextMilestone()
     expect(updatedRecordRes.returns).toEqual(currentNextMilestoneRes.returns + 1n)
   }, 50000)
 })
 
 describe('02 cliff tests', () => {
   const groupIndex = groupOfAddress(testAddress)
-  let tokenVesting: TokenVestingInstance
+  let vesting: VestingInstance
   let manager: PrivateKeyWallet
   let users: PrivateKeyWallet[]
   let milestones: MilestoneInfo[]
@@ -124,18 +124,18 @@ describe('02 cliff tests', () => {
     startTime = new Date().getTime()
     milestones = generateMilestones(startTime, 10, 10, 0)
     manager = await getSigner(alph(5000), groupIndex)
-    tokenVesting = (await deployVestingContract(manager.address, startTime)).contractInstance
+    vesting = (await deployVestingContract(manager.address, startTime)).contractInstance
     users = await getSigners(5, alph(100), groupIndex)
     amounts = [alph(100), alph(110), alph(120), alph(130), alph(140)]
     const addresses = users.map((user) => user.address)
     const totalAmount = amounts.reduce((acc, amt) => acc + amt, 0n)
-    await initialize(manager, tokenVesting, milestones)
-    await addRecipients(manager, tokenVesting, addresses, amounts, totalAmount)
+    await initialize(manager, vesting, milestones)
+    await addRecipients(manager, vesting, addresses, amounts, totalAmount)
   }, 30000)
 
   async function getUserMetadata(user: PrivateKeyWallet) {
     const path = utils.binToHex(base58.decode(user.address))
-    const metadataContractId = subContractId(tokenVesting.contractId, path, groupIndex)
+    const metadataContractId = subContractId(vesting.contractId, path, groupIndex)
     const metadataContract = Metadata.at(addressFromContractId(metadataContractId))
     const state = await metadataContract.fetchState()
     return state
@@ -145,21 +145,21 @@ describe('02 cliff tests', () => {
     const state = await getUserMetadata(user)
     expect(state.fields.claimIndex).toEqual(claimId)
     expect(state.fields.address).toEqual(user.address)
-    expect(state.fields.vesting).toEqual(tokenVesting.contractId)
+    expect(state.fields.vesting).toEqual(vesting.contractId)
   }
 
   async function checkUserTotalClaimed(user: PrivateKeyWallet, totalClaimed: bigint) {
     const state = await getUserMetadata(user)
     expect(state.fields.totalClaimed).toEqual(totalClaimed)
     expect(state.fields.address).toEqual(user.address)
-    expect(state.fields.vesting).toEqual(tokenVesting.contractId)
+    expect(state.fields.vesting).toEqual(vesting.contractId)
   }
 
   test('test: user cannot claim milestone until milestone reached', async () => {
     const user = users[0]
-    const claimable = await tokenVesting.view.getClaimableAmount({ args: { address: user.address } })
+    const claimable = await vesting.view.getClaimableAmount({ args: { address: user.address } })
     expect(claimable.returns).toEqual(0n)
-    await claimFailed(user, tokenVesting, 11n)
+    await claimFailed(user, vesting, 11n)
   }, 300000)
 
   test('test: user claim milestone when milestone reached', async () => {
@@ -171,13 +171,13 @@ describe('02 cliff tests', () => {
 
     let percentage = (milestones[0].percentage * 100n) / BigInt(1e18)
     let expectedAmount = (percentage * amountLocked) / 100n
-    let claimable = await tokenVesting.view.getClaimableAmount({ args: { address: user.address } })
+    let claimable = await vesting.view.getClaimableAmount({ args: { address: user.address } })
     expect(claimable.returns).toEqual(expectedAmount)
 
-    await claim(user, tokenVesting)
+    await claim(user, vesting)
     await checkUserTotalClaimed(user, claimable.returns)
 
-    let nextMilestoneRes = await tokenVesting.view.getNextMilestone()
+    let nextMilestoneRes = await vesting.view.getNextMilestone()
     await checkUserClaimId(user, nextMilestoneRes.returns)
     expect(nextMilestoneRes.returns).toEqual(1n)
 
@@ -189,13 +189,13 @@ describe('02 cliff tests', () => {
     percentage = ((milestones[1].percentage - milestones[0].percentage) * 100n) / BigInt(1e18)
     expectedAmount = (percentage * amountLocked) / 100n
 
-    claimable = await tokenVesting.view.getClaimableAmount({ args: { address: user.address } })
+    claimable = await vesting.view.getClaimableAmount({ args: { address: user.address } })
     expect(claimable.returns).toEqual(expectedAmount)
 
-    await claim(user, tokenVesting)
+    await claim(user, vesting)
     await checkUserTotalClaimed(user, claimable.returns + previouslyClaimed)
 
-    nextMilestoneRes = await tokenVesting.view.getNextMilestone()
+    nextMilestoneRes = await vesting.view.getNextMilestone()
     expect(nextMilestoneRes.returns).toEqual(2n)
     await checkUserClaimId(user, nextMilestoneRes.returns)
   }, 300000)
@@ -203,7 +203,7 @@ describe('02 cliff tests', () => {
 
 describe('03 linear tests', () => {
   const groupIndex = groupOfAddress(testAddress)
-  let tokenVesting: TokenVestingInstance
+  let vesting: VestingInstance
   let manager: PrivateKeyWallet
   let users: PrivateKeyWallet[]
   let milestones: MilestoneInfo[]
@@ -214,18 +214,18 @@ describe('03 linear tests', () => {
     startTime = new Date().getTime()
     milestones = generateMilestones(startTime, 10, 30, 1)
     manager = await getSigner(alph(5000), groupIndex)
-    tokenVesting = (await deployVestingContract(manager.address, startTime)).contractInstance
+    vesting = (await deployVestingContract(manager.address, startTime)).contractInstance
     users = await getSigners(5, alph(100), groupIndex)
     amounts = [alph(100), alph(110), alph(120), alph(130), alph(140)]
     const addresses = users.map((user) => user.address)
     const totalAmount = amounts.reduce((acc, amt) => acc + amt, 0n)
-    await initialize(manager, tokenVesting, milestones)
-    await addRecipients(manager, tokenVesting, addresses, amounts, totalAmount)
+    await initialize(manager, vesting, milestones)
+    await addRecipients(manager, vesting, addresses, amounts, totalAmount)
   }, 30000)
 
   async function getUserMetadata(user: PrivateKeyWallet) {
     const path = utils.binToHex(base58.decode(user.address))
-    const metadataContractId = subContractId(tokenVesting.contractId, path, groupIndex)
+    const metadataContractId = subContractId(vesting.contractId, path, groupIndex)
     const metadataContract = Metadata.at(addressFromContractId(metadataContractId))
     const state = await metadataContract.fetchState()
     return state
@@ -235,14 +235,14 @@ describe('03 linear tests', () => {
     const state = await getUserMetadata(user)
     expect(state.fields.claimIndex).toEqual(claimId)
     expect(state.fields.address).toEqual(user.address)
-    expect(state.fields.vesting).toEqual(tokenVesting.contractId)
+    expect(state.fields.vesting).toEqual(vesting.contractId)
   }
 
   async function checkUserTotalClaimed(user: PrivateKeyWallet, totalClaimed: bigint) {
     const state = await getUserMetadata(user)
     expect(state.fields.totalClaimed).toBeGreaterThan(totalClaimed)
     expect(state.fields.address).toEqual(user.address)
-    expect(state.fields.vesting).toEqual(tokenVesting.contractId)
+    expect(state.fields.vesting).toEqual(vesting.contractId)
   }
 
   async function getBlockTimestamp() {
@@ -270,13 +270,13 @@ describe('03 linear tests', () => {
       ((BigInt(currTime) - BigInt(startTime)) * milestone.percentage) / (milestone.timestamp - BigInt(startTime))
 
     let expectedAmount = (percentage * amountLocked) / BigInt(1e18)
-    const claimable = await tokenVesting.view.getClaimableAmount({ args: { address: user.address } })
+    const claimable = await vesting.view.getClaimableAmount({ args: { address: user.address } })
     expect(claimable.returns).toBeGreaterThan(expectedAmount)
-    await claim(user, tokenVesting)
+    await claim(user, vesting)
     await checkUserTotalClaimed(user, claimable.returns)
 
     // check that the nextmilestone has not updated
-    let nextMilestoneRes = await tokenVesting.view.getNextMilestone()
+    let nextMilestoneRes = await vesting.view.getNextMilestone()
     await checkUserClaimId(user, nextMilestoneRes.returns)
     expect(nextMilestoneRes.returns).toEqual(0n)
   }, 300000)

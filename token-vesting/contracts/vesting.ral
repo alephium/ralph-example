@@ -17,7 +17,7 @@ struct UserMetadata {
   lastProcessedTimestamp: U256
 }
 
-Contract TokenVesting(
+Contract Vesting(
   metadataTemplateId: ByteVec,
   manager: Address,
   startTime: U256,

@@ -1,5 +1,5 @@
 Contract Metadata(
-  vesting: TokenVesting, 
+  vesting: Vesting, 
   address: Address, 
   lockedAmount: U256,
   mut totalClaimed: U256,

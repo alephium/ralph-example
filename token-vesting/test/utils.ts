@@ -6,8 +6,8 @@ import {
   Claim,
   Initialize,
   Metadata,
-  TokenVesting,
-  TokenVestingInstance,
+  Vesting,
+  VestingInstance,
   UpdateNextMilestoneIndex
 } from '../artifacts/ts'
 import {
@@ -50,7 +50,7 @@ export async function deployMetadataTemplate() {
 
 export async function deployVestingContract(manager: Address, startTime: number) {
   const metadataTemplate = await deployMetadataTemplate()
-  return await TokenVesting.deploy(defaultSigner, {
+  return await Vesting.deploy(defaultSigner, {
     initialFields: {
       metadataTemplateId: metadataTemplate.contractInstance.contractId,
       manager,
@@ -89,11 +89,7 @@ export async function transferAlphTo(to: Address, amount: bigint) {
   )
 }
 
-export async function initialize(
-  signer: SignerProvider,
-  vestContract: TokenVestingInstance,
-  milestones: MilestoneInfo[]
-) {
+export async function initialize(signer: SignerProvider, vestContract: VestingInstance, milestones: MilestoneInfo[]) {
   return await Initialize.execute(signer, {
     initialFields: { vestingContract: vestContract.contractId, milestonesArr: milestones as any },
     attoAlphAmount: 10n * ONE_ALPH
@@ -102,7 +98,7 @@ export async function initialize(
 
 export async function initializeFailed(
   signer: SignerProvider,
-  vestContract: TokenVestingInstance,
+  vestContract: VestingInstance,
   milestones: MilestoneInfo[],
   errorCode: bigint
 ) {
@@ -111,7 +107,7 @@ export async function initializeFailed(
 
 export async function addRecipient(
   signer: SignerProvider,
-  vestContract: TokenVestingInstance,
+  vestContract: VestingInstance,
   recipient: Address,
   amount: bigint
 ) {
@@ -123,7 +119,7 @@ export async function addRecipient(
 
 export async function addRecipientFailed(
   signer: SignerProvider,
-  vestContract: TokenVestingInstance,
+  vestContract: VestingInstance,
   recipient: Address,
   amount: bigint,
   errorCode: bigint
@@ -137,7 +133,7 @@ export async function addRecipientFailed(
 
 export async function addRecipients(
   signer: SignerProvider,
-  vestContract: TokenVestingInstance,
+  vestContract: VestingInstance,
   addresses: Address[],
   amounts: bigint[],
   totalAmount: bigint
@@ -155,7 +151,7 @@ export async function addRecipients(
 
 export async function updateNextMilestoneIndex(
   signer: SignerProvider,
-  vestContract: TokenVestingInstance,
+  vestContract: VestingInstance,
   startIndex: bigint
 ) {
   return await UpdateNextMilestoneIndex.execute(signer, {
@@ -166,7 +162,7 @@ export async function updateNextMilestoneIndex(
   })
 }
 
-export async function claim(signer: SignerProvider, vestContract: TokenVestingInstance) {
+export async function claim(signer: SignerProvider, vestContract: VestingInstance) {
   return await Claim.execute(signer, {
     initialFields: {
       vestingContract: vestContract.contractId
@@ -174,7 +170,7 @@ export async function claim(signer: SignerProvider, vestContract: TokenVestingIn
   })
 }
 
-export async function claimFailed(signer: SignerProvider, vestContract: TokenVestingInstance, errorCode: bigint) {
+export async function claimFailed(signer: SignerProvider, vestContract: VestingInstance, errorCode: bigint) {
   await expectAssertionError(claim(signer, vestContract), vestContract.address, Number(errorCode))
 }
 
