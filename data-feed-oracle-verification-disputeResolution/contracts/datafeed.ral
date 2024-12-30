@@ -1,0 +1,406 @@
+//reference: https://github.com/alephium/ralph-example/pull/48
+//may merch later
+struct Request {
+    proposer : Address,
+    disputer : Address,
+    settled : Bool,
+    proposedPrice: I256,
+    resolvedPrice: I256,
+    expirationTime: U256,
+    reward: U256,
+    finalFee: U256,
+    bond: U256,
+    customLiveness: U256
+}
+
+struct Price {
+    isAvailable: Bool,
+    price: I256,
+    verifiedTime: U256
+}
+
+
+Abstract Contract AncillaryData() {
+    pub fn appendKeyValueAddress(ancillaryData: ByteVec, key: ByteVec, value: Address) -> ByteVec {
+        let prefix = constructPrefix(ancillaryData, key)
+        return ancillaryData ++ prefix ++ toByteVec!(value)
+    }
+
+    
+    // Helper method that returns the left hand side of a "key:value" pair plus the colon ":" and a leading
+    // comma "," if the `currentAncillaryData` is not empty. The return value is intended to be prepended as a prefix to
+    // some utf8 value that is ultimately added to a comma-delimited, key-value dictionary.
+    fn constructPrefix(currentAncillaryData: ByteVec, key: ByteVec) -> ByteVec {
+        if ( size!(currentAncillaryData) > 0) {
+            return b`,` ++ key ++ b`:`
+        } else {
+            return key ++ b`:`
+        }
+    }
+}
+
+//the timerAddress should be zero when launch on mainnet
+Abstract Contract Testable(timerAddress: Address) {
+    mapping[U256,U256] currentTime 
+    
+    enum ErrorCodes {
+        InvalidTimer = 7
+    }
+
+    @using(preapprovedAssets = true)
+    pub fn setCurrentTime(payer: Address, time: U256) -> () {
+        checkCaller!(payer == owner, ErrorCodes.InvalidCaller)
+        assert!( timerAddress != nullContractAddress!(), ErrorCodes.InvalidTimer)
+        if (currentTime.contains!(0)){
+            currentTime[0] = time
+        }else{
+            currentTime.insert!(payer,0, time)
+        }
+    }
+    pub fn getCurrentTime() -> U256 {
+        if (timerAddress != nullContractAddress!()) {
+            if (currentTime.contains!(0)){
+                return currentTime[0]
+            }else{
+                return blockTimeStamp!()
+            }
+        } else {
+            return blockTimeStamp!()
+        }
+    }
+}
+
+Contract WeatherDataFeed(
+    owner: Address,
+    mut authorizedOraclesCount: U256,
+    mut lastTimestamp: U256,
+    mut lastRequestId: ByteVec,
+    fee: U256,
+    feeWallet: Address,
+    defaultLiveness: U256,
+    timerAddress: Address
+) extends AncillaryData(), Testable(timerAddress){
+    mapping[Address, Bool] authorizedOracles
+    mapping[ByteVec, Request] requests
+    mapping[ByteVec, Price] verifiedPrices
+
+    //event NewRequest(requestId: ByteVec, identifier: ByteVec, timestamp: U256, ancillaryData: ByteVec, request: Request)
+    event NewRequest(requestId: ByteVec, identifier: ByteVec, timestamp: U256, ancillaryData: ByteVec, request: ByteVec)
+    event RequestCompleted(requestId: ByteVec, temp: ByteVec)
+    event ProposePrice(requester: Address, identifier: ByteVec, timestamp: U256, ancillaryData: ByteVec, proposedRequest: ByteVec)
+    event Settle(requester: Address, identifier: ByteVec, timestamp: U256, ancillaryData: ByteVec, settledRequest: ByteVec)
+
+
+    enum ErrorCodes {
+        UnauthorizedOracle = 0
+        InvalidCaller = 1
+        InvalidTimestamp = 2
+        MUSTBE_REQUESTED = 3
+        PriceNotAvailable = 4
+        NOT_SETTLEABLE = 5
+    }
+
+    enum State {
+        Requested = 0
+        Proposed = 1   
+        Expired = 2
+        Disputed = 3
+        Resolved = 4
+        Settled = 5
+    }
+
+    @using(preapprovedAssets = true, updateFields = true)
+    pub fn addOracle(newOracle: Address) -> () {
+        // Ensure only the owner can add oracles
+        checkCaller!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
+
+        authorizedOracles.insert!(callerAddress!(), newOracle, true)
+        authorizedOraclesCount = authorizedOraclesCount + 1
+    }
+
+    @using(updateFields = true)
+    pub fn removeOracle(oracle: Address) -> () {
+        // Ensure only the owner can remove oracles
+        checkCaller!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
+
+        authorizedOracles.remove!(callerAddress!(), oracle)
+        authorizedOraclesCount = authorizedOraclesCount - 1
+    }
+
+    pub fn checkOracle(oracle: Address) -> Bool {
+        return authorizedOracles[oracle]
+    }
+
+    //TODO: implement this later
+    pub fn hasPrice(requester: Address, identifier: ByteVec, timestamp: U256, ancillaryData: ByteVec, requestParams: Request) -> Bool {
+        //TODO: call validate data
+        let requestId = getId( identifier, timestamp, ancillaryData, requester)
+        validateRequestHash(requestId, requestParams)
+        let state = getState(requester, identifier, timestamp, ancillaryData, requestParams)
+        return state == State.Resolved || state == State.Settled || state == State.Expired
+    }
+
+    //returns totalBond
+    @using(preapprovedAssets = true, checkExternalCaller = false)
+    pub fn makeRequest(        
+        identifier: ByteVec,
+        timestamp: U256,
+        ancillaryData: ByteVec,
+        reward: U256,
+        bond: U256,
+        customLiveness: U256) -> U256 {
+        let caller = callerAddress!()
+
+        // Create a unique request ID
+        let requestId = getId( identifier, timestamp, ancillaryData, caller)
+
+        //TODO: Calculate the final fee
+        let finalFee = fee
+
+        // Initialize the request
+        // Store as hash
+        let mut bondStored = 0
+        if (bond != 0){
+            bondStored = bond
+        }
+
+        let request = Request {
+            proposer: nullContractAddress!(),
+            disputer: nullContractAddress!(),
+            settled: false,
+            proposedPrice: 0i,
+            resolvedPrice: 0i,
+            expirationTime: 999,
+            reward: reward,
+            finalFee: finalFee,
+            bond: bondStored,
+            customLiveness: customLiveness
+        }
+        requests.insert!(caller, requestId, request )
+
+        if (reward > 0){
+            // Pay fee to the oracle
+            transferToken!(caller, feeWallet, ALPH, reward)
+        }
+
+        // Emit the new request event
+        emit NewRequest(requestId, identifier, timestamp, ancillaryData, encodeToByteVec!(request))
+
+        return request.bond + finalFee
+    }
+
+    
+    @using(updateFields = true, preapprovedAssets = true)
+    pub fn completeRequest(requestId: ByteVec, temp: ByteVec, publicKey: ByteVec, signature: ByteVec, timestamp: U256) -> () {
+        let caller = callerAddress!()
+
+        // Ensure only authorized oracles can complete requests
+        checkCaller!(authorizedOracles[caller], ErrorCodes.UnauthorizedOracle)
+
+        // Ensure the timestamp is valid
+        assert!(lastTimestamp <= timestamp, ErrorCodes.InvalidTimestamp)
+
+        // Verify signature       
+        verifySecP256K1!(requestId, publicKey, signature)
+
+        // Update the request
+        let existingRequest = requests[requestId]
+
+        let request = Request {
+            proposer: existingRequest.proposer,
+            disputer: existingRequest.disputer,
+            settled: true,
+            proposedPrice: existingRequest.proposedPrice,
+            resolvedPrice: existingRequest.resolvedPrice,
+            expirationTime: existingRequest.expirationTime,
+            reward: existingRequest.reward,
+            finalFee: existingRequest.finalFee,
+            bond: existingRequest.bond,
+            customLiveness: existingRequest.customLiveness
+        }
+
+        //TODO store as hash?
+        storeRequest{caller -> ALPH: 0.1 alph}(caller, requestId, request)
+
+        // Update state variables
+        lastTimestamp = blockTimeStamp!()
+        lastRequestId = requestId
+
+        // Emit the completion event
+        emit RequestCompleted(requestId, temp)
+    }
+
+    pub fn getRequest(requestId: ByteVec) -> Request {
+        return requests[requestId]
+    }
+
+    @using(preapprovedAssets= true, checkExternalCaller = false, assetsInContract = true)
+    pub fn proposePrice(
+        proposer: Address,
+        requester: Address,
+        identifier: ByteVec,
+        timestamp: U256,
+        ancillaryData: ByteVec,
+        requestParams: Request,
+        proposedPrice: I256) -> () {
+
+            assert!( proposer != nullContractAddress!(), ErrorCodes.InvalidCaller)
+            
+            let state = getState(requester, identifier, timestamp, ancillaryData, requestParams)
+            assert!(state == State.Requested, ErrorCodes.MUSTBE_REQUESTED)
+
+            let requestId = getId(identifier, timestamp, ancillaryData, proposer)
+
+            let mut liveness = requestParams.customLiveness
+            if (liveness == 0){
+                liveness = defaultLiveness
+            }
+
+            let proposedRequest = Request { 
+                proposer: proposer, 
+                disputer: requestParams.disputer, 
+                settled: requestParams.settled, 
+                proposedPrice: proposedPrice, 
+                resolvedPrice: requestParams.resolvedPrice, 
+                expirationTime: blockTimeStamp!() + liveness, 
+                reward: requestParams.reward, 
+                finalFee: requestParams.finalFee,
+                bond: requestParams.bond, 
+                customLiveness: requestParams.customLiveness
+            }
+
+            storeRequest{proposer -> ALPH: 2 alph}(proposer, requestId, proposedRequest)
+
+            let totalBond = requestParams.bond + requestParams.finalFee
+            if (totalBond > 0){
+                transferTokenFromSelf!( feeWallet, ALPH, totalBond)
+            }
+
+            emit ProposePrice(requester, identifier, timestamp, ancillaryData, encodeToByteVec!(proposedRequest))
+
+            //callback
+            //if (isContractAddress!(requester)){
+                //TDOO contract for requester
+            //}
+    }
+
+    fn getId(identifier: ByteVec, timestamp: U256, ancillaryData: ByteVec, caller: Address) -> ByteVec {
+        return blake2b!( identifier ++ ancillaryData ++ toByteVec!(timestamp) ++ toByteVec!(caller))
+    }
+
+    fn validateRequestHash(requestId: ByteVec,  requestParams: Request) -> () {
+        //TODO: Add detail on validate request hash
+        assert!( getRequestHash(requests[requestId]) == getRequestHash(requestParams), ErrorCodes.InvalidCaller)
+    }
+
+    fn getRequestHash(requestParams: Request) -> ByteVec {
+        //TODO: validate request hash
+        return keccak256!( encodeToByteVec!(requestParams) )
+    }
+
+    pub fn getState(requester: Address, identifier: ByteVec, timestamp: U256, ancillaryData: ByteVec, requestParams: Request) -> U256 {
+        // Note: This function does not check whether all of the _request parameter values are correct. For example,
+        // the request.reward could be any value and it would not impact this function's return value. Therefore, it
+        // is the caller's responsibility to check that _request matches with the expected ID corresponding to
+        // {requester, identifier, timestamp, ancillaryData} via validateRequestHash().
+
+        if (requestParams.proposer == nullContractAddress!() ){
+            return State.Requested
+        }
+        
+        if (requestParams.settled){
+            return State.Settled
+        }
+        
+        if (requestParams.disputer == nullContractAddress!()){
+            if (requestParams.expirationTime < getCurrentTime()){
+                return State.Expired
+            }else{
+                return State.Proposed
+            }
+        }
+
+        let hasPrice = hasPrice(requester, identifier, timestamp, stampAncillaryData(ancillaryData, requester),requestParams) 
+        if (hasPrice){
+            return State.Resolved
+        }else{
+            return State.Disputed
+        }
+    }
+
+    fn stampAncillaryData(ancillaryData: ByteVec, requester: Address) -> ByteVec {
+        // Since this contract will be the one to formally submit DVM price requests, its useful for voters to know who
+        // the original requester was.
+        return appendKeyValueAddress(ancillaryData, b`ooRequester`, requester)
+    }
+
+    @using(preapprovedAssets= true)
+    fn storeRequest(requester:Address, requestId:ByteVec, request:Request) -> () {
+        if ( requests.contains!(requestId) ){
+            requests.remove!(requester, requestId)
+        }
+        requests.insert!(requester, requestId, request)
+    }
+
+    pub fn settle( requester: Address, identifier: ByteVec, timestamp: U256, ancillaryData: ByteVec, requestParams: Request ) -> () {
+        let requestId = getId(identifier, timestamp, ancillaryData, requester);
+        validateRequestHash(requestId, requestParams)
+        let settledRequest = Request {
+            proposer: requestParams.proposer,
+            disputer: requestParams.disputer,
+            settled: true,
+            proposedPrice: requestParams.proposedPrice,
+            resolvedPrice: requestParams.resolvedPrice,
+            expirationTime: requestParams.expirationTime,
+            reward: requestParams.reward,
+            finalFee: requestParams.finalFee,
+            bond: requestParams.bond,
+            customLiveness: requestParams.customLiveness
+        }
+        
+        let state = getState(requester, identifier, timestamp, ancillaryData, requestParams)
+        if (state == State.Expired){
+            // In the expiry case, just pay back the proposer's bond and final fee along with the reward.
+            settledRequest.resolvedPrice = requestParams.proposedPrice
+            let payout = requestParams.bond + requestParams.finalFee + requestParams.reward
+            transferTokenFromSelf!( proposer, ALPH, payout);
+        } else if (state == State.Resolved){
+            // In the Resolved case, pay either the disputer or the proposer the entire payout (+ bond and reward).
+            let resolvedPrice = getPrice(identifier, timestamp, stampAncillaryData(ancillaryData, requester))
+            settledRequest.resolvedPrice = resolvedPrice
+
+            let disputeSuccess = settledRequest.resolvedPrice != requestParams.proposedPrice
+            
+            let payout = requestParams.bond + (requestParams.bond - computeBurnedBond(settledRequest)) + requestParams.finalFee + requestParams.reward
+            let mut rewardReceiver = requestParams.proposer
+            if (disputeSuccess){
+                rewardReceiver = requestParams.disputer
+            }
+            transferTokenFromSelf!( rewardReceiver, ALPH, payout);
+        } else {
+            panic!(ErrorCodes.NOT_SETTLEABLE)
+        }
+
+        storeRequest(requester, requestId, settledRequest)
+
+        emit Settle(requester, identifier, timestamp, ancillaryData, settledRequest)
+
+        //TODO: callback
+    }
+
+    // Gets a price that has already been resolved.
+    fn getPrice( identifier: ByteVec, timestamp: U256, ancillaryData: ByteVec) -> I256 {
+        let lookup = verifiedPrices[ encodePriceRequest(identifier, timestamp, ancillaryData)];
+        assert!(lookup.isAvailable, ErrorCodes.PriceNotAvailable);
+        return lookup.price;
+    }
+
+    fn encodePriceRequest(identifier: ByteVec, timestamp: U256, ancillaryData: ByteVec) -> ByteVec {
+        return keccak256(encodeToByteVec!(identifier) ++ encodeToByteVec!(timestamp) ++ ancillaryData)
+    }
+
+    fn computeBurnedBond(request: Request) -> U256 {
+        // burnedBond = floor(bond / 2)
+        return request.bond / 2
+    }
+}
