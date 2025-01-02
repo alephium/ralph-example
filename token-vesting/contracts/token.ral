@@ -1,0 +1,40 @@
+import "std/fungible_token_interface"
+
+Contract Token(
+    symbol: ByteVec,
+    name: ByteVec,
+    decimals: U256,
+    mut totalSupply: U256
+) implements IFungibleToken {
+
+    event Transfer(to: Address, amount: U256)
+
+    @using(assetsInContract = true, checkExternalCaller = false)
+    pub fn transfer(to: Address) -> () {
+      transferTokenFromSelf!(to, selfTokenId!(), 1)
+      // Emit the event
+      emit Transfer(to, 1)
+    }
+
+    pub fn getSymbol() -> ByteVec {
+        return symbol
+    }
+
+    pub fn getName() -> ByteVec {
+        return name
+    }
+
+    pub fn getDecimals() -> U256 {
+        return decimals
+    }
+
+    pub fn getTotalSupply() -> U256 {
+        return totalSupply
+    }
+
+    @using(updateFields = true, checkExternalCaller = false, preapprovedAssets = true)
+    pub fn burn(tokenAmount: U256) -> () {
+        totalSupply = totalSupply - tokenAmount
+        burnToken!(callerAddress!(), selfTokenId!(), tokenAmount)
+    }
+}

@@ -1,14 +1,12 @@
 import { expectAssertionError, testAddress, testPrivateKey } from '@alephium/web3-test'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
 import {
-  AddRecipient,
-  AddRecipients,
+  AddVestingSchedule,
+  AddVestingScheduleWithPercentage,
   Claim,
-  Initialize,
   Metadata,
   Vesting,
-  VestingInstance,
-  UpdateNextMilestoneIndex
+  VestingInstance
 } from '../artifacts/ts'
 import {
   web3,
@@ -22,44 +20,33 @@ import {
 } from '@alephium/web3'
 import { randomBytes } from 'crypto'
 import * as base58 from 'bs58'
-import axios from 'axios'
 
 web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
 export const ZERO_ADDRESS = 'tgx7VNFoP9DJiFMFgXXtafQZkUvyEdDHT9ryamHJYrjq'
 export const defaultSigner = new PrivateKeyWallet({ privateKey: testPrivateKey })
 export const groupIndex = groupOfAddress(testAddress)
 
-export interface MilestoneInfo {
-  timestamp: bigint
-  ramp: bigint
-  percentage: bigint
-}
-
 export async function deployMetadataTemplate() {
   return await Metadata.deploy(defaultSigner, {
     initialFields: {
       vesting: '',
       address: ZERO_ADDRESS,
-      lockedAmount: 0n,
-      totalClaimed: 0n,
-      claimIndex: 0n,
-      lastProcessedTimestamp: 0n
+      startTime: 0n,
+      cliffTime: 0n,
+      endTime: 0n,
+      totalAmount: 0n,
+      totalClaimed: 0n
     }
   })
 }
 
-export async function deployVestingContract(manager: Address, startTime: number) {
+export async function deployVestingContract(manager: Address) {
   const metadataTemplate = await deployMetadataTemplate()
   return await Vesting.deploy(defaultSigner, {
     initialFields: {
       metadataTemplateId: metadataTemplate.contractInstance.contractId,
       manager,
-      startTime: BigInt(startTime),
-      totalMilestones: 0n,
-      totalAmountLocked: 0n,
-      totalAmountUnlocked: 0n,
-      totalRecipients: 0n,
-      nextMilestone: 0n
+      totalSchedules: 0n
     }
   })
 }
@@ -89,89 +76,91 @@ export async function transferAlphTo(to: Address, amount: bigint) {
   )
 }
 
-export async function initialize(signer: SignerProvider, vestContract: VestingInstance, milestones: MilestoneInfo[]) {
-  return await Initialize.execute(signer, {
-    initialFields: { vestingContract: vestContract.contractId, milestonesArr: milestones as any },
-    attoAlphAmount: 10n * ONE_ALPH
+export async function addVestingSchedule(
+  signer: SignerProvider,
+  vesting: VestingInstance,
+  recipient: Address,
+  startTime: bigint,
+  cliffTime: bigint,
+  endTime: bigint,
+  totalAmount: bigint
+) {
+  return await AddVestingSchedule.execute(signer, {
+    initialFields: { vesting: vesting.contractId, recipient, startTime, cliffTime, endTime, totalAmount },
+    attoAlphAmount: totalAmount + 5n * ONE_ALPH
   })
 }
 
-export async function initializeFailed(
+export async function addVestingScheduleWithPercentage(
   signer: SignerProvider,
-  vestContract: VestingInstance,
-  milestones: MilestoneInfo[],
-  errorCode: bigint
-) {
-  await expectAssertionError(initialize(signer, vestContract, milestones), vestContract.address, Number(errorCode))
-}
-
-export async function addRecipient(
-  signer: SignerProvider,
-  vestContract: VestingInstance,
+  vesting: VestingInstance,
   recipient: Address,
-  amount: bigint
+  startTime: bigint,
+  cliffTime: bigint,
+  endTime: bigint,
+  totalAmount: bigint,
+  percentage: bigint
 ) {
-  return await AddRecipient.execute(signer, {
-    initialFields: { vestingContract: vestContract.contractId, recipient, amount },
-    attoAlphAmount: amount + 2n * ONE_ALPH
+  return await AddVestingScheduleWithPercentage.execute(signer, {
+    initialFields: { vesting: vesting.contractId, recipient, startTime, cliffTime, endTime, totalAmount, percentage },
+    attoAlphAmount: totalAmount + 5n * ONE_ALPH
   })
 }
 
-export async function addRecipientFailed(
+export async function addVestingScheduleFailed(
   signer: SignerProvider,
-  vestContract: VestingInstance,
+  vesting: VestingInstance,
   recipient: Address,
-  amount: bigint,
+  startTime: bigint,
+  cliffTime: bigint,
+  endTime: bigint,
+  totalAmount: bigint,
   errorCode: bigint
 ) {
   await expectAssertionError(
-    addRecipient(signer, vestContract, recipient, amount),
-    vestContract.address,
+    addVestingSchedule(signer, vesting, recipient, startTime, cliffTime, endTime, totalAmount),
+    vesting.address,
     Number(errorCode)
   )
 }
 
-export async function addRecipients(
+export async function addVestingScheduleWithPercentageFailed(
   signer: SignerProvider,
-  vestContract: VestingInstance,
-  addresses: Address[],
-  amounts: bigint[],
-  totalAmount: bigint
+  vesting: VestingInstance,
+  recipient: Address,
+  startTime: bigint,
+  cliffTime: bigint,
+  endTime: bigint,
+  totalAmount: bigint,
+  percentage: bigint,
+  errorCode: bigint
 ) {
-  return await AddRecipients.execute(signer, {
-    initialFields: {
-      vestingContract: vestContract.contractId,
-      addresses: addresses as any,
-      amounts: amounts as any,
-      totalAmount
-    },
-    attoAlphAmount: totalAmount * 2n + 5n * ONE_ALPH
-  })
+  await expectAssertionError(
+    addVestingScheduleWithPercentage(
+      signer,
+      vesting,
+      recipient,
+      startTime,
+      cliffTime,
+      endTime,
+      totalAmount,
+      percentage
+    ),
+    vesting.address,
+    Number(errorCode)
+  )
 }
 
-export async function updateNextMilestoneIndex(
-  signer: SignerProvider,
-  vestContract: VestingInstance,
-  startIndex: bigint
-) {
-  return await UpdateNextMilestoneIndex.execute(signer, {
-    initialFields: {
-      vestingContract: vestContract.contractId,
-      startIndex: startIndex
-    }
-  })
-}
-
-export async function claim(signer: SignerProvider, vestContract: VestingInstance) {
+export async function claim(signer: SignerProvider, vesting: VestingInstance) {
   return await Claim.execute(signer, {
     initialFields: {
-      vestingContract: vestContract.contractId
+      vesting: vesting.contractId
     }
   })
 }
 
-export async function claimFailed(signer: SignerProvider, vestContract: VestingInstance, errorCode: bigint) {
-  await expectAssertionError(claim(signer, vestContract), vestContract.address, Number(errorCode))
+export async function claimFailed(signer: SignerProvider, vesting: VestingInstance, errorCode: bigint) {
+  await expectAssertionError(claim(signer, vesting), vesting.address, Number(errorCode))
 }
 
 export async function balanceOf(tokenId: string, address = testAddress): Promise<bigint> {
@@ -179,30 +168,6 @@ export async function balanceOf(tokenId: string, address = testAddress): Promise
   if (tokenId === ALPH_TOKEN_ID) return BigInt(balances.balance)
   const balance = balances.tokenBalances?.find((t) => t.id === tokenId)
   return balance === undefined ? 0n : BigInt(balance.amount)
-}
-
-export function generateMilestones(
-  startTime: number,
-  count: number,
-  intervalSeconds: number,
-  ramp: 0 | 1
-): MilestoneInfo[] {
-  const data: MilestoneInfo[] = []
-  const intervalMillis = intervalSeconds * 1000
-
-  for (let i = 0; i < count; i++) {
-    const interval = i + 1
-    const timestamp = BigInt(startTime + interval * intervalMillis)
-    const percentage = i === count - 1 ? 100 : (100 / count) * (i + 1)
-
-    data.push({
-      timestamp,
-      percentage: BigInt(Math.round((percentage * 1e18) / 100)),
-      ramp: BigInt(ramp)
-    })
-  }
-
-  return data
 }
 
 export function alph(amount: bigint | number): bigint {
@@ -218,5 +183,23 @@ export async function mineBlocks(numBlocks: number, delay: number) {
   for (let i = 0; i < numBlocks; i++) {
     await mineBlock()
     await sleep(delay)
+  }
+}
+
+export function generateSchedule(durationInSecs: number, cliff: boolean) {
+  const currentTime = Date.now()
+  // create startTime 5 secs ahead
+  const startTime = currentTime + 5000
+  let cliffTime = startTime
+  if (cliff) {
+    // cliff of 20% of duration
+    const percentage = (durationInSecs * 20) / 100
+    cliffTime = startTime + percentage * 1000
+  }
+  const endTime = startTime + durationInSecs * 1000
+  return {
+    startTime: BigInt(startTime),
+    cliffTime: BigInt(cliffTime),
+    endTime: BigInt(endTime)
   }
 }

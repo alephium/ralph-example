@@ -1,0 +1,3 @@
+TxScript AddVestingSchedule(vesting: Vesting, recipient: Address, startTime: U256, cliffTime: U256, endTime: U256, totalAmount: U256) {
+  vesting.addVestingSchedule{callerAddress!() -> ALPH: totalAmount + 2 alph}(recipient, startTime, cliffTime, endTime, totalAmount)
+}
