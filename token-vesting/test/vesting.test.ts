@@ -28,7 +28,7 @@ describe('VestingWallet Tests', () => {
     fakeManager = await getSigner(alph(5000), groupIndex)
     vesting = (await deployVestingContract(manager.address)).contractInstance
     users = await getSigners(6, alph(100), groupIndex)
-  })
+  }, 10000)
 
   async function getUserMetadata(user: PrivateKeyWallet) {
     const path = utils.binToHex(base58.decode(user.address))
@@ -180,25 +180,21 @@ describe('VestingWallet Tests', () => {
     await checkUserLockedAmount(user1, actualAmount)
   }, 30000)
 
-  // test('test: admin cannot add schedule with percentage greater than 100%', async () => {
-  //   const user1 = users[0]
-  //   const lockedAmount = alph(100)
-  //   const schedule = generateSchedule(60, true)
-  //   const percentage = 120n
-  //   await addVestingScheduleWithPercentageFailed(
-  //     manager,
-  //     vesting,
-  //     user1.address,
-  //     schedule.startTime,
-  //     schedule.cliffTime,
-  //     schedule.endTime,
-  //     lockedAmount,
-  //     percentage,
-  //     3n
-  //   )
-
-  //   const actualAmount = (lockedAmount * 30n) / 100n
-
-  //   await checkUserLockedAmount(user1, actualAmount)
-  // }, 30000)
+  test('test: admin cannot add schedule with percentage greater than 100%', async () => {
+    const user1 = users[0]
+    const lockedAmount = alph(100)
+    const schedule = generateSchedule(60, true)
+    const percentage = 120n
+    await addVestingScheduleWithPercentageFailed(
+      manager,
+      vesting,
+      user1.address,
+      schedule.startTime,
+      schedule.cliffTime,
+      schedule.endTime,
+      lockedAmount,
+      percentage,
+      3n
+    )
+  }, 30000)
 })
