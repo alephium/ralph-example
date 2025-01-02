@@ -1,3 +1,0 @@
-TxScript Claim(vestingContract: Vesting) {
-  vestingContract.claim()
-}

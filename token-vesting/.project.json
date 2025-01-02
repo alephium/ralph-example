@@ -10,59 +10,23 @@
     "ignoreUnusedFunctionReturnWarnings": false
   },
   "infos": {
-    "AddRecipient": {
-      "sourceFile": "txScripts/addRecipient.ral",
-      "sourceCodeHash": "342b16c75b4266e8ee745817cfac996abf7a702f6b535d4a3b05ebbb1e0aa72d",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": ""
-    },
-    "AddRecipients": {
-      "sourceFile": "txScripts/addRecipients.ral",
-      "sourceCodeHash": "5f6fcc9b114a6a82481a941fd456fc19bfbcd95d8ec95053ba48159603aeddae",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": ""
-    },
-    "Claim": {
-      "sourceFile": "txScripts/claim.ral",
-      "sourceCodeHash": "bbfc7ea90359d040750d55ba19ce71f7c239afba0f1166a687e30286aa58a723",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": ""
-    },
-    "Initialize": {
-      "sourceFile": "txScripts/initialize.ral",
-      "sourceCodeHash": "8e791ef0398486c4d2f70d14a631431a34687bfc1f4efb4558506dd8a935aa4b",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": ""
-    },
     "Metadata": {
       "sourceFile": "metadata.ral",
-      "sourceCodeHash": "958748520a48565495a1f925234571f8b9d2dacd0b2fd76204839a70d93f5b58",
+      "sourceCodeHash": "09ed7ce8a0dde9a317ad0a3f9784593822439ae05ce33a17e8f6cd89ec876c6e",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "42115e8e9f446897e5cf654019e0330c2cf9e7eb82630a1718c23fd4b8127f7c"
+      "codeHashDebug": "41770d64c8501a13b46b7214a4448c23efc074a12a3dfea82c684267142e8d30"
     },
-    "Milestone": {
+    "UserVestingSchedule": {
       "sourceFile": "vesting.ral",
-      "sourceCodeHash": "b90b30becab822dccb503b77e9f531ffb1ba1ca623807a07db59d6825709c40c",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": ""
-    },
-    "UpdateNextMilestoneIndex": {
-      "sourceFile": "txScripts/updateLastReachedMilestone.ral",
-      "sourceCodeHash": "3069c9f9a4fabe5e30afd9b1535838ad1382562a9fd1b2ced94890f05c5c7af3",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": ""
-    },
-    "UserMetadata": {
-      "sourceFile": "vesting.ral",
-      "sourceCodeHash": "b90b30becab822dccb503b77e9f531ffb1ba1ca623807a07db59d6825709c40c",
+      "sourceCodeHash": "5b8679d95cf88409164edd5feda75c6a1e2d740f4e2f24255257d11d66bce422",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },
     "Vesting": {
       "sourceFile": "vesting.ral",
-      "sourceCodeHash": "b90b30becab822dccb503b77e9f531ffb1ba1ca623807a07db59d6825709c40c",
-      "bytecodeDebugPatch": "=6-2+78=2-2+b8=2-2=1-3+1=2-2+03=3-1+4=3-1+8=2-2+c9=3-1+d=3-5+b=3-1+9=3-1+a=3-1+8=2-2=2-1+445445=2+4=1-2+4a46a2=2-2+b7=15-1+e=348-2+60=208+7a7e0214696e73657274206174206d617020706174683a2000=119-1+c=2694",
-      "codeHashDebug": "3c198efd3c50d049dad20dcc1e5064434e6305701bcdd921f7cd8a2453b78c0b"
+      "sourceCodeHash": "5b8679d95cf88409164edd5feda75c6a1e2d740f4e2f24255257d11d66bce422",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "bd50fcd4b4396c30e5e916a8de8996fad72cd89a215cfbeb329148a0c92bef89"
     }
   }
 }

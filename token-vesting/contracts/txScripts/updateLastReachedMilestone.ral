@@ -1,3 +1,0 @@
-TxScript UpdateNextMilestoneIndex(vestingContract: Vesting, startIndex: U256) {
-  vestingContract.updateNextMilestoneIndex(startIndex)
-}

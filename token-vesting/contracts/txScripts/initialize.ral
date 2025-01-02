@@ -1,3 +1,0 @@
-TxScript Initialize (vestingContract: Vesting, milestonesArr: [Milestone; 10] ) {
-  vestingContract.initialize{callerAddress!() -> ALPH: 10 alph}(milestonesArr)
-}

@@ -1,312 +1,134 @@
-const ONE = 1e18
-
-enum Ramp {
-  Cliff = 0
-  Linear = 1
-}
-
-struct Milestone {
-  mut timestamp: U256,
-  mut ramp: U256,
-  mut percentage: U256
-}
-
-struct UserMetadata {
+struct UserVestingSchedule {
+  startTime: U256,
+  cliffTime: U256,
+  endTime: U256,
   lockedAmount: U256,
-  totalClaimed: U256,
-  lastProcessedTimestamp: U256
+  totalClaimed: U256
 }
 
 Contract Vesting(
   metadataTemplateId: ByteVec,
   manager: Address,
-  startTime: U256,
-  mut totalMilestones: U256,
-  mut totalAmountLocked: U256,
-  mut totalAmountUnlocked: U256,
-  mut totalRecipients: U256,
-  mut nextMilestone: U256
+  mut totalSchedules: U256
 ){
-  mapping[U256, Milestone] milestones
-
   event Claim(recipient: Address, amount: U256)
-  
-  event MilestoneReached(index: U256)
 
-  event NewRecipientAdded(recipient: Address, amount: U256)
+  event NewScheduleAdded(recipient: Address, startTime: U256, cliffTime:U256, endTime: U256, totalAmount: U256)
   
-  event NewRecipientsAdded(totalRecipients: U256, totalAmount: U256)
+  event VestingEndedByOwner(addressToEnd: Address, amountWithdrawable: U256, amountRefundable: U256)
 
   enum ErrorCodes {
     InvalidCaller = 0
-    MilestoneArrayEmpty = 1
-    LastPercentageMustBe100 = 2
-    OnlyLastPercentageCanBe100 = 3
-    TimestampsNotSorted = 4
-    PercentagesNotSorted = 5
-    InvalidRampSet = 6
-    InsufficientAlph = 7
-    AlreadyHasLock = 8
-    InvalidTotalAmount = 9
-    MetadataNotExists = 10
-    ClaimTimeNotReached = 11
-    AlreadyInitialized = 12
-  }
-
-  // max milestones is 50, for testing i'm setting as 10
-  @using(preapprovedAssets = true, updateFields = true)
-  pub fn initialize(milestonesArr: [Milestone; 10]) -> () {
-    let caller = callerAddress!()
-    checkCaller!(caller == manager, ErrorCodes.InvalidCaller)
-
-    assert!(totalMilestones == 0, ErrorCodes.AlreadyInitialized)
-
-    assert!(len!(milestonesArr) > 0, ErrorCodes.MilestoneArrayEmpty)
-
-    let mut current = milestonesArr[0]
-
-    let milestonesLen = len!(milestonesArr)
-
-    for (let mut index = 0; index < milestonesLen ; index = index + 1) {
-      if(index != 0){
-        let previous = current
-        current = milestonesArr[index]
-
-        assert!(previous.timestamp <= current.timestamp, ErrorCodes.TimestampsNotSorted)
-        assert!(previous.percentage < current.percentage, ErrorCodes.PercentagesNotSorted)
-      }
-
-      assert!(current.ramp == Ramp.Cliff || current.ramp == Ramp.Linear, ErrorCodes.InvalidRampSet)
-
-      milestones.insert!(callerAddress!(), index, current)
-
-      if (index == milestonesLen - 1){
-        assert!(current.percentage == ONE, ErrorCodes.LastPercentageMustBe100)
-      }else{
-        assert!(current.percentage != ONE, ErrorCodes.OnlyLastPercentageCanBe100)
-      }
-    }
-    totalMilestones = milestonesLen
+    InvalidCliffTime = 1
+    InvalidEndTime = 2
+    InvalidPercentage = 3
+    InsufficientAlph = 4
+    AlreadyHasLock = 5
+    MetadataNotExists = 6
   }
 
   @using(preapprovedAssets = true, updateFields = true)
-  pub fn addRecipient(recipient: Address, amount: U256) -> () {
+  pub fn addVestingScheduleWithPercentage(recipient: Address, startTime: U256, cliffTime: U256, endTime: U256, totalAmount: U256, percentage: U256) -> () {
     let caller = callerAddress!()
     checkCaller!(caller == manager, ErrorCodes.InvalidCaller)
+    assert!(percentage <= 100, ErrorCodes.InvalidPercentage)
+
+    assert!(cliffTime >= startTime,ErrorCodes.InvalidCliffTime)
+    assert!(endTime >= cliffTime, ErrorCodes.InvalidEndTime)
+
+    let vestAmount = (totalAmount * percentage) / 100
+
+    createSub{caller -> ALPH : vestAmount + 1 alph}(caller, recipient, startTime, cliffTime, endTime, vestAmount)
     
-    createSub{caller -> ALPH : amount + 1 alph}(caller, recipient, amount)
-    
-    totalRecipients = totalRecipients + 1
-    totalAmountLocked = totalAmountLocked + amount
-    emit NewRecipientAdded(recipient, amount)
+    totalSchedules = totalSchedules + 1
+
+    emit NewScheduleAdded(recipient, startTime, cliffTime, endTime, totalAmount)
   }
 
-  // can take up to 100, but for testing we set as 5
   @using(preapprovedAssets = true, updateFields = true)
-  pub fn addRecipients(addresses: [Address; 5], amounts: [U256; 5], totalAmount: U256) -> () {
+  pub fn addVestingSchedule(recipient: Address, startTime: U256, cliffTime: U256, endTime: U256, totalAmount: U256) -> () {
     let caller = callerAddress!()
     checkCaller!(caller == manager, ErrorCodes.InvalidCaller)
 
-    totalAmountLocked = totalAmountLocked + totalAmount
-    let addresesLen = len!(addresses)
-    totalRecipients = totalRecipients + addresesLen
-    let mut totalAmountCheck = 0
+    assert!(cliffTime >= startTime,ErrorCodes.InvalidCliffTime)
+    assert!(endTime >= cliffTime, ErrorCodes.InvalidEndTime)
 
-    for (let mut index = 0; index < addresesLen; index = index + 1) {
-      let currAddress = addresses[index]
-      let currAmount = amounts[index]
-      totalAmountCheck = totalAmountCheck + currAmount
-      createSub{caller -> ALPH : currAmount + 1 alph}(caller, currAddress, currAmount)
+    createSub{caller -> ALPH : totalAmount + 1 alph}(caller, recipient, startTime, cliffTime, endTime, totalAmount)
+    
+    totalSchedules = totalSchedules + 1
+
+    emit NewScheduleAdded(recipient, startTime, cliffTime, endTime, totalAmount)
+  }
+
+  pub fn endVesting(addressToEnd: Address, refundAddress: Address) -> () {
+    let caller = callerAddress!()
+    checkCaller!(caller == manager, ErrorCodes.InvalidCaller)
+
+    let metadata = getMetadata(addressToEnd)
+
+    let mut amountRefundable = 0
+    let mut amountWithdrawable = 0
+
+    if(blockTimeStamp!() < metadata.getCliffTime()){
+      amountRefundable = metadata.getTotalAmountLocked()
+    }else{
+      let totalAmountVested = metadata.getTotalAmountVested()
+      amountWithdrawable = totalAmountVested - metadata.getTotalAmountClaimed()
+      amountRefundable = metadata.getTotalAmountLocked() - totalAmountVested
     }
 
-    assert!(totalAmountCheck == totalAmount, ErrorCodes.InvalidTotalAmount)
-    emit NewRecipientsAdded(addresesLen, totalAmount)
-  }
+    if(amountWithdrawable > 0){
+      metadata.makeTransfer(addressToEnd, amountWithdrawable)
+    }
 
-  @using(updateFields = true)
-  pub fn claim() -> () {
+    if(amountRefundable > 0){
+      metadata.makeTransfer(refundAddress, amountRefundable)
+    }
+
+    metadata.removeVestingSchedule()
+
+    emit VestingEndedByOwner(addressToEnd, amountWithdrawable, amountRefundable)
+  }
+ 
+  pub fn claim() -> (){
     let caller = callerAddress!()
     let metadata = getMetadata(caller)
 
+    let prevClaimed = metadata.getTotalAmountClaimed()
+
     checkCaller!(caller == metadata.getAddress(), ErrorCodes.InvalidCaller)
 
-    updateNextMilestoneIndex(nextMilestone)
+    metadata.unlockToken()
 
-    let mut currClaimIndex = metadata.getClaimIndex()
-    if(currClaimIndex > 0){
-      currClaimIndex = currClaimIndex - 1
-    }
-    
-    let lastProcessedTimestamp = metadata.getLastProcessedTime()
+    let currClaimed = metadata.getTotalAmountClaimed()
 
-    let userMilestones = milestones[currClaimIndex]
-
-    let (mut percentage, claimIndex, currProcessedTimestamp) = getClaimableRecord(currClaimIndex, lastProcessedTimestamp)
-
-    if(percentage != 0 && nextMilestone > 1){
-      percentage = percentage - userMilestones.percentage
-    }
-
-    let amount = metadata.getLockedAmount() * percentage / ONE
-
-    assert!(amount > 0, ErrorCodes.ClaimTimeNotReached)
-
-    metadata.unlockToken(amount, claimIndex, currProcessedTimestamp)
-    
-    totalAmountUnlocked = totalAmountUnlocked + amount
-    emit Claim(caller, amount)
+    emit Claim(caller, currClaimed - prevClaimed)
   }
 
-  pub fn getClaimableAmount(address: Address) -> U256 {
-    let metadata = getMetadata(address)
-    let mut claimIndex = metadata.getClaimIndex()
-    if(claimIndex > 0){
-      claimIndex = claimIndex - 1
-    }
-    let lastProcessedTimestamp = metadata.getLastProcessedTime()
-    let userMilestones = milestones[claimIndex]
-    let (mut percentage, _, _) = getClaimableRecord(claimIndex, lastProcessedTimestamp)
-    if(percentage != 0 && nextMilestone != 0){
-      percentage = percentage - userMilestones.percentage
-    }
-    let amount = metadata.getLockedAmount() * percentage / ONE
-    return amount
-  }
+  pub fn getUserVestingSchedule() -> UserVestingSchedule {
+    let caller = callerAddress!()
+    let metadata = getMetadata(caller)
 
-  pub fn getUserMetadata(address: Address) -> UserMetadata {
-    let metadata = getMetadata(address)
-    return UserMetadata { 
-      lockedAmount: metadata.getLockedAmount(), 
-      totalClaimed: metadata.getTotalClaimed(),
-      lastProcessedTimestamp: metadata.getLastProcessedTime()
+    return UserVestingSchedule {
+      startTime: metadata.getStartTime(),
+      cliffTime: metadata.getCliffTime(),
+      endTime: metadata.getEndTime(),
+      lockedAmount: metadata.getTotalAmountLocked(),
+      totalClaimed: metadata.getTotalAmountClaimed()
     }
   }
-
-  pub fn getAmountLeftInContract () -> U256 {
-    return totalAmountLocked - totalAmountUnlocked
-  }
-
-  pub fn getMilestoneData (index: U256) -> Milestone {
-    return milestones[index]
-  }
-
-  pub fn getTotalMilestones () -> U256 {
-    return totalMilestones
-  }
-
-  pub fn getTotalLocked () -> U256 {
-    return totalAmountLocked
-  }
-
-  pub fn getTotalAmountStillLocked () -> U256 {
-    return totalAmountLocked - totalAmountUnlocked
-  }
-
-  pub fn getTotalAmountUnlocked () -> U256 {
-    return totalAmountUnlocked
-  }
-
-  pub fn getTotalRecipients () -> U256 {
-    return totalRecipients
-  }
-
-  pub fn getNextMilestone () -> U256 {
-    return nextMilestone
-  }
-
-  @using(updateFields = true, checkExternalCaller = false)
-  pub fn updateNextMilestoneIndex(startIndex: U256) -> () {
-    let mut currentMilestone = milestones[startIndex]
-
-    if (currentMilestone.timestamp > blockTimeStamp!()) {
-        return
-    }
-
-    let mut loopComplete = false
-    let mut index = startIndex
-
-    while (index < totalMilestones && !loopComplete) {
-        let currMilestone = milestones[index]
-
-        if (currMilestone.timestamp <= blockTimeStamp!()) {
-            currentMilestone = currMilestone
-        } else {
-            if (index > nextMilestone) {
-                nextMilestone = index
-            }
-            loopComplete = true
-        }
-
-        index = index + 1
-    }
-
-    if (!loopComplete && nextMilestone < totalMilestones - 1) {
-        nextMilestone = totalMilestones - 1
-    }
-  }
-
-  fn getClaimableRecord(userClaimIndex: U256, userLastProcessedTime: U256) -> (U256, U256, U256) {
-    let mut milestoneIndex = nextMilestone
-    if(nextMilestone > 0){
-      milestoneIndex = nextMilestone - 1 
-    } 
-    let currentMilestone = milestones[milestoneIndex]
-    let mut percentage = 0
-    let mut claimIndex = userClaimIndex
-    let mut lastProcessedTimestamp = userLastProcessedTime
-
-    if (currentMilestone.timestamp > blockTimeStamp!() && currentMilestone.ramp != Ramp.Linear) {
-      return percentage, claimIndex, lastProcessedTimestamp
-    }
-
-    for (let mut index = milestoneIndex; index < totalMilestones; index = index + 1) {
-        let current = milestones[index]
-
-        if (current.timestamp > blockTimeStamp!()) {
-            if (current.ramp == Ramp.Linear) {
-                let mut startPoint = startTime
-                let mut startPercentage = 0
-
-                if(index != 0){
-                  startPoint = milestones[index - 1].timestamp
-                  startPercentage = milestones[index - 1].percentage
-                }
-
-                if (lastProcessedTimestamp < startPoint) {
-                  lastProcessedTimestamp = startPoint
-                }
-
-                let currTimestamp = blockTimeStamp!()
-                percentage = percentage
-                    + ((currTimestamp - lastProcessedTimestamp) * (current.percentage - startPercentage))
-                        / (current.timestamp - startPoint)
-
-                lastProcessedTimestamp = currTimestamp
-            }
-
-            return percentage, claimIndex, lastProcessedTimestamp
-        }
-
-        lastProcessedTimestamp = current.timestamp
-        percentage = current.percentage
-        claimIndex = nextMilestone
-    }
-
-    return percentage, claimIndex, lastProcessedTimestamp
-  }
-
 
   @using(preapprovedAssets = true)
-  fn createSub(caller: Address, recipient: Address, amount: U256) -> () {
+  fn createSub(caller: Address, recipient: Address, startTime: U256, cliffTime: U256, endTime: U256, totalAmount: U256) -> () {
     let path = toByteVec!(recipient)
     let metadataContractId = subContractId!(path)
     assert!(!contractExists!(metadataContractId), ErrorCodes.AlreadyHasLock)
-    assert!(tokenRemaining!(caller, ALPH) >= amount + 1 alph, ErrorCodes.InsufficientAlph)
-    let (encodedImmFields, encodedMutFields) = Metadata.encodeFields!(selfContract!(), recipient, amount, 0, 0, 0)
-    let _ = copyCreateSubContract!{caller -> ALPH : amount + 1 alph}(path, metadataTemplateId, encodedImmFields, encodedMutFields)
+    assert!(tokenRemaining!(caller, ALPH) >= totalAmount + 1 alph, ErrorCodes.InsufficientAlph)
+    let (encodedImmFields, encodedMutFields) = Metadata.encodeFields!(selfContract!(), recipient, startTime, cliffTime, endTime, totalAmount, 0)
+    let _ = copyCreateSubContract!{caller -> ALPH : totalAmount + 1 alph}(path, metadataTemplateId, encodedImmFields, encodedMutFields)
   }
 
-  fn getMetadata(address: Address) -> Metadata {
+  fn getMetadata(address: Address) -> Metadata{
     let metadataContractId = subContractId!(toByteVec!(address))
     assert!(contractExists!(metadataContractId), ErrorCodes.MetadataNotExists)
     return Metadata(metadataContractId)

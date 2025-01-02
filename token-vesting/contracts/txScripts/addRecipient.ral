@@ -1,3 +1,0 @@
-TxScript AddRecipient(vestingContract: Vesting, recipient: Address, amount: U256 ) {
-  vestingContract.addRecipient{callerAddress!() -> ALPH: amount + 1 alph}(recipient, amount)
-}

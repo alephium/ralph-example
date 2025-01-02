@@ -1,44 +1,81 @@
 Contract Metadata(
   vesting: Vesting, 
   address: Address, 
-  lockedAmount: U256,
-  mut totalClaimed: U256,
-  mut claimIndex: U256,
-  mut lastProcessedTimestamp: U256
+  startTime: U256,
+  cliffTime: U256,
+  endTime: U256,
+  totalAmount: U256,
+  mut totalClaimed: U256
 ) {
   const InvalidCaller = 0
-  const InsufficientBalance = 1
+  const CliffTimeNotReached = 8
 
   pub fn getAddress() -> Address {
     return address
   }
 
   @using(assetsInContract = true, updateFields = true)
-  pub fn unlockToken(amount: U256, claimIndexUpdate: U256, lastClaimTimeStamp: U256) -> () {
+  pub fn unlockToken() -> () {
     checkCaller!(callerContractId!() == contractId!(vesting), InvalidCaller)
-    assert!(lockedAmount - totalClaimed >= amount, InsufficientBalance)
-    transferTokenFromSelf!(address, ALPH, amount)
-    totalClaimed = totalClaimed + amount
-    lastProcessedTimestamp = lastClaimTimeStamp
-    claimIndex = claimIndexUpdate
-    if(lockedAmount - totalClaimed == 0){
+    
+    assert!(blockTimeStamp!() > cliffTime, CliffTimeNotReached)
+
+    let totalAmountVested = getTotalAmountVested()
+    let amountWithdrawable = totalAmountVested - totalClaimed
+
+    totalClaimed = totalAmountVested
+
+    if (amountWithdrawable > 0){
+      makeTransfer(address, amountWithdrawable)
+    }
+
+    if (totalClaimed == totalAmount) {
       destroySelf!(address)
     }
   }
 
-  pub fn getLockedAmount() -> U256 {
-    return lockedAmount
+  pub fn getTotalAmountLocked() -> U256 {
+    return totalAmount
   }
 
-  pub fn getTotalClaimed() -> U256 {
+  pub fn getTotalAmountClaimed() -> U256 {
     return totalClaimed
   }
 
-  pub fn getClaimIndex() -> U256 {
-    return claimIndex
+  pub fn getTotalAmountVested() -> U256 {
+    let now = blockTimeStamp!()
+
+    if(now >= endTime){
+      return totalAmount
+    }
+
+    let timeSinceStart = now - startTime
+    let totalVestingTime = endTime - startTime
+    let totalAmountVested = (timeSinceStart * totalAmount) / totalVestingTime
+    return totalAmountVested
   }
 
-  pub fn getLastProcessedTime() -> U256 {
-    return lastProcessedTimestamp
+  pub fn getStartTime() -> U256 {
+    return startTime
+  }
+
+  pub fn getCliffTime() -> U256 {
+    return cliffTime
+  }
+
+  pub fn getEndTime() -> U256 {
+    return endTime
+  }
+
+  @using(assetsInContract = true)
+  pub fn removeVestingSchedule() -> () {
+    checkCaller!(callerContractId!() == contractId!(vesting), InvalidCaller)
+    destroySelf!(address)
+  }
+
+  @using(assetsInContract = true)
+  pub fn makeTransfer(recipient: Address, amount: U256) -> () {
+    checkCaller!(callerContractId!() == contractId!(vesting), InvalidCaller)
+    transferTokenFromSelf!(recipient, ALPH, amount)
   }
 }
