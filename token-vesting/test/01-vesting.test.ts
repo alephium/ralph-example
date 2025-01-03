@@ -1,13 +1,5 @@
-import {
-  addressFromContractId,
-  ALPH_TOKEN_ID,
-  DUST_AMOUNT,
-  groupOfAddress,
-  subContractId,
-  utils,
-  web3
-} from '@alephium/web3'
-import { getSigner, getSigners, testAddress } from '@alephium/web3-test'
+import { addressFromContractId, subContractId, utils } from '@alephium/web3'
+import { getSigner, getSigners } from '@alephium/web3-test'
 import { Metadata, VestingInstance } from '../artifacts/ts'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
 import {
@@ -17,12 +9,8 @@ import {
   addVestingScheduleWithPercentageFailed,
   alph,
   deployVestingContract,
-  claim,
-  claimFailed,
   groupIndex,
-  mineBlocks,
-  generateSchedule,
-  balanceOf
+  generateSchedule
 } from './utils'
 import base58 from 'bs58'
 

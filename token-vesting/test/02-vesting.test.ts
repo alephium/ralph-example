@@ -1,13 +1,5 @@
-import {
-  addressFromContractId,
-  ALPH_TOKEN_ID,
-  DUST_AMOUNT,
-  groupOfAddress,
-  subContractId,
-  utils,
-  web3
-} from '@alephium/web3'
-import { expectAssertionError, getSigner, getSigners, testAddress } from '@alephium/web3-test'
+import { addressFromContractId, ALPH_TOKEN_ID, DUST_AMOUNT, subContractId, utils, web3 } from '@alephium/web3'
+import { expectAssertionError, getSigner } from '@alephium/web3-test'
 import { Metadata, VestingInstance } from '../artifacts/ts'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
 import {
@@ -123,33 +115,31 @@ describe('TimeFunctionality Tests', () => {
     expect(currBalance + tolerance).toBeGreaterThanOrEqual(prevBalance + lockedAmount)
   }, 30000)
 
-  // test('admin can get refund after cliff', async () => {
-  //   await checkUserLockedAmount(user, lockedAmount)
-  //   await mineBlocks(4, 1000)
+  test('admin can get refund after cliff', async () => {
+    await checkUserLockedAmount(user, lockedAmount)
+    await mineBlocks(4, 1000)
 
-  //   const vestingSchedule = await vesting.view.getUserVestingSchedule({ args: { address: user.address } })
-  //   const refundable = vestingSchedule.returns.lockedAmount - vestingSchedule.returns.totalAmountVested
+    const vestingSchedule = await vesting.view.getUserVestingSchedule({ args: { address: user.address } })
+    const refundable = vestingSchedule.returns.lockedAmount - vestingSchedule.returns.totalAmountVested
+    const prevBalance = await balanceOf(ALPH_TOKEN_ID, manager.address)
+    await endVesting(manager, vesting, user.address, manager.address)
+    const currBalance = await balanceOf(ALPH_TOKEN_ID, manager.address)
 
-  //   const prevBalance = await balanceOf(ALPH_TOKEN_ID, manager.address)
-  //   await endVesting(manager, vesting, user.address, manager.address)
-  //   const currBalance = await balanceOf(ALPH_TOKEN_ID, manager.address)
+    expect(currBalance + tolerance).toBeGreaterThanOrEqual(prevBalance + refundable)
+  }, 30000)
 
-  //   expect(currBalance + tolerance).toBeGreaterThanOrEqual(prevBalance + refundable)
-  // }, 30000)
+  test('user gets claimable after cliff when vesting ended', async () => {
+    await checkUserLockedAmount(user, lockedAmount)
 
-  // test('user gets claimable after cliff when vesting ended', async () => {
-  //   await checkUserLockedAmount(user, lockedAmount)
+    await mineBlocks(4, 1000)
 
-  //   await mineBlocks(4, 1000)
-
-  //   const vestingSchedule = await vesting.view.getUserVestingSchedule({ args: { address: user.address } })
-  //   const claimable = vestingSchedule.returns.totalAmountVested - vestingSchedule.returns.totalClaimed
-
-  //   const prevBalance = await balanceOf(ALPH_TOKEN_ID, user.address)
-  //   await endVestingFailed(fakeManager, vesting, user.address, manager.address, 0n)
-  //   const currBalance = await balanceOf(ALPH_TOKEN_ID, user.address)
-  //   expect(currBalance + tolerance).toBeGreaterThan(prevBalance + claimable)
-  // }, 30000)
+    const vestingSchedule = await vesting.view.getUserVestingSchedule({ args: { address: user.address } })
+    const claimable = vestingSchedule.returns.totalAmountVested - vestingSchedule.returns.totalClaimed
+    const prevBalance = await balanceOf(ALPH_TOKEN_ID, user.address)
+    await endVesting(manager, vesting, user.address, manager.address)
+    const currBalance = await balanceOf(ALPH_TOKEN_ID, user.address)
+    expect(currBalance + tolerance).toBeGreaterThan(prevBalance + claimable)
+  }, 30000)
 
   test('schedule is removed when vesting is ended', async () => {
     await checkUserLockedAmount(user, lockedAmount)
@@ -161,5 +151,10 @@ describe('TimeFunctionality Tests', () => {
       vesting.address,
       6
     )
+  }, 30000)
+
+  test('non admin can not end vesting', async () => {
+    await checkUserLockedAmount(user, lockedAmount)
+    await endVestingFailed(fakeManager, vesting, user.address, manager.address, 0n)
   }, 30000)
 })

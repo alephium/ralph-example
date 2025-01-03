@@ -76,8 +76,28 @@ Contract Metadata(
   }
 
   @using(assetsInContract = true)
-  pub fn makeTransfer(recipient: Address, amount: U256) -> () {
+  pub fn endVesting(refundAddress: Address) -> (U256, U256) {
     checkCaller!(callerContractId!() == contractId!(vesting), InvalidContractCaller)
-    transferTokenFromSelf!(recipient, ALPH, amount)
+
+    let mut amountRefundable = 0
+    let mut amountWithdrawable = 0
+
+    if(blockTimeStamp!() < cliffTime) {
+      amountRefundable = getTotalAmountLocked()
+    }else{
+      let totalAmountVested = getTotalAmountVested()
+      amountWithdrawable = totalAmountVested - getTotalAmountClaimed()
+      amountRefundable = getTotalAmountLocked() - totalAmountVested
+    }
+
+    if(amountWithdrawable > 0){
+      transferTokenFromSelf!(address, ALPH, amountWithdrawable)
+    }
+
+    if(amountRefundable > 0){
+      transferTokenFromSelf!(refundAddress, ALPH, amountRefundable)
+    }
+
+    return amountWithdrawable, amountRefundable
   }
 }

@@ -67,24 +67,7 @@ Contract Vesting(
 
     let metadata = getMetadata(addressToEnd)
 
-    let mut amountRefundable = 0
-    let mut amountWithdrawable = 0
-
-    if(blockTimeStamp!() < metadata.getCliffTime()){
-      amountRefundable = metadata.getTotalAmountLocked()
-    }else{
-      let totalAmountVested = metadata.getTotalAmountVested()
-      amountWithdrawable = totalAmountVested - metadata.getTotalAmountClaimed()
-      amountRefundable = metadata.getTotalAmountLocked() - totalAmountVested
-    }
-
-    if(amountWithdrawable > 0){
-      metadata.makeTransfer(addressToEnd, amountWithdrawable)
-    }
-
-    if(amountRefundable > 0){
-      metadata.makeTransfer(refundAddress, amountRefundable)
-    }
+    let (amountWithdrawable, amountRefundable) = metadata.endVesting(refundAddress)
 
     metadata.removeVestingSchedule()
 
