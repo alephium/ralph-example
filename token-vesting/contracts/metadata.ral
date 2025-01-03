@@ -1,0 +1,107 @@
+Contract Metadata(
+  vesting: Vesting, 
+  address: Address, 
+  startTime: U256,
+  cliffTime: U256,
+  endTime: U256,
+  totalAmount: U256,
+  mut totalClaimed: U256
+) {
+
+  const CliffTimeNotReached = 8
+  const InvalidContractCaller = 9
+
+  pub fn getAddress() -> Address {
+    return address
+  }
+
+  @using(assetsInContract = true, updateFields = true)
+  pub fn unlockToken() -> () {
+
+    checkCaller!(callerContractId!() == contractId!(vesting), InvalidContractCaller)
+    
+    assert!(blockTimeStamp!() > cliffTime, CliffTimeNotReached)
+
+    let totalAmountVested = getTotalAmountVested()
+    let amountWithdrawable = totalAmountVested - totalClaimed
+
+    totalClaimed = totalAmountVested
+
+    let tokenId = vesting.getTokenId()
+
+    if (amountWithdrawable > 0){
+      transferTokenFromSelf!(address, tokenId, amountWithdrawable)
+    }
+  }
+
+  pub fn getTotalAmountLocked() -> U256 {
+    return totalAmount
+  }
+
+  pub fn getTotalAmountClaimed() -> U256 {
+    return totalClaimed
+  }
+
+  pub fn getTotalAmountVested() -> U256 {
+    let now = blockTimeStamp!()
+
+    if(now < startTime){
+      return 0
+    }
+
+    if(now >= endTime){
+      return totalAmount
+    }
+
+    let timeSinceStart = now - startTime
+    let totalVestingTime = endTime - startTime
+    let totalAmountVested = (timeSinceStart * totalAmount) / totalVestingTime
+    return totalAmountVested
+  }
+
+  pub fn getStartTime() -> U256 {
+    return startTime
+  }
+
+  pub fn getCliffTime() -> U256 {
+    return cliffTime
+  }
+
+  pub fn getEndTime() -> U256 {
+    return endTime
+  }
+
+  @using(assetsInContract = true)
+  pub fn removeVestingSchedule() -> () {
+    checkCaller!(callerContractId!() == contractId!(vesting), InvalidContractCaller)
+    destroySelf!(address)
+  }
+
+  @using(assetsInContract = true)
+  pub fn endVesting(refundAddress: Address) -> (U256, U256) {
+    checkCaller!(callerContractId!() == contractId!(vesting), InvalidContractCaller)
+
+    let mut amountRefundable = 0
+    let mut amountWithdrawable = 0
+
+    if(blockTimeStamp!() < cliffTime) {
+      amountRefundable = getTotalAmountLocked()
+    }else{
+      let totalAmountVested = getTotalAmountVested()
+      amountWithdrawable = totalAmountVested - getTotalAmountClaimed()
+      amountRefundable = getTotalAmountLocked() - totalAmountVested
+    }
+
+    let tokenId = vesting.getTokenId()
+
+    if(amountWithdrawable > 0){
+      transferTokenFromSelf!(address, tokenId, amountWithdrawable)
+    }
+
+    if(amountRefundable > 0){
+      transferTokenFromSelf!(refundAddress, tokenId, amountRefundable)
+    }
+
+    return amountWithdrawable, amountRefundable
+  }
+}

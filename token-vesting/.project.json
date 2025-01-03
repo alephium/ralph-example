@@ -1,0 +1,68 @@
+{
+  "fullNodeVersion": "v3.10.0",
+  "compilerOptionsUsed": {
+    "ignoreUnusedConstantsWarnings": false,
+    "ignoreUnusedVariablesWarnings": false,
+    "ignoreUnusedFieldsWarnings": false,
+    "ignoreUnusedPrivateFunctionsWarnings": false,
+    "ignoreUpdateFieldsCheckWarnings": false,
+    "ignoreCheckExternalCallerWarnings": false,
+    "ignoreUnusedFunctionReturnWarnings": false
+  },
+  "infos": {
+    "AddVestingSchedule": {
+      "sourceFile": "TxScripts/addVestingSchedule.ral",
+      "sourceCodeHash": "52c2469bcf24d3be8856e1fa80405681395991efa71bab5d380d9d43af078e03",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "AddVestingScheduleWithPercentage": {
+      "sourceFile": "TxScripts/addVestingSchedulePercentage.ral",
+      "sourceCodeHash": "e796233125a44621d2daf59559e958904fdbf8fd0ee37b570d59a29ce9ab3e2b",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "Claim": {
+      "sourceFile": "TxScripts/claim.ral",
+      "sourceCodeHash": "78d8049ae83cc5c4595465434eef220963b67cd96d2cc73241f794f04be2271c",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "EndVesting": {
+      "sourceFile": "TxScripts/endVesting.ral",
+      "sourceCodeHash": "d07e59b64534ca68991f0f6dff4b9523920781ca60f0d268243356f8babdb4c8",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "IFungibleToken": {
+      "sourceFile": "../node_modules/@alephium/web3/std/fungible_token_interface.ral",
+      "sourceCodeHash": "62910bf11e1eeb6cb2fd468626ff606a9b06306b2b81590c3b10f6deb5966bde",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "Metadata": {
+      "sourceFile": "metadata.ral",
+      "sourceCodeHash": "2626cfea6c9e4d249c993c3f0065cbe129e22a1f229903606d0dbdb0da5b76a4",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "13cc81d4d36c016bdf5376d4c9c6b917841189f137dc5009eddafe86bd53225e"
+    },
+    "Token": {
+      "sourceFile": "token.ral",
+      "sourceCodeHash": "d577ddd6751732ca003a1dfecc282fed09c96b37d6b15d4649f416a7672f43cf",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "3ef6b0e92af5358d2f9872825f6e90387fea4a832864748d71e43437329e37e0"
+    },
+    "UserVestingSchedule": {
+      "sourceFile": "vesting.ral",
+      "sourceCodeHash": "324955185f5c4b7740bbb86603810d275f12c97b01f3b249e422214c378baeff",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "Vesting": {
+      "sourceFile": "vesting.ral",
+      "sourceCodeHash": "324955185f5c4b7740bbb86603810d275f12c97b01f3b249e422214c378baeff",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "491b42d3d5349aa0a370297981f79047b6f9bd9ed85ca957c3a695caedc01147"
+    }
+  }
+}
