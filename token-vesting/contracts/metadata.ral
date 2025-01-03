@@ -7,8 +7,9 @@ Contract Metadata(
   totalAmount: U256,
   mut totalClaimed: U256
 ) {
-  const InvalidCaller = 0
+
   const CliffTimeNotReached = 8
+  const InvalidContractCaller = 9
 
   pub fn getAddress() -> Address {
     return address
@@ -16,7 +17,8 @@ Contract Metadata(
 
   @using(assetsInContract = true, updateFields = true)
   pub fn unlockToken() -> () {
-    checkCaller!(callerContractId!() == contractId!(vesting), InvalidCaller)
+
+    checkCaller!(callerContractId!() == contractId!(vesting), InvalidContractCaller)
     
     assert!(blockTimeStamp!() > cliffTime, CliffTimeNotReached)
 
@@ -26,11 +28,7 @@ Contract Metadata(
     totalClaimed = totalAmountVested
 
     if (amountWithdrawable > 0){
-      makeTransfer(address, amountWithdrawable)
-    }
-
-    if (totalClaimed == totalAmount) {
-      destroySelf!(address)
+      transferTokenFromSelf!(address, ALPH, amountWithdrawable)
     }
   }
 
@@ -44,6 +42,10 @@ Contract Metadata(
 
   pub fn getTotalAmountVested() -> U256 {
     let now = blockTimeStamp!()
+
+    if(now < startTime){
+      return 0
+    }
 
     if(now >= endTime){
       return totalAmount
@@ -69,13 +71,13 @@ Contract Metadata(
 
   @using(assetsInContract = true)
   pub fn removeVestingSchedule() -> () {
-    checkCaller!(callerContractId!() == contractId!(vesting), InvalidCaller)
+    checkCaller!(callerContractId!() == contractId!(vesting), InvalidContractCaller)
     destroySelf!(address)
   }
 
   @using(assetsInContract = true)
   pub fn makeTransfer(recipient: Address, amount: U256) -> () {
-    checkCaller!(callerContractId!() == contractId!(vesting), InvalidCaller)
+    checkCaller!(callerContractId!() == contractId!(vesting), InvalidContractCaller)
     transferTokenFromSelf!(recipient, ALPH, amount)
   }
 }

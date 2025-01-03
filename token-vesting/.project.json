@@ -42,9 +42,9 @@
     },
     "Metadata": {
       "sourceFile": "metadata.ral",
-      "sourceCodeHash": "09ed7ce8a0dde9a317ad0a3f9784593822439ae05ce33a17e8f6cd89ec876c6e",
+      "sourceCodeHash": "637eece2fd0a7c21fd87cf1ed2eeb9140658f15f1dec568dafccdd8d0652445e",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "41770d64c8501a13b46b7214a4448c23efc074a12a3dfea82c684267142e8d30"
+      "codeHashDebug": "5ee1f03259c6565b564106c34ddc1f37f142417afcad2feb3734e2b7703c2453"
     },
     "Token": {
       "sourceFile": "token.ral",
@@ -54,15 +54,15 @@
     },
     "UserVestingSchedule": {
       "sourceFile": "vesting.ral",
-      "sourceCodeHash": "5b8679d95cf88409164edd5feda75c6a1e2d740f4e2f24255257d11d66bce422",
+      "sourceCodeHash": "030d82c5432ea6bb0f6d841675c3ee6f8d6c125a131779078584690a8e5aaa90",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },
     "Vesting": {
       "sourceFile": "vesting.ral",
-      "sourceCodeHash": "5b8679d95cf88409164edd5feda75c6a1e2d740f4e2f24255257d11d66bce422",
+      "sourceCodeHash": "030d82c5432ea6bb0f6d841675c3ee6f8d6c125a131779078584690a8e5aaa90",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "bd50fcd4b4396c30e5e916a8de8996fad72cd89a215cfbeb329148a0c92bef89"
+      "codeHashDebug": "aac1ea83cd90f9b75d96bb8fbce6d5aa3ff50bfbd289eb82c7efac62aa4868f6"
     }
   }
 }

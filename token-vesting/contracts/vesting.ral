@@ -3,7 +3,8 @@ struct UserVestingSchedule {
   cliffTime: U256,
   endTime: U256,
   lockedAmount: U256,
-  totalClaimed: U256
+  totalClaimed: U256,
+  totalAmountVested: U256
 }
 
 Contract Vesting(
@@ -105,16 +106,16 @@ Contract Vesting(
     emit Claim(caller, currClaimed - prevClaimed)
   }
 
-  pub fn getUserVestingSchedule() -> UserVestingSchedule {
-    let caller = callerAddress!()
-    let metadata = getMetadata(caller)
+  pub fn getUserVestingSchedule(address: Address) -> UserVestingSchedule {
+    let metadata = getMetadata(address)
 
     return UserVestingSchedule {
       startTime: metadata.getStartTime(),
       cliffTime: metadata.getCliffTime(),
       endTime: metadata.getEndTime(),
       lockedAmount: metadata.getTotalAmountLocked(),
-      totalClaimed: metadata.getTotalAmountClaimed()
+      totalClaimed: metadata.getTotalAmountClaimed(),
+      totalAmountVested: metadata.getTotalAmountVested()
     }
   }
 

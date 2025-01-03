@@ -4,6 +4,7 @@ import {
   AddVestingSchedule,
   AddVestingScheduleWithPercentage,
   Claim,
+  EndVesting,
   Metadata,
   Vesting,
   VestingInstance
@@ -16,7 +17,10 @@ import {
   SignerProvider,
   groupOfAddress,
   waitForTxConfirmation,
-  sleep
+  sleep,
+  addressFromContractId,
+  subContractId,
+  utils
 } from '@alephium/web3'
 import { randomBytes } from 'crypto'
 import * as base58 from 'bs58'
@@ -159,8 +163,44 @@ export async function claim(signer: SignerProvider, vesting: VestingInstance) {
   })
 }
 
+export async function endVesting(
+  signer: SignerProvider,
+  vesting: VestingInstance,
+  addressToEnd: Address,
+  refundAddress: Address
+) {
+  return await EndVesting.execute(signer, {
+    initialFields: {
+      vesting: vesting.contractId,
+      addressToEnd,
+      refundAddress
+    }
+  })
+}
+
+export async function endVestingFailed(
+  signer: SignerProvider,
+  vesting: VestingInstance,
+  addressToEnd: Address,
+  refundAddress: Address,
+  errorCode: bigint
+) {
+  await expectAssertionError(
+    endVesting(signer, vesting, addressToEnd, refundAddress),
+    vesting.address,
+    Number(errorCode)
+  )
+}
+
+async function getMetadataAddress(user: PrivateKeyWallet, vesting: VestingInstance) {
+  const path = utils.binToHex(base58.decode(user.address))
+  const metadataContractId = subContractId(vesting.contractId, path, groupIndex)
+  return addressFromContractId(metadataContractId)
+}
+
 export async function claimFailed(signer: SignerProvider, vesting: VestingInstance, errorCode: bigint) {
-  await expectAssertionError(claim(signer, vesting), vesting.address, Number(errorCode))
+  const metadataAddress = await getMetadataAddress(signer as PrivateKeyWallet, vesting)
+  await expectAssertionError(claim(signer, vesting), metadataAddress, Number(errorCode))
 }
 
 export async function balanceOf(tokenId: string, address = testAddress): Promise<bigint> {
@@ -189,7 +229,7 @@ export async function mineBlocks(numBlocks: number, delay: number) {
 export function generateSchedule(durationInSecs: number, cliff: boolean) {
   const currentTime = Date.now()
   // create startTime 5 secs ahead
-  const startTime = currentTime + 5000
+  const startTime = currentTime + 2000
   let cliffTime = startTime
   if (cliff) {
     // cliff of 20% of duration

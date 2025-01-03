@@ -1,4 +1,12 @@
-import { addressFromContractId, groupOfAddress, subContractId, utils, web3 } from '@alephium/web3'
+import {
+  addressFromContractId,
+  ALPH_TOKEN_ID,
+  DUST_AMOUNT,
+  groupOfAddress,
+  subContractId,
+  utils,
+  web3
+} from '@alephium/web3'
 import { getSigner, getSigners, testAddress } from '@alephium/web3-test'
 import { Metadata, VestingInstance } from '../artifacts/ts'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
@@ -13,7 +21,8 @@ import {
   claimFailed,
   groupIndex,
   mineBlocks,
-  generateSchedule
+  generateSchedule,
+  balanceOf
 } from './utils'
 import base58 from 'bs58'
 
@@ -48,7 +57,9 @@ describe('VestingWallet Tests', () => {
   test('test: admin add schedule without cliff', async () => {
     const user1 = users[0]
     const lockedAmount = alph(100)
-    const schedule = generateSchedule(60, false)
+    const duration = 60
+    const schedule = generateSchedule(duration, false)
+
     await addVestingSchedule(
       manager,
       vesting,
@@ -65,7 +76,9 @@ describe('VestingWallet Tests', () => {
   test('test: admin add schedule with cliff', async () => {
     const user1 = users[0]
     const lockedAmount = alph(100)
-    const schedule = generateSchedule(60, true)
+    const duration = 60
+    const schedule = generateSchedule(duration, true)
+
     await addVestingSchedule(
       manager,
       vesting,
@@ -82,7 +95,8 @@ describe('VestingWallet Tests', () => {
   test('test: admin cannot add schedule to user twice', async () => {
     const user1 = users[0]
     const lockedAmount = alph(100)
-    const schedule = generateSchedule(60, false)
+    const duration = 60
+    const schedule = generateSchedule(duration, false)
 
     await addVestingSchedule(
       manager,
@@ -109,7 +123,8 @@ describe('VestingWallet Tests', () => {
   test('test: not admin cannot add schedule', async () => {
     const user1 = users[0]
     const lockedAmount = alph(100)
-    const schedule = generateSchedule(60, false)
+    const duration = 60
+    const schedule = generateSchedule(duration, false)
 
     await addVestingScheduleFailed(
       fakeManager,
@@ -126,7 +141,8 @@ describe('VestingWallet Tests', () => {
   test('test: admin cannot add schedule with invalid cliff time', async () => {
     const user1 = users[1]
     const lockedAmount = alph(100)
-    const schedule = generateSchedule(60, false)
+    const duration = 60
+    const schedule = generateSchedule(duration, false)
 
     // testing with cliff time less than start time
     await addVestingScheduleFailed(
@@ -144,7 +160,8 @@ describe('VestingWallet Tests', () => {
   test('test: admin cannot add schedule with invalid end time', async () => {
     const user1 = users[0]
     const lockedAmount = alph(100)
-    const schedule = generateSchedule(60, false)
+    const duration = 60
+    const schedule = generateSchedule(duration, false)
 
     // testing with end time less than cliff time
     await addVestingScheduleFailed(
@@ -162,7 +179,8 @@ describe('VestingWallet Tests', () => {
   test('test: admin add schedule with percentage', async () => {
     const user1 = users[0]
     const lockedAmount = alph(100)
-    const schedule = generateSchedule(60, true)
+    const duration = 60
+    const schedule = generateSchedule(duration, true)
     const percentage = 30n
     await addVestingScheduleWithPercentage(
       manager,
@@ -183,7 +201,8 @@ describe('VestingWallet Tests', () => {
   test('test: admin cannot add schedule with percentage greater than 100%', async () => {
     const user1 = users[0]
     const lockedAmount = alph(100)
-    const schedule = generateSchedule(60, true)
+    const duration = 60
+    const schedule = generateSchedule(duration, true)
     const percentage = 120n
     await addVestingScheduleWithPercentageFailed(
       manager,
