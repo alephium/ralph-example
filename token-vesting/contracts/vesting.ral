@@ -9,6 +9,7 @@ struct UserVestingSchedule {
 
 Contract Vesting(
   metadataTemplateId: ByteVec,
+  tokenId: ByteVec,
   manager: Address,
   mut totalSchedules: U256
 ){
@@ -26,6 +27,7 @@ Contract Vesting(
     InsufficientAlph = 4
     AlreadyHasLock = 5
     MetadataNotExists = 6
+    InsufficientToken = 7
   }
 
   @using(preapprovedAssets = true, updateFields = true)
@@ -34,27 +36,34 @@ Contract Vesting(
     checkCaller!(caller == manager, ErrorCodes.InvalidCaller)
     assert!(percentage <= 100, ErrorCodes.InvalidPercentage)
 
+    let vestAmount = (totalAmount * percentage) / 100
+
     assert!(cliffTime >= startTime,ErrorCodes.InvalidCliffTime)
     assert!(endTime >= cliffTime, ErrorCodes.InvalidEndTime)
 
-    let vestAmount = (totalAmount * percentage) / 100
+    assert!(tokenRemaining!(caller, ALPH) >= minimalContractDeposit!(), ErrorCodes.InsufficientAlph)
+    assert!(tokenRemaining!(caller, tokenId) >= totalAmount, ErrorCodes.InsufficientToken)
 
-    createSub{caller -> ALPH : vestAmount + 1 alph}(caller, recipient, startTime, cliffTime, endTime, vestAmount)
+    createSub{caller -> ALPH : minimalContractDeposit!(), tokenId: totalAmount}(caller, recipient, startTime, cliffTime, endTime, vestAmount)
     
     totalSchedules = totalSchedules + 1
 
-    emit NewScheduleAdded(recipient, startTime, cliffTime, endTime, totalAmount)
+    emit NewScheduleAdded(recipient, startTime, cliffTime, endTime, vestAmount)    
   }
 
   @using(preapprovedAssets = true, updateFields = true)
   pub fn addVestingSchedule(recipient: Address, startTime: U256, cliffTime: U256, endTime: U256, totalAmount: U256) -> () {
     let caller = callerAddress!()
+
     checkCaller!(caller == manager, ErrorCodes.InvalidCaller)
 
     assert!(cliffTime >= startTime,ErrorCodes.InvalidCliffTime)
     assert!(endTime >= cliffTime, ErrorCodes.InvalidEndTime)
 
-    createSub{caller -> ALPH : totalAmount + 1 alph}(caller, recipient, startTime, cliffTime, endTime, totalAmount)
+    assert!(tokenRemaining!(caller, ALPH) >= minimalContractDeposit!(), ErrorCodes.InsufficientAlph)
+    assert!(tokenRemaining!(caller, tokenId) >= totalAmount, ErrorCodes.InsufficientToken)
+
+    createSub{caller -> ALPH : minimalContractDeposit!(), tokenId: totalAmount}(caller, recipient, startTime, cliffTime, endTime, totalAmount)
     
     totalSchedules = totalSchedules + 1
 
@@ -102,14 +111,21 @@ Contract Vesting(
     }
   }
 
+  pub fn getTokenId() -> ByteVec {
+    return tokenId
+  }
+
+  pub fn getTotalVestingSchedules() -> U256 {
+    return totalSchedules
+  }
+
   @using(preapprovedAssets = true)
   fn createSub(caller: Address, recipient: Address, startTime: U256, cliffTime: U256, endTime: U256, totalAmount: U256) -> () {
     let path = toByteVec!(recipient)
     let metadataContractId = subContractId!(path)
     assert!(!contractExists!(metadataContractId), ErrorCodes.AlreadyHasLock)
-    assert!(tokenRemaining!(caller, ALPH) >= totalAmount + 1 alph, ErrorCodes.InsufficientAlph)
     let (encodedImmFields, encodedMutFields) = Metadata.encodeFields!(selfContract!(), recipient, startTime, cliffTime, endTime, totalAmount, 0)
-    let _ = copyCreateSubContract!{caller -> ALPH : totalAmount + 1 alph}(path, metadataTemplateId, encodedImmFields, encodedMutFields)
+    let _ = copyCreateSubContract!{caller -> ALPH : minimalContractDeposit!(), tokenId: totalAmount}(path, metadataTemplateId, encodedImmFields, encodedMutFields)
   }
 
   fn getMetadata(address: Address) -> Metadata{

@@ -27,8 +27,10 @@ Contract Metadata(
 
     totalClaimed = totalAmountVested
 
+    let tokenId = vesting.getTokenId()
+
     if (amountWithdrawable > 0){
-      transferTokenFromSelf!(address, ALPH, amountWithdrawable)
+      transferTokenFromSelf!(address, tokenId, amountWithdrawable)
     }
   }
 
@@ -90,12 +92,14 @@ Contract Metadata(
       amountRefundable = getTotalAmountLocked() - totalAmountVested
     }
 
+    let tokenId = vesting.getTokenId()
+
     if(amountWithdrawable > 0){
-      transferTokenFromSelf!(address, ALPH, amountWithdrawable)
+      transferTokenFromSelf!(address, tokenId, amountWithdrawable)
     }
 
     if(amountRefundable > 0){
-      transferTokenFromSelf!(refundAddress, ALPH, amountRefundable)
+      transferTokenFromSelf!(refundAddress, tokenId, amountRefundable)
     }
 
     return amountWithdrawable, amountRefundable

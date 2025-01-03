@@ -6,6 +6,7 @@ import {
   Claim,
   EndVesting,
   Metadata,
+  Token,
   Vesting,
   VestingInstance
 } from '../artifacts/ts'
@@ -44,11 +45,25 @@ export async function deployMetadataTemplate() {
   })
 }
 
+export async function deployToken(manager: Address) {
+  const issueTokenAmount = alph(100000)
+  return await Token.deploy(defaultSigner, {
+    initialFields: {
+      totalSupply: alph(1000000)
+    },
+    issueTokenAmount,
+    issueTokenTo: manager
+  })
+}
+
 export async function deployVestingContract(manager: Address) {
   const metadataTemplate = await deployMetadataTemplate()
+  const token = await deployToken(manager)
+  const tokenId = token.contractInstance.contractId
   return await Vesting.deploy(defaultSigner, {
     initialFields: {
       metadataTemplateId: metadataTemplate.contractInstance.contractId,
+      tokenId,
       manager,
       totalSchedules: 0n
     }
@@ -80,9 +95,25 @@ export async function transferAlphTo(to: Address, amount: bigint) {
   )
 }
 
+export async function transferTokenTo(
+  signer: SignerProvider,
+  from: Address,
+  to: Address,
+  tokenId: string,
+  amount: bigint
+) {
+  return await waitTxConfirmed(
+    signer.signAndSubmitTransferTx({
+      signerAddress: from,
+      destinations: [{ address: to, attoAlphAmount: 0n, tokens: [{ id: tokenId, amount }] }]
+    })
+  )
+}
+
 export async function addVestingSchedule(
   signer: SignerProvider,
   vesting: VestingInstance,
+  tokenId: string,
   recipient: Address,
   startTime: bigint,
   cliffTime: bigint,
@@ -90,14 +121,16 @@ export async function addVestingSchedule(
   totalAmount: bigint
 ) {
   return await AddVestingSchedule.execute(signer, {
-    initialFields: { vesting: vesting.contractId, recipient, startTime, cliffTime, endTime, totalAmount },
-    attoAlphAmount: totalAmount + 5n * ONE_ALPH
+    initialFields: { vesting: vesting.contractId, tokenId, recipient, startTime, cliffTime, endTime, totalAmount },
+    attoAlphAmount: 2n * ONE_ALPH,
+    tokens: [{ id: tokenId, amount: totalAmount }]
   })
 }
 
 export async function addVestingScheduleWithPercentage(
   signer: SignerProvider,
   vesting: VestingInstance,
+  tokenId: string,
   recipient: Address,
   startTime: bigint,
   cliffTime: bigint,
@@ -106,14 +139,25 @@ export async function addVestingScheduleWithPercentage(
   percentage: bigint
 ) {
   return await AddVestingScheduleWithPercentage.execute(signer, {
-    initialFields: { vesting: vesting.contractId, recipient, startTime, cliffTime, endTime, totalAmount, percentage },
-    attoAlphAmount: totalAmount + 5n * ONE_ALPH
+    initialFields: {
+      vesting: vesting.contractId,
+      tokenId,
+      recipient,
+      startTime,
+      cliffTime,
+      endTime,
+      totalAmount,
+      percentage
+    },
+    attoAlphAmount: 2n * ONE_ALPH,
+    tokens: [{ id: tokenId, amount: totalAmount }]
   })
 }
 
 export async function addVestingScheduleFailed(
   signer: SignerProvider,
   vesting: VestingInstance,
+  tokenId: string,
   recipient: Address,
   startTime: bigint,
   cliffTime: bigint,
@@ -122,7 +166,7 @@ export async function addVestingScheduleFailed(
   errorCode: bigint
 ) {
   await expectAssertionError(
-    addVestingSchedule(signer, vesting, recipient, startTime, cliffTime, endTime, totalAmount),
+    addVestingSchedule(signer, vesting, tokenId, recipient, startTime, cliffTime, endTime, totalAmount),
     vesting.address,
     Number(errorCode)
   )
@@ -131,6 +175,7 @@ export async function addVestingScheduleFailed(
 export async function addVestingScheduleWithPercentageFailed(
   signer: SignerProvider,
   vesting: VestingInstance,
+  tokenId: string,
   recipient: Address,
   startTime: bigint,
   cliffTime: bigint,
@@ -143,6 +188,7 @@ export async function addVestingScheduleWithPercentageFailed(
     addVestingScheduleWithPercentage(
       signer,
       vesting,
+      tokenId,
       recipient,
       startTime,
       cliffTime,
@@ -159,7 +205,8 @@ export async function claim(signer: SignerProvider, vesting: VestingInstance) {
   return await Claim.execute(signer, {
     initialFields: {
       vesting: vesting.contractId
-    }
+    },
+    attoAlphAmount: 2n * ONE_ALPH
   })
 }
 
@@ -174,7 +221,8 @@ export async function endVesting(
       vesting: vesting.contractId,
       addressToEnd,
       refundAddress
-    }
+    },
+    attoAlphAmount: 2n * ONE_ALPH
   })
 }
 
