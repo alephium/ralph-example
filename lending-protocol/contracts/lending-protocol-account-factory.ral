@@ -15,7 +15,7 @@ Abstract Contract LendingProtocolAccountFactory(lendingProtocolTemplateId: ByteV
     }
 
     pub fn getLendingProtocolAccount(_address: Address, _token: Address) -> LendingProtocolAccount {
-        let lendingProtocolAccountId = subContractId!(toByteVec!(_address))
+        let lendingProtocolAccountId = subContractId!(getTemplateId(_address, _token))
         return LendingProtocolAccount(lendingProtocolAccountId)
     }
 

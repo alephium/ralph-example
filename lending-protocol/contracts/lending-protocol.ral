@@ -9,15 +9,22 @@ Contract LendingProtocol(
     const POOL_LENGTH = 1000000000
     let mut supportedAssets: Array[Address, POOL_LENGTH] = [#0; POOL_LENGTH]
     let mut supportedAssetsPointer = 0
+    struct UserAccounts {
+        accounts: Array[ByteVec, POOL_LENGTH],
+        pointer: U256
+    }
     
     mapping[Address , U256] pool_supply
     mapping[Address, ByteVec] addressToTokenId
+    mapping[Address, UserAccounts] userToAccounts
 
     ////////////////////////
     // Events
     ////////////////////////
 
-    event Borrow(_address: Address, _token: Address, _amount:U256)
+    event Borrow(_address: Address, _token: Address, _amount: U256)
+    event Lend(_address: Address, _token: Address, _amount: U256)
+    event Repay(_address: Address, _token: Address, _amount: U256)
     event AccounCreation(_address: Address, token: Address)
 
     ////////////////////////
@@ -49,7 +56,18 @@ Contract LendingProtocol(
     pub fn userCanBorrow(_user: Address, _collateralToken: Address, amount: U256) -> Bool {
         // TODO: write logic to check whether user can use collateral token to borrow specified amount
         // check whether user has deposited _collateralToken
+        // cannot borrow if collateral account is locked
         // calculate to check whether user can use deposited amount to collect specified amount
+        if(!lendingProtocolAccountExists(_user, _collateralToken)){
+            return false
+        }
+        let account = getLendingProtocolAccount(_user, _collateralToken)
+        if(account.isLocked()){
+            return false
+        }
+        if(amount.getTotalDeposit() < amount){
+            return false
+        }
         return true
     }
 
@@ -74,6 +92,14 @@ Contract LendingProtocol(
         supportedAssetsPointer = supportedAssetsPointer + 1
         addressToTokenId[tokenAddress] = tokenId
     }
+    @using(preapprovedAssets = true, updateFields = true)
+    pub fn deposit(token: Address, amount: U256){
+        //TODO: implement a deposit logic
+    }
+    @using(preapprovedAssets = true, updateFields = true)
+    pub fn withdraw(token: Address, amount: U256){
+        //TODO: implement a withdrawal logic
+    }
 
     @using(preapprovedAssets = true, updateFields = true)
     pub fn borrow(token: Address, collateralToken: Address, amount: U256) -> () {
@@ -85,6 +111,11 @@ Contract LendingProtocol(
         assert!(userCanBorrow(_address, collateralToken, amount), ErrorCodes.CANNOT_BORROW)
         assert!(tokenRemaining!(selfAddress!(), addressToTokenId[token]) > amount, ErrorCodes.INSUFFICIENT_LIQUIDITY)
         
+        // get collacteral account
+        let collateralAccount = getLendingProtocolAccount(_address, collateralToken)
+        collateralAccount.lockAccount()
+
+
         let lendingPoolId = subContractId!(toByteVec!(token))
         LendingPool(lendingPoolId).borrow(
             _address,
@@ -94,10 +125,19 @@ Contract LendingProtocol(
         emit Borrow(_address, token, amount)
     }
 
-    pub fn lend(token: Address, amount: Address) -> () {
+    pub fn lend(token: Address, amount: U256) -> () {
         // TODO: add function in the lending account to increase and decrease deposited amount
         let _address = callerAddress!()
         assert!(lendingProtocolAccountExists(_address, token), ErrorCodes.CANNOT_LEND)
+        let account = getLendingProtocolAccount(_address, token)
+        assert!(account.getTotalDeposit() >= amount, ErrorCodes.CANNOT_LEND)
+        account.deductFromBalance(amount)
+        let lendingPoolId = subContractId!(toByteVec!(token))
+        LendingPool(lendingPoolId).supply(
+            _address,
+            amount
+        )
+        emit Lend(_address, token, amount)
     }
 
     @using(preapprovedAssets = true, updateFields = true)
@@ -110,7 +150,7 @@ Contract LendingProtocol(
             amount
         )
         transferTokenToSelf!(_address, addressToTokenId[token], amount)
-        emit Borrow(_address, token, amount)
+        emit Repay(_address, token, amount)
     }
 
 
@@ -120,7 +160,7 @@ Contract LendingProtocol(
     }
 }
 
-TxScript Borrow(lendingProtocol: LendingProtocol, token: Address, collateralToken: Address,amount: U256) {
+TxScript Borrow(lendingProtocol: LendingProtocol) {
     let _address = callerAddress!()
     let tokenId = lendingProtocol.getTokenId()
     let lendingProtocolAccExists = lendingProtocol.lendingProtocolAccountExists(_address)

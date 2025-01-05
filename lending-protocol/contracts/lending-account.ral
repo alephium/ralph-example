@@ -4,6 +4,7 @@ Contract LendingProtocolAccount(
     parentContractAddress: Address,
     mut amountDeposited: U256
 ) {
+    let mut is_locked = false
     enum ErrorCodes {
         UNAUTHORIZED = 402
         INSUFFICIENT_BALANCE = 423
@@ -20,6 +21,10 @@ Contract LendingProtocolAccount(
 
     pub fn getTotalDeposit() -> U256 {
         return amountDeposited
+    }
+
+    pub isLocked() -> Bool{
+        return is_locked
     }
 
     @using(assetsInContract = true)
@@ -45,4 +50,17 @@ Contract LendingProtocolAccount(
         return amount
     }
 
+    @using(updateFields = true)
+    pub fn lockAccount() -> () {
+        let caller = callerAddress()
+        checkCaller!(caller == parentContractAddress, ErrorCodes.UNAUTHORIZED)
+        is_locked = true
+    }
+    
+    @using(updateFields = true)
+    pub fn unlockAccount() -> () {
+        let caller = callerAddress()
+        checkCaller!(caller == parentContractAddress, ErrorCodes.UNAUTHORIZED)
+        is_locked = false
+    }
 }

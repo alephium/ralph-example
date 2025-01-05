@@ -20,6 +20,7 @@ Contract LendingPool (token: Address, mut borrowInterestRate: U256, mut lendingI
     }
     struct BorrowTransaction {
         user: Address,
+        collateral: Address,
         mut amount: U256,
         mut interest: U256,
         mut dateLastBorrowed: U256
@@ -29,7 +30,13 @@ Contract LendingPool (token: Address, mut borrowInterestRate: U256, mut lendingI
     let supplies: [LenderTransaction; 1000000000] =  [LenderTransaction {user: @0000000000000000000000000000000000, amount: 0}; 1000000000]
     let suppliesPointer: U256 = 0
     let borrows: [BorrowTransaction; 1000000000] =  [
-        BorrowTransaction {user: @0000000000000000000000000000000000, amount: 0, interest: 0, dateLastBorrowed: 0}; 1000000000
+        BorrowTransaction {
+            user: @0000000000000000000000000000000000,
+            collateral: @0000000000000000000000000000000000,
+            amount: 0,
+            interest: 0,
+            dateLastBorrowed: 0
+        }; 1000000000
     ]
     let borrowsPointer: U256 = 0
 
@@ -78,12 +85,13 @@ Contract LendingPool (token: Address, mut borrowInterestRate: U256, mut lendingI
         }
     }
 
-    pub fn borrow(_user: Address, amount: U256) -> () {
+    pub fn borrow(_user: Address, _collateralToken: Address, amount: U256) -> () {
         checkCaller()
         let mut borrowerIndex = getBorrower(_user)
         if (borrowerIndex == -1) {
             borrower = BorrowTransaction{
                 user: _user,
+                collateral: _collateralToken
                 amount: amount,
                 interest: borrowInterestRate,
                 dateLastBorrowed: blockTimeStamp!()
@@ -92,7 +100,7 @@ Contract LendingPool (token: Address, mut borrowInterestRate: U256, mut lendingI
             borrows[borrowsPointer] = borrower
             borrowsPointer = borrowsPointer + 1
         }else{
-            borrows[borrowerIndex].amount = borrower.amount + amount
+            borrows[borrowerIndex].amount = borrows[borrowerIndex].amount + amount
             borrows[borrowerIndex].dateLastBorrowed = blockTimeStamp!()
         }
         totalBorrowAmount = totalBorrowAmount + amount
