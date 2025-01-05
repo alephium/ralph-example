@@ -160,16 +160,5 @@ Contract LendingProtocol(
     }
 }
 
-TxScript Borrow(lendingProtocol: LendingProtocol) {
-    let _address = callerAddress!()
-    let tokenId = lendingProtocol.getTokenId()
-    let lendingProtocolAccExists = lendingProtocol.lendingProtocolAccountExists(_address)
-
-    if (lendingProtocolAccExists) {
-        lendingProtocol.deposit{_address -> tokenId: amount}(amount)
-    } else {
-        lendingProtocol.deposit{_address -> tokenId: amount, ALPH: 1 alph}(amount)
-    }
-}
 
 
