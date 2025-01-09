@@ -1,57 +1,70 @@
-# Alephium Liquid Staking Reward System
+# Liquid Staking Contract
 
-A reward system implementation for liquid staking on Alephium blockchain with time-weighted rewards and performance multipliers.
+A smart contract implementation for liquid staking on Alephium blockchain.
 
-## Features
+## Overview
 
-- 🕒 Time-weighted rewards
-  - 1.05x multiplier for 7+ days staking
-  - 1.1x multiplier for 30+ days staking
-- 📈 Pool performance adjustments
-- 🔄 Compound rewards
-- ⚖️ Fair reward distribution
+This contract implements a liquid staking system with the following features:
 
-## Contract Overview
+- Token staking with flexible amounts
+- Time-based reward multipliers
+- Performance-based reward adjustments
+- Compound staking support
+- Flexible withdrawal system
 
-The reward system implements:
+## Contract Features
 
-```ralph
-Contract RewardSystem(
-    tokenId: ByteVec,
-    rewardTokenId: ByteVec,
-    mut baseRewardRate: U256,
-    mut poolPerformanceMultiplier: U256,
-    owner: Address
-)
-```
+### Staking
+
+- Users can stake tokens at any time
+- Multiple stakes from the same user are combined
+- Automatic reward calculation based on stake duration
+
+### Rewards
+
+- Base reward rate adjustable by owner
+- Time-based multipliers:
+  - 100% base rate for < 7 days
+  - 105% for 7-30 days
+  - 110% for > 30 days
+- Pool performance multiplier (adjustable by owner)
+- Rewards are calculated and distributed in a separate reward token
+
+### Withdrawal
+
+- Flexible withdrawal amounts
+- Automatic reward claiming during withdrawal
+- Complete or partial withdrawal options
+
+## Contract Structure
+
+### State Variables
+
+- `tokenId`: The staking token identifier
+- `rewardTokenId`: The reward token identifier
+- `baseRewardRate`: Annual reward rate in basis points
+- `poolPerformanceMultiplier`: Performance multiplier in basis points
+- `owner`: Contract owner address
 
 ### Key Functions
 
 - `stake(amount: U256)`: Stake tokens
 - `withdraw(amount: U256)`: Withdraw staked tokens
 - `claimRewards()`: Claim accumulated rewards
-- `compoundRewards()`: Compound rewards into stake
 - `updatePoolPerformance(newMultiplier: U256)`: Update pool performance multiplier
 
 ## Development
 
 ### Prerequisites
 
-- Node.js v16+
-- Docker
-- npm
+- Node.js (version specified in package.json)
+- Alephium development environment
 
 ### Setup
 
 ```bash
-# change to the liquid-staking directory
-cd liquid-staking
-
 # Install dependencies
 npm install
-
-# Start local devnet (using official Alephium image)
-npm run devnet
 
 # Build contracts
 npm run build
@@ -60,32 +73,13 @@ npm run build
 npm test
 ```
 
-### Testing
+### Error Codes
 
-Tests cover:
+- `InvalidAmount` (0): Invalid amount specified
+- `NoStakeFound` (1): No stake found for the caller
+- `NoRewardsToClaim` (2): No rewards available to claim
+- `InvalidMultiplier` (3): Invalid performance multiplier value
 
-- Staking functionality
-- Time-weighted multipliers
-- Reward calculations
-- Pool performance adjustments
-- Access control
+## License
 
-```bash
-# Run all tests
-npm test
-
-# Run specific test file
-npm test reward_system.test.ts
-```
-
-## Project Structure
-
-```
-liquid-staking/
-├── contracts/
-│   └── reward_system.ral     # Main reward contract
-├── test/
-│   ├── reward_system.test.ts # Contract tests
-│   └── utils.ts              # Test utilities
-└── alephium.config.ts        # Project configuration
-```
+[License Type]
