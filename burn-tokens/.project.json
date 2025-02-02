@@ -1,20 +1,21 @@
 {
-  "fullNodeVersion": "v2.9.0",
+  "fullNodeVersion": "v3.11.1",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
     "ignoreUnusedFieldsWarnings": false,
     "ignoreUnusedPrivateFunctionsWarnings": false,
     "ignoreUpdateFieldsCheckWarnings": false,
-    "ignoreCheckExternalCallerWarnings": false
+    "ignoreCheckExternalCallerWarnings": false,
+    "ignoreUnusedFunctionReturnWarnings": false,
+    "skipAbstractContractCheck": false
   },
   "infos": {
     "BurnToken": {
       "sourceFile": "burn-tokens.ral",
-      "sourceCodeHash": "617b0a3ddca4deff2410e0afae67b617115409250ac529ad01c00149233fcfab",
+      "sourceCodeHash": "a3e97e20b55cccd18abadf4c174c4ae1265d24b1ccbbe855c94c3dfa70affaf6",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
+      "codeHashDebug": ""
     }
   }
 }

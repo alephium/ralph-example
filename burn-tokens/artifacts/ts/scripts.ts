@@ -11,9 +11,10 @@ import {
   SignerProvider,
   HexString,
 } from "@alephium/web3";
+import { getContractByCodeHash } from "./contracts";
 import { default as BurnTokenScriptJson } from "../BurnToken.ral.json";
 
 export const BurnToken = new ExecutableScript<{
   tokenId: HexString;
   amount: bigint;
-}>(Script.fromJson(BurnTokenScriptJson));
+}>(Script.fromJson(BurnTokenScriptJson, "", []), getContractByCodeHash);

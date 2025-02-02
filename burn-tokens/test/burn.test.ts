@@ -1,23 +1,11 @@
-import {
-  web3,
-  Project,
-  addressFromContractId,
-  AssetOutput,
-  DUST_AMOUNT,
-  ONE_ALPH,
-} from '@alephium/web3'
-import { randomContractId, testAddress, mintToken, getSigner } from '@alephium/web3-test'
-import { deployToDevnet } from '@alephium/cli'
+import { web3, ONE_ALPH } from '@alephium/web3'
+import { getSigner, mintToken } from '@alephium/web3-test'
 import { BurnToken } from '../artifacts/ts'
 
 web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
 const nodeProvider = web3.getCurrentNodeProvider()
 
 describe('integration tests', () => {
-  beforeAll(async () => {
-    await Project.build()
-  })
-
   it('should burn tokens on devnet', async () => {
     const signer = await getSigner(ONE_ALPH * 100n, 0)
     const { contractId: tokenId } = await mintToken(signer.address, 100n)

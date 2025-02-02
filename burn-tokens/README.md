@@ -1,3 +1,3 @@
-# Lock Assets
+# Burn Tokens
 
-A simple example showing how to lock assets in contract
+A simple example showing how to burn tokens on the Alephium blockchain using the `burnToken` built-in function.
