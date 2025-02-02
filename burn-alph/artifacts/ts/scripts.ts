@@ -11,9 +11,10 @@ import {
   SignerProvider,
   HexString,
 } from "@alephium/web3";
+import { getContractByCodeHash } from "./contracts";
 import { default as BurnALPHScriptScriptJson } from "../BurnALPHScript.ral.json";
 
 export const BurnALPHScript = new ExecutableScript<{
   burnALPH: HexString;
   amount: bigint;
-}>(Script.fromJson(BurnALPHScriptScriptJson, ""));
+}>(Script.fromJson(BurnALPHScriptScriptJson, "", []), getContractByCodeHash);

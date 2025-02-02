@@ -1,4 +1,4 @@
-import { web3, Project, ONE_ALPH, Address, DUST_AMOUNT } from '@alephium/web3'
+import { web3, ONE_ALPH, Address, DUST_AMOUNT, MINIMAL_CONTRACT_DEPOSIT } from '@alephium/web3'
 import { getSigner } from '@alephium/web3-test'
 import { deployToDevnet } from '@alephium/cli'
 import { BurnALPH, BurnALPHScript } from '../artifacts/ts'
@@ -8,10 +8,6 @@ web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
 const nodeProvider = web3.getCurrentNodeProvider()
 
 describe('integration tests', () => {
-  beforeAll(async () => {
-    await Project.build()
-  })
-
   async function getALPHBalance(address: Address): Promise<bigint> {
     const balances = await nodeProvider.addresses.getAddressesAddressBalance(address)
     return BigInt(balances.balance)
@@ -25,7 +21,7 @@ describe('integration tests', () => {
     expect(accountBalance0).toEqual(ONE_ALPH * 100n)
 
     const contractBalance0 = (await burnALPH.fetchState()).asset.alphAmount
-    expect(contractBalance0).toEqual(ONE_ALPH)
+    expect(contractBalance0).toEqual(MINIMAL_CONTRACT_DEPOSIT)
 
     const burntAmount = BigInt(randomInt(1, 50))
     const result = await BurnALPHScript.execute(signer, {
@@ -41,6 +37,6 @@ describe('integration tests', () => {
     expect(accountBalance1).toEqual((100n - burntAmount) * ONE_ALPH - gasFee)
 
     const contractBalance1 = (await burnALPH.fetchState()).asset.alphAmount
-    expect(contractBalance1).toEqual(ONE_ALPH + burntAmount * ONE_ALPH)
+    expect(contractBalance1).toEqual(MINIMAL_CONTRACT_DEPOSIT + burntAmount * ONE_ALPH)
   }, 20000)
 })
