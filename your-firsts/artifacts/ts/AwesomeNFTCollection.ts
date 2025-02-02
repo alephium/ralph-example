@@ -21,6 +21,7 @@ import {
   callMethod,
   multicallMethods,
   fetchContractState,
+  Asset,
   ContractInstance,
   getContractEventsCurrentCount,
   TestContractParamsWithoutMaps,
@@ -30,9 +31,10 @@ import {
   signExecuteMethod,
   addStdIdToFields,
   encodeContractFields,
+  Narrow,
 } from "@alephium/web3";
 import { default as AwesomeNFTCollectionContractJson } from "../AwesomeNFTCollection.ral.json";
-import { getContractByCodeHash } from "./contracts";
+import { getContractByCodeHash, registerContract } from "./contracts";
 
 // Custom types for the contract
 export namespace AwesomeNFTCollectionTypes {
@@ -78,10 +80,9 @@ export namespace AwesomeNFTCollectionTypes {
       ? CallMethodTable[MaybeName]["result"]
       : undefined;
   };
-  export type MulticallReturnType<Callss extends MultiCallParams[]> =
-    Callss["length"] extends 1
-      ? MultiCallResults<Callss[0]>
-      : { [index in keyof Callss]: MultiCallResults<Callss[index]> };
+  export type MulticallReturnType<Callss extends MultiCallParams[]> = {
+    [index in keyof Callss]: MultiCallResults<Callss[index]>;
+  };
 
   export interface SignExecuteMethodTable {
     getCollectionUri: {
@@ -185,6 +186,14 @@ class Factory extends ContractFactory<
       return testMethod(this, "mint", params, getContractByCodeHash);
     },
   };
+
+  stateForTest(
+    initFields: AwesomeNFTCollectionTypes.Fields,
+    asset?: Asset,
+    address?: string
+  ) {
+    return this.stateForTest_(initFields, asset, address, undefined);
+  }
 }
 
 // Use this object to test and deploy the contract
@@ -196,6 +205,7 @@ export const AwesomeNFTCollection = new Factory(
     []
   )
 );
+registerContract(AwesomeNFTCollection);
 
 // Use this class to interact with the blockchain
 export class AwesomeNFTCollectionInstance extends ContractInstance {
@@ -323,14 +333,22 @@ export class AwesomeNFTCollectionInstance extends ContractInstance {
     },
   };
 
+  async multicall<Calls extends AwesomeNFTCollectionTypes.MultiCallParams>(
+    calls: Calls
+  ): Promise<AwesomeNFTCollectionTypes.MultiCallResults<Calls>>;
   async multicall<Callss extends AwesomeNFTCollectionTypes.MultiCallParams[]>(
-    ...callss: Callss
-  ): Promise<AwesomeNFTCollectionTypes.MulticallReturnType<Callss>> {
-    return (await multicallMethods(
+    callss: Narrow<Callss>
+  ): Promise<AwesomeNFTCollectionTypes.MulticallReturnType<Callss>>;
+  async multicall<
+    Callss extends
+      | AwesomeNFTCollectionTypes.MultiCallParams
+      | AwesomeNFTCollectionTypes.MultiCallParams[]
+  >(callss: Callss): Promise<unknown> {
+    return await multicallMethods(
       AwesomeNFTCollection,
       this,
       callss,
       getContractByCodeHash
-    )) as AwesomeNFTCollectionTypes.MulticallReturnType<Callss>;
+    );
   }
 }
