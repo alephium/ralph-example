@@ -1,6 +1,5 @@
 import {
   web3,
-  Project,
   addressFromContractId,
   AssetOutput,
   DUST_AMOUNT,
@@ -13,14 +12,8 @@ import { LockAlphAndToken, LockAlphOnly, LockAssets, LockTokenOnly } from '../ar
 describe('unit tests', () => {
   const testContractId = randomContractId()
   const testTokenId = testContractId
-  const testContractAddress = addressFromContractId(testContractId)
   const testGasFee = 62500000000000000n // The default gas fee for unit tests
-
-  // We initialize the fixture variables before all tests
-  beforeAll(async () => {
-    web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
-    await Project.build()
-  })
+  web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
 
   it('test lock alph', async () => {
     const test = async (lockAmount: bigint) => {
@@ -103,10 +96,7 @@ describe('unit tests', () => {
 })
 
 describe('integration tests', () => {
-  beforeAll(async () => {
-    web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
-    await Project.build()
-  })
+  web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
 
   it('should lock Alph and tokens on devnet', async () => {
     const signer = await getSigner(ONE_ALPH * 100n, 0)

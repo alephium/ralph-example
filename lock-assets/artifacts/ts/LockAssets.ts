@@ -21,18 +21,91 @@ import {
   callMethod,
   multicallMethods,
   fetchContractState,
+  Asset,
   ContractInstance,
   getContractEventsCurrentCount,
+  TestContractParamsWithoutMaps,
+  TestContractResultWithoutMaps,
+  SignExecuteContractMethodParams,
+  SignExecuteScriptTxResult,
+  signExecuteMethod,
+  addStdIdToFields,
+  encodeContractFields,
+  Narrow,
 } from "@alephium/web3";
 import { default as LockAssetsContractJson } from "../LockAssets.ral.json";
-import { getContractByCodeHash } from "./contracts";
+import { getContractByCodeHash, registerContract } from "./contracts";
 
 // Custom types for the contract
 export namespace LockAssetsTypes {
   export type State = Omit<ContractState<any>, "fields">;
+
+  export interface CallMethodTable {
+    lockAlphOnly: {
+      params: CallContractParams<{ amount: bigint }>;
+      result: CallContractResult<null>;
+    };
+    lockTokenOnly: {
+      params: CallContractParams<{ tokenId: HexString; amount: bigint }>;
+      result: CallContractResult<null>;
+    };
+    lockAlphAndToken: {
+      params: CallContractParams<{
+        alphAmount: bigint;
+        tokenId: HexString;
+        tokenAmount: bigint;
+      }>;
+      result: CallContractResult<null>;
+    };
+  }
+  export type CallMethodParams<T extends keyof CallMethodTable> =
+    CallMethodTable[T]["params"];
+  export type CallMethodResult<T extends keyof CallMethodTable> =
+    CallMethodTable[T]["result"];
+  export type MultiCallParams = Partial<{
+    [Name in keyof CallMethodTable]: CallMethodTable[Name]["params"];
+  }>;
+  export type MultiCallResults<T extends MultiCallParams> = {
+    [MaybeName in keyof T]: MaybeName extends keyof CallMethodTable
+      ? CallMethodTable[MaybeName]["result"]
+      : undefined;
+  };
+  export type MulticallReturnType<Callss extends MultiCallParams[]> = {
+    [index in keyof Callss]: MultiCallResults<Callss[index]>;
+  };
+
+  export interface SignExecuteMethodTable {
+    lockAlphOnly: {
+      params: SignExecuteContractMethodParams<{ amount: bigint }>;
+      result: SignExecuteScriptTxResult;
+    };
+    lockTokenOnly: {
+      params: SignExecuteContractMethodParams<{
+        tokenId: HexString;
+        amount: bigint;
+      }>;
+      result: SignExecuteScriptTxResult;
+    };
+    lockAlphAndToken: {
+      params: SignExecuteContractMethodParams<{
+        alphAmount: bigint;
+        tokenId: HexString;
+        tokenAmount: bigint;
+      }>;
+      result: SignExecuteScriptTxResult;
+    };
+  }
+  export type SignExecuteMethodParams<T extends keyof SignExecuteMethodTable> =
+    SignExecuteMethodTable[T]["params"];
+  export type SignExecuteMethodResult<T extends keyof SignExecuteMethodTable> =
+    SignExecuteMethodTable[T]["result"];
 }
 
 class Factory extends ContractFactory<LockAssetsInstance, {}> {
+  encodeFields() {
+    return encodeContractFields({}, this.contract.fieldsSig, []);
+  }
+
   at(address: string): LockAssetsInstance {
     return new LockAssetsInstance(address);
   }
@@ -40,32 +113,44 @@ class Factory extends ContractFactory<LockAssetsInstance, {}> {
   tests = {
     lockAlphOnly: async (
       params: Omit<
-        TestContractParams<never, { amount: bigint }>,
+        TestContractParamsWithoutMaps<never, { amount: bigint }>,
         "initialFields"
       >
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "lockAlphOnly", params);
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(this, "lockAlphOnly", params, getContractByCodeHash);
     },
     lockTokenOnly: async (
       params: Omit<
-        TestContractParams<never, { tokenId: HexString; amount: bigint }>,
+        TestContractParamsWithoutMaps<
+          never,
+          { tokenId: HexString; amount: bigint }
+        >,
         "initialFields"
       >
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "lockTokenOnly", params);
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(this, "lockTokenOnly", params, getContractByCodeHash);
     },
     lockAlphAndToken: async (
       params: Omit<
-        TestContractParams<
+        TestContractParamsWithoutMaps<
           never,
           { alphAmount: bigint; tokenId: HexString; tokenAmount: bigint }
         >,
         "initialFields"
       >
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "lockAlphAndToken", params);
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(
+        this,
+        "lockAlphAndToken",
+        params,
+        getContractByCodeHash
+      );
     },
   };
+
+  stateForTest(initFields: {}, asset?: Asset, address?: string) {
+    return this.stateForTest_(initFields, asset, address, undefined);
+  }
 }
 
 // Use this object to test and deploy the contract
@@ -73,9 +158,11 @@ export const LockAssets = new Factory(
   Contract.fromJson(
     LockAssetsContractJson,
     "=4-2=2-2+27=3-1+c408d=11-1+b7e010c6c6f636b416c70684f6e6c79=47+f7=1+010d6c6f636b546f6b656e4f6e6c79=73+f7e01106c6f636b416c7068416e64546f6b656=49",
-    "cdae77471b252db59a9318e4f1de08d7a93feb2a583fc775a4d332d60613fdd5"
+    "cdae77471b252db59a9318e4f1de08d7a93feb2a583fc775a4d332d60613fdd5",
+    []
   )
 );
+registerContract(LockAssets);
 
 // Use this class to interact with the blockchain
 export class LockAssetsInstance extends ContractInstance {
@@ -86,4 +173,58 @@ export class LockAssetsInstance extends ContractInstance {
   async fetchState(): Promise<LockAssetsTypes.State> {
     return fetchContractState(LockAssets, this);
   }
+
+  view = {
+    lockAlphOnly: async (
+      params: LockAssetsTypes.CallMethodParams<"lockAlphOnly">
+    ): Promise<LockAssetsTypes.CallMethodResult<"lockAlphOnly">> => {
+      return callMethod(
+        LockAssets,
+        this,
+        "lockAlphOnly",
+        params,
+        getContractByCodeHash
+      );
+    },
+    lockTokenOnly: async (
+      params: LockAssetsTypes.CallMethodParams<"lockTokenOnly">
+    ): Promise<LockAssetsTypes.CallMethodResult<"lockTokenOnly">> => {
+      return callMethod(
+        LockAssets,
+        this,
+        "lockTokenOnly",
+        params,
+        getContractByCodeHash
+      );
+    },
+    lockAlphAndToken: async (
+      params: LockAssetsTypes.CallMethodParams<"lockAlphAndToken">
+    ): Promise<LockAssetsTypes.CallMethodResult<"lockAlphAndToken">> => {
+      return callMethod(
+        LockAssets,
+        this,
+        "lockAlphAndToken",
+        params,
+        getContractByCodeHash
+      );
+    },
+  };
+
+  transact = {
+    lockAlphOnly: async (
+      params: LockAssetsTypes.SignExecuteMethodParams<"lockAlphOnly">
+    ): Promise<LockAssetsTypes.SignExecuteMethodResult<"lockAlphOnly">> => {
+      return signExecuteMethod(LockAssets, this, "lockAlphOnly", params);
+    },
+    lockTokenOnly: async (
+      params: LockAssetsTypes.SignExecuteMethodParams<"lockTokenOnly">
+    ): Promise<LockAssetsTypes.SignExecuteMethodResult<"lockTokenOnly">> => {
+      return signExecuteMethod(LockAssets, this, "lockTokenOnly", params);
+    },
+    lockAlphAndToken: async (
+      params: LockAssetsTypes.SignExecuteMethodParams<"lockAlphAndToken">
+    ): Promise<LockAssetsTypes.SignExecuteMethodResult<"lockAlphAndToken">> => {
+      return signExecuteMethod(LockAssets, this, "lockAlphAndToken", params);
+    },
+  };
 }
