@@ -21,15 +21,20 @@ import {
   callMethod,
   multicallMethods,
   fetchContractState,
+  Asset,
   ContractInstance,
   getContractEventsCurrentCount,
   TestContractParamsWithoutMaps,
   TestContractResultWithoutMaps,
+  SignExecuteContractMethodParams,
+  SignExecuteScriptTxResult,
+  signExecuteMethod,
   addStdIdToFields,
   encodeContractFields,
+  Narrow,
 } from "@alephium/web3";
 import { default as DynamicArrayForIntContractJson } from "../DynamicArrayForInt.ral.json";
-import { getContractByCodeHash } from "./contracts";
+import { getContractByCodeHash, registerContract } from "./contracts";
 
 // Custom types for the contract
 export namespace DynamicArrayForIntTypes {
@@ -73,6 +78,46 @@ export namespace DynamicArrayForIntTypes {
       ? CallMethodTable[MaybeName]["result"]
       : undefined;
   };
+  export type MulticallReturnType<Callss extends MultiCallParams[]> = {
+    [index in keyof Callss]: MultiCallResults<Callss[index]>;
+  };
+
+  export interface SignExecuteMethodTable {
+    get: {
+      params: SignExecuteContractMethodParams<{
+        array: HexString;
+        index: bigint;
+      }>;
+      result: SignExecuteScriptTxResult;
+    };
+    update: {
+      params: SignExecuteContractMethodParams<{
+        array: HexString;
+        index: bigint;
+        value: bigint;
+      }>;
+      result: SignExecuteScriptTxResult;
+    };
+    push: {
+      params: SignExecuteContractMethodParams<{
+        array: HexString;
+        value: bigint;
+      }>;
+      result: SignExecuteScriptTxResult;
+    };
+    pop: {
+      params: SignExecuteContractMethodParams<{ array: HexString }>;
+      result: SignExecuteScriptTxResult;
+    };
+    sum: {
+      params: SignExecuteContractMethodParams<{ array: HexString }>;
+      result: SignExecuteScriptTxResult;
+    };
+  }
+  export type SignExecuteMethodParams<T extends keyof SignExecuteMethodTable> =
+    SignExecuteMethodTable[T]["params"];
+  export type SignExecuteMethodResult<T extends keyof SignExecuteMethodTable> =
+    SignExecuteMethodTable[T]["result"];
 }
 
 class Factory extends ContractFactory<DynamicArrayForIntInstance, {}> {
@@ -135,6 +180,10 @@ class Factory extends ContractFactory<DynamicArrayForIntInstance, {}> {
       return testMethod(this, "sum", params, getContractByCodeHash);
     },
   };
+
+  stateForTest(initFields: {}, asset?: Asset, address?: string) {
+    return this.stateForTest_(initFields, asset, address, undefined);
+  }
 }
 
 // Use this object to test and deploy the contract
@@ -146,6 +195,7 @@ export const DynamicArrayForInt = new Factory(
     []
   )
 );
+registerContract(DynamicArrayForInt);
 
 // Use this class to interact with the blockchain
 export class DynamicArrayForIntInstance extends ContractInstance {
@@ -157,7 +207,7 @@ export class DynamicArrayForIntInstance extends ContractInstance {
     return fetchContractState(DynamicArrayForInt, this);
   }
 
-  methods = {
+  view = {
     get: async (
       params: DynamicArrayForIntTypes.CallMethodParams<"get">
     ): Promise<DynamicArrayForIntTypes.CallMethodResult<"get">> => {
@@ -215,14 +265,50 @@ export class DynamicArrayForIntInstance extends ContractInstance {
     },
   };
 
+  transact = {
+    get: async (
+      params: DynamicArrayForIntTypes.SignExecuteMethodParams<"get">
+    ): Promise<DynamicArrayForIntTypes.SignExecuteMethodResult<"get">> => {
+      return signExecuteMethod(DynamicArrayForInt, this, "get", params);
+    },
+    update: async (
+      params: DynamicArrayForIntTypes.SignExecuteMethodParams<"update">
+    ): Promise<DynamicArrayForIntTypes.SignExecuteMethodResult<"update">> => {
+      return signExecuteMethod(DynamicArrayForInt, this, "update", params);
+    },
+    push: async (
+      params: DynamicArrayForIntTypes.SignExecuteMethodParams<"push">
+    ): Promise<DynamicArrayForIntTypes.SignExecuteMethodResult<"push">> => {
+      return signExecuteMethod(DynamicArrayForInt, this, "push", params);
+    },
+    pop: async (
+      params: DynamicArrayForIntTypes.SignExecuteMethodParams<"pop">
+    ): Promise<DynamicArrayForIntTypes.SignExecuteMethodResult<"pop">> => {
+      return signExecuteMethod(DynamicArrayForInt, this, "pop", params);
+    },
+    sum: async (
+      params: DynamicArrayForIntTypes.SignExecuteMethodParams<"sum">
+    ): Promise<DynamicArrayForIntTypes.SignExecuteMethodResult<"sum">> => {
+      return signExecuteMethod(DynamicArrayForInt, this, "sum", params);
+    },
+  };
+
   async multicall<Calls extends DynamicArrayForIntTypes.MultiCallParams>(
     calls: Calls
-  ): Promise<DynamicArrayForIntTypes.MultiCallResults<Calls>> {
-    return (await multicallMethods(
+  ): Promise<DynamicArrayForIntTypes.MultiCallResults<Calls>>;
+  async multicall<Callss extends DynamicArrayForIntTypes.MultiCallParams[]>(
+    callss: Narrow<Callss>
+  ): Promise<DynamicArrayForIntTypes.MulticallReturnType<Callss>>;
+  async multicall<
+    Callss extends
+      | DynamicArrayForIntTypes.MultiCallParams
+      | DynamicArrayForIntTypes.MultiCallParams[]
+  >(callss: Callss): Promise<unknown> {
+    return await multicallMethods(
       DynamicArrayForInt,
       this,
-      calls,
+      callss,
       getContractByCodeHash
-    )) as DynamicArrayForIntTypes.MultiCallResults<Calls>;
+    );
   }
 }
