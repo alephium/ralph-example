@@ -9,7 +9,7 @@ import {
   TestContractResult,
   HexString,
   ContractFactory,
-  SubscribeOptions,
+  EventSubscribeOptions,
   EventSubscription,
   CallContractParams,
   CallContractResult,
@@ -21,11 +21,20 @@ import {
   callMethod,
   multicallMethods,
   fetchContractState,
+  Asset,
   ContractInstance,
   getContractEventsCurrentCount,
+  TestContractParamsWithoutMaps,
+  TestContractResultWithoutMaps,
+  SignExecuteContractMethodParams,
+  SignExecuteScriptTxResult,
+  signExecuteMethod,
+  addStdIdToFields,
+  encodeContractFields,
+  Narrow,
 } from "@alephium/web3";
 import { default as OldCodeContractJson } from "../OldCode.ral.json";
-import { getContractByCodeHash } from "./contracts";
+import { getContractByCodeHash, registerContract } from "./contracts";
 
 // Custom types for the contract
 export namespace OldCodeTypes {
@@ -40,6 +49,10 @@ export namespace OldCodeTypes {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<bigint>;
     };
+    migrateWithFields: {
+      params: CallContractParams<{ newCode: HexString; newN: bigint }>;
+      result: CallContractResult<null>;
+    };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
     CallMethodTable[T]["params"];
@@ -53,33 +66,73 @@ export namespace OldCodeTypes {
       ? CallMethodTable[MaybeName]["result"]
       : undefined;
   };
+  export type MulticallReturnType<Callss extends MultiCallParams[]> = {
+    [index in keyof Callss]: MultiCallResults<Callss[index]>;
+  };
+
+  export interface SignExecuteMethodTable {
+    get: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
+    migrateWithFields: {
+      params: SignExecuteContractMethodParams<{
+        newCode: HexString;
+        newN: bigint;
+      }>;
+      result: SignExecuteScriptTxResult;
+    };
+  }
+  export type SignExecuteMethodParams<T extends keyof SignExecuteMethodTable> =
+    SignExecuteMethodTable[T]["params"];
+  export type SignExecuteMethodResult<T extends keyof SignExecuteMethodTable> =
+    SignExecuteMethodTable[T]["result"];
 }
 
 class Factory extends ContractFactory<OldCodeInstance, OldCodeTypes.Fields> {
+  encodeFields(fields: OldCodeTypes.Fields) {
+    return encodeContractFields(
+      addStdIdToFields(this.contract, fields),
+      this.contract.fieldsSig,
+      []
+    );
+  }
+
   at(address: string): OldCodeInstance {
     return new OldCodeInstance(address);
   }
 
   tests = {
     get: async (
-      params: Omit<TestContractParams<OldCodeTypes.Fields, never>, "testArgs">
-    ): Promise<TestContractResult<bigint>> => {
-      return testMethod(this, "get", params);
-    },
-    migrate: async (
-      params: TestContractParams<OldCodeTypes.Fields, { newCode: HexString }>
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "migrate", params);
+      params: Omit<
+        TestContractParamsWithoutMaps<OldCodeTypes.Fields, never>,
+        "testArgs"
+      >
+    ): Promise<TestContractResultWithoutMaps<bigint>> => {
+      return testMethod(this, "get", params, getContractByCodeHash);
     },
     migrateWithFields: async (
-      params: TestContractParams<
+      params: TestContractParamsWithoutMaps<
         OldCodeTypes.Fields,
         { newCode: HexString; newN: bigint }
       >
-    ): Promise<TestContractResult<null>> => {
-      return testMethod(this, "migrateWithFields", params);
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(
+        this,
+        "migrateWithFields",
+        params,
+        getContractByCodeHash
+      );
     },
   };
+
+  stateForTest(
+    initFields: OldCodeTypes.Fields,
+    asset?: Asset,
+    address?: string
+  ) {
+    return this.stateForTest_(initFields, asset, address, undefined);
+  }
 }
 
 // Use this object to test and deploy the contract
@@ -87,9 +140,11 @@ export const OldCode = new Factory(
   Contract.fromJson(
     OldCodeContractJson,
     "",
-    "161d631a28d43b6a8ac218f8c62395012a808d0359c5db69f03d20e14dfc2edf"
+    "8ff6f6893bf0e2e97ab43f96a94fd26d70966186994b73750c599e3fa9bf1c9c",
+    []
   )
 );
+registerContract(OldCode);
 
 // Use this class to interact with the blockchain
 export class OldCodeInstance extends ContractInstance {
@@ -101,7 +156,7 @@ export class OldCodeInstance extends ContractInstance {
     return fetchContractState(OldCode, this);
   }
 
-  methods = {
+  view = {
     get: async (
       params?: OldCodeTypes.CallMethodParams<"get">
     ): Promise<OldCodeTypes.CallMethodResult<"get">> => {
@@ -113,16 +168,41 @@ export class OldCodeInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    migrateWithFields: async (
+      params: OldCodeTypes.CallMethodParams<"migrateWithFields">
+    ): Promise<OldCodeTypes.CallMethodResult<"migrateWithFields">> => {
+      return callMethod(
+        OldCode,
+        this,
+        "migrateWithFields",
+        params,
+        getContractByCodeHash
+      );
+    },
+  };
+
+  transact = {
+    get: async (
+      params: OldCodeTypes.SignExecuteMethodParams<"get">
+    ): Promise<OldCodeTypes.SignExecuteMethodResult<"get">> => {
+      return signExecuteMethod(OldCode, this, "get", params);
+    },
+    migrateWithFields: async (
+      params: OldCodeTypes.SignExecuteMethodParams<"migrateWithFields">
+    ): Promise<OldCodeTypes.SignExecuteMethodResult<"migrateWithFields">> => {
+      return signExecuteMethod(OldCode, this, "migrateWithFields", params);
+    },
   };
 
   async multicall<Calls extends OldCodeTypes.MultiCallParams>(
     calls: Calls
-  ): Promise<OldCodeTypes.MultiCallResults<Calls>> {
-    return (await multicallMethods(
-      OldCode,
-      this,
-      calls,
-      getContractByCodeHash
-    )) as OldCodeTypes.MultiCallResults<Calls>;
+  ): Promise<OldCodeTypes.MultiCallResults<Calls>>;
+  async multicall<Callss extends OldCodeTypes.MultiCallParams[]>(
+    callss: Narrow<Callss>
+  ): Promise<OldCodeTypes.MulticallReturnType<Callss>>;
+  async multicall<
+    Callss extends OldCodeTypes.MultiCallParams | OldCodeTypes.MultiCallParams[]
+  >(callss: Callss): Promise<unknown> {
+    return await multicallMethods(OldCode, this, callss, getContractByCodeHash);
   }
 }

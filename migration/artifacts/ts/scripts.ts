@@ -11,30 +11,29 @@ import {
   SignerProvider,
   HexString,
 } from "@alephium/web3";
-import { default as OldGetScriptJson } from "../OldGet.ral.json";
-import { default as MigrateScriptJson } from "../Migrate.ral.json";
+import { getContractByCodeHash } from "./contracts";
 import { default as MigrateWithFieldsScriptJson } from "../MigrateWithFields.ral.json";
 import { default as NewGetScriptJson } from "../NewGet.ral.json";
 import { default as NewSetScriptJson } from "../NewSet.ral.json";
+import { default as OldGetScriptJson } from "../OldGet.ral.json";
 
-export const OldGet = new ExecutableScript<{
-  contract: HexString;
-  expected: bigint;
-}>(Script.fromJson(OldGetScriptJson));
-export const Migrate = new ExecutableScript<{
-  contract: HexString;
-  newCode: HexString;
-}>(Script.fromJson(MigrateScriptJson));
 export const MigrateWithFields = new ExecutableScript<{
   contract: HexString;
   newCode: HexString;
   newN: bigint;
-}>(Script.fromJson(MigrateWithFieldsScriptJson));
+}>(Script.fromJson(MigrateWithFieldsScriptJson, "", []), getContractByCodeHash);
+
 export const NewGet = new ExecutableScript<{
   contract: HexString;
   expected: bigint;
-}>(Script.fromJson(NewGetScriptJson));
+}>(Script.fromJson(NewGetScriptJson, "", []), getContractByCodeHash);
+
 export const NewSet = new ExecutableScript<{
   contract: HexString;
   newN: bigint;
-}>(Script.fromJson(NewSetScriptJson));
+}>(Script.fromJson(NewSetScriptJson, "", []), getContractByCodeHash);
+
+export const OldGet = new ExecutableScript<{
+  contract: HexString;
+  expected: bigint;
+}>(Script.fromJson(OldGetScriptJson, "", []), getContractByCodeHash);

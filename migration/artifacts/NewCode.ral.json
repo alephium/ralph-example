@@ -1,8 +1,8 @@
 {
-  "version": "v2.3.3",
+  "version": "v3.11.1",
   "name": "NewCode",
-  "bytecode": "01020916010000000102a000020100010101041600a100a00002",
-  "codeHash": "16ef550a08d9e4991afd5af65516e28bd52f408260de4c1b3d331edd59d68288",
+  "bytecode": "01020e4020010000000103d3f36cd8e4a00002010001010105d3168527a21600a100a00002",
+  "codeHash": "5ab600c02f43c3e503464bcd10a714a49fe69a69d72ef6ad69a3c07700127c39",
   "fieldsSig": {
     "names": [
       "n"
@@ -18,9 +18,6 @@
   "functions": [
     {
       "name": "get",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
       "paramNames": [],
       "paramTypes": [],
       "paramIsMutable": [],
@@ -30,9 +27,6 @@
     },
     {
       "name": "set",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
       "paramNames": [
         "m"
       ],
