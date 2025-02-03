@@ -17,8 +17,8 @@ This repository contains practical examples to help you learn and understand Ral
 
 2. Go to each of the example and run the following commands
    ```bash
-   # e.g. the amm-dex example
-   > cd ralph-examples/amm-dex
+   # e.g. the blind-auction example
+   > cd blind-auction
    > npm install
    > npm run compile
    > npm run test
