@@ -21,6 +21,7 @@ import {
   callMethod,
   multicallMethods,
   fetchContractState,
+  Asset,
   ContractInstance,
   getContractEventsCurrentCount,
   TestContractParamsWithoutMaps,
@@ -30,9 +31,10 @@ import {
   signExecuteMethod,
   addStdIdToFields,
   encodeContractFields,
+  Narrow,
 } from "@alephium/web3";
 import { default as TokenContractJson } from "../Token.ral.json";
-import { getContractByCodeHash } from "./contracts";
+import { getContractByCodeHash, registerContract } from "./contracts";
 
 // Custom types for the contract
 export namespace TokenTypes {
@@ -79,10 +81,9 @@ export namespace TokenTypes {
       ? CallMethodTable[MaybeName]["result"]
       : undefined;
   };
-  export type MulticallReturnType<Callss extends MultiCallParams[]> =
-    Callss["length"] extends 1
-      ? MultiCallResults<Callss[0]>
-      : { [index in keyof Callss]: MultiCallResults<Callss[index]> };
+  export type MulticallReturnType<Callss extends MultiCallParams[]> = {
+    [index in keyof Callss]: MultiCallResults<Callss[index]>;
+  };
 
   export interface SignExecuteMethodTable {
     getSymbol: {
@@ -119,10 +120,6 @@ class Factory extends ContractFactory<TokenInstance, TokenTypes.Fields> {
       this.contract.fieldsSig,
       []
     );
-  }
-
-  getInitialFieldsWithDefaultValues() {
-    return this.contract.getInitialFieldsWithDefaultValues() as TokenTypes.Fields;
   }
 
   at(address: string): TokenInstance {
@@ -171,6 +168,10 @@ class Factory extends ContractFactory<TokenInstance, TokenTypes.Fields> {
       return testMethod(this, "burn", params, getContractByCodeHash);
     },
   };
+
+  stateForTest(initFields: TokenTypes.Fields, asset?: Asset, address?: string) {
+    return this.stateForTest_(initFields, asset, address, undefined);
+  }
 }
 
 // Use this object to test and deploy the contract
@@ -182,6 +183,7 @@ export const Token = new Factory(
     []
   )
 );
+registerContract(Token);
 
 // Use this class to interact with the blockchain
 export class TokenInstance extends ContractInstance {
@@ -273,14 +275,15 @@ export class TokenInstance extends ContractInstance {
     },
   };
 
+  async multicall<Calls extends TokenTypes.MultiCallParams>(
+    calls: Calls
+  ): Promise<TokenTypes.MultiCallResults<Calls>>;
   async multicall<Callss extends TokenTypes.MultiCallParams[]>(
-    ...callss: Callss
-  ): Promise<TokenTypes.MulticallReturnType<Callss>> {
-    return (await multicallMethods(
-      Token,
-      this,
-      callss,
-      getContractByCodeHash
-    )) as TokenTypes.MulticallReturnType<Callss>;
+    callss: Narrow<Callss>
+  ): Promise<TokenTypes.MulticallReturnType<Callss>>;
+  async multicall<
+    Callss extends TokenTypes.MultiCallParams | TokenTypes.MultiCallParams[]
+  >(callss: Callss): Promise<unknown> {
+    return await multicallMethods(Token, this, callss, getContractByCodeHash);
   }
 }

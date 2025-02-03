@@ -21,15 +21,20 @@ import {
   callMethod,
   multicallMethods,
   fetchContractState,
+  Asset,
   ContractInstance,
   getContractEventsCurrentCount,
   TestContractParamsWithoutMaps,
   TestContractResultWithoutMaps,
+  SignExecuteContractMethodParams,
+  SignExecuteScriptTxResult,
+  signExecuteMethod,
   addStdIdToFields,
   encodeContractFields,
+  Narrow,
 } from "@alephium/web3";
 import { default as AuctionContractJson } from "../Auction.ral.json";
-import { getContractByCodeHash } from "./contracts";
+import { getContractByCodeHash, registerContract } from "./contracts";
 
 // Custom types for the contract
 export namespace AuctionTypes {
@@ -60,6 +65,22 @@ export namespace AuctionTypes {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<Address>;
     };
+    bid: {
+      params: CallContractParams<{ from: Address; amount: bigint }>;
+      result: CallContractResult<null>;
+    };
+    getBidder: {
+      params: CallContractParams<{ address: Address }>;
+      result: CallContractResult<HexString>;
+    };
+    withdraw: {
+      params: Omit<CallContractParams<{}>, "args">;
+      result: CallContractResult<null>;
+    };
+    auctionEnd: {
+      params: Omit<CallContractParams<{}>, "args">;
+      result: CallContractResult<null>;
+    };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
     CallMethodTable[T]["params"];
@@ -73,6 +94,39 @@ export namespace AuctionTypes {
       ? CallMethodTable[MaybeName]["result"]
       : undefined;
   };
+  export type MulticallReturnType<Callss extends MultiCallParams[]> = {
+    [index in keyof Callss]: MultiCallResults<Callss[index]>;
+  };
+
+  export interface SignExecuteMethodTable {
+    getAuctioneer: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
+    bid: {
+      params: SignExecuteContractMethodParams<{
+        from: Address;
+        amount: bigint;
+      }>;
+      result: SignExecuteScriptTxResult;
+    };
+    getBidder: {
+      params: SignExecuteContractMethodParams<{ address: Address }>;
+      result: SignExecuteScriptTxResult;
+    };
+    withdraw: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
+    auctionEnd: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
+  }
+  export type SignExecuteMethodParams<T extends keyof SignExecuteMethodTable> =
+    SignExecuteMethodTable[T]["params"];
+  export type SignExecuteMethodResult<T extends keyof SignExecuteMethodTable> =
+    SignExecuteMethodTable[T]["result"];
 }
 
 class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
@@ -84,22 +138,18 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
     );
   }
 
-  getInitialFieldsWithDefaultValues() {
-    return this.contract.getInitialFieldsWithDefaultValues() as AuctionTypes.Fields;
-  }
-
   eventIndex = { HighestBidIncreased: 0, AuctionEnded: 1 };
   consts = {
     ErrorCodes: {
-      InvalidArg: BigInt(0),
-      AuctionAlreadyEnded: BigInt(1),
-      BidNotHighEnough: BigInt(2),
-      InvalidBidderAddress: BigInt(3),
-      BidderNotExists: BigInt(4),
-      HighestBidderNotAllowedToWithdraw: BigInt(5),
-      AuctionNotYetEnded: BigInt(6),
-      AuctionEndAlreadyCalled: BigInt(7),
-      InvalidCaller: BigInt(8),
+      InvalidArg: BigInt("0"),
+      AuctionAlreadyEnded: BigInt("1"),
+      BidNotHighEnough: BigInt("2"),
+      InvalidBidderAddress: BigInt("3"),
+      BidderNotExists: BigInt("4"),
+      HighestBidderNotAllowedToWithdraw: BigInt("5"),
+      AuctionNotYetEnded: BigInt("6"),
+      AuctionEndAlreadyCalled: BigInt("7"),
+      InvalidCaller: BigInt("8"),
     },
   };
 
@@ -149,6 +199,14 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
       return testMethod(this, "auctionEnd", params, getContractByCodeHash);
     },
   };
+
+  stateForTest(
+    initFields: AuctionTypes.Fields,
+    asset?: Asset,
+    address?: string
+  ) {
+    return this.stateForTest_(initFields, asset, address, undefined);
+  }
 }
 
 // Use this object to test and deploy the contract
@@ -160,6 +218,7 @@ export const Auction = new Factory(
     []
   )
 );
+registerContract(Auction);
 
 // Use this class to interact with the blockchain
 export class AuctionInstance extends ContractInstance {
@@ -210,7 +269,7 @@ export class AuctionInstance extends ContractInstance {
     return subscribeContractEvents(Auction.contract, this, options, fromCount);
   }
 
-  methods = {
+  view = {
     getAuctioneer: async (
       params?: AuctionTypes.CallMethodParams<"getAuctioneer">
     ): Promise<AuctionTypes.CallMethodResult<"getAuctioneer">> => {
@@ -222,16 +281,83 @@ export class AuctionInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    bid: async (
+      params: AuctionTypes.CallMethodParams<"bid">
+    ): Promise<AuctionTypes.CallMethodResult<"bid">> => {
+      return callMethod(Auction, this, "bid", params, getContractByCodeHash);
+    },
+    getBidder: async (
+      params: AuctionTypes.CallMethodParams<"getBidder">
+    ): Promise<AuctionTypes.CallMethodResult<"getBidder">> => {
+      return callMethod(
+        Auction,
+        this,
+        "getBidder",
+        params,
+        getContractByCodeHash
+      );
+    },
+    withdraw: async (
+      params?: AuctionTypes.CallMethodParams<"withdraw">
+    ): Promise<AuctionTypes.CallMethodResult<"withdraw">> => {
+      return callMethod(
+        Auction,
+        this,
+        "withdraw",
+        params === undefined ? {} : params,
+        getContractByCodeHash
+      );
+    },
+    auctionEnd: async (
+      params?: AuctionTypes.CallMethodParams<"auctionEnd">
+    ): Promise<AuctionTypes.CallMethodResult<"auctionEnd">> => {
+      return callMethod(
+        Auction,
+        this,
+        "auctionEnd",
+        params === undefined ? {} : params,
+        getContractByCodeHash
+      );
+    },
+  };
+
+  transact = {
+    getAuctioneer: async (
+      params: AuctionTypes.SignExecuteMethodParams<"getAuctioneer">
+    ): Promise<AuctionTypes.SignExecuteMethodResult<"getAuctioneer">> => {
+      return signExecuteMethod(Auction, this, "getAuctioneer", params);
+    },
+    bid: async (
+      params: AuctionTypes.SignExecuteMethodParams<"bid">
+    ): Promise<AuctionTypes.SignExecuteMethodResult<"bid">> => {
+      return signExecuteMethod(Auction, this, "bid", params);
+    },
+    getBidder: async (
+      params: AuctionTypes.SignExecuteMethodParams<"getBidder">
+    ): Promise<AuctionTypes.SignExecuteMethodResult<"getBidder">> => {
+      return signExecuteMethod(Auction, this, "getBidder", params);
+    },
+    withdraw: async (
+      params: AuctionTypes.SignExecuteMethodParams<"withdraw">
+    ): Promise<AuctionTypes.SignExecuteMethodResult<"withdraw">> => {
+      return signExecuteMethod(Auction, this, "withdraw", params);
+    },
+    auctionEnd: async (
+      params: AuctionTypes.SignExecuteMethodParams<"auctionEnd">
+    ): Promise<AuctionTypes.SignExecuteMethodResult<"auctionEnd">> => {
+      return signExecuteMethod(Auction, this, "auctionEnd", params);
+    },
   };
 
   async multicall<Calls extends AuctionTypes.MultiCallParams>(
     calls: Calls
-  ): Promise<AuctionTypes.MultiCallResults<Calls>> {
-    return (await multicallMethods(
-      Auction,
-      this,
-      calls,
-      getContractByCodeHash
-    )) as AuctionTypes.MultiCallResults<Calls>;
+  ): Promise<AuctionTypes.MultiCallResults<Calls>>;
+  async multicall<Callss extends AuctionTypes.MultiCallParams[]>(
+    callss: Narrow<Callss>
+  ): Promise<AuctionTypes.MulticallReturnType<Callss>>;
+  async multicall<
+    Callss extends AuctionTypes.MultiCallParams | AuctionTypes.MultiCallParams[]
+  >(callss: Callss): Promise<unknown> {
+    return await multicallMethods(Auction, this, callss, getContractByCodeHash);
   }
 }

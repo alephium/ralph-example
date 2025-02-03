@@ -48,20 +48,20 @@ describe('test auction', () => {
     index: number,
     deposit: bigint
   ) {
-    const result = await auction.methods.getBid({ args: { bidder, index: BigInt(index) } })
+    const result = await auction.view.getBid({ args: { bidder, index: BigInt(index) } })
     expect(result.returns).toEqual({ blindedBid, deposit })
   }
 
   async function checkBidRemoved(auction: AuctionInstance, bidder: Address, index: number) {
     try {
-      await auction.methods.getBid({ args: { bidder, index: BigInt(index) } })
+      await auction.view.getBid({ args: { bidder, index: BigInt(index) } })
     } catch (error: any) {
       expect(error?.message).toContain('does not exist')
     }
   }
 
   async function checkBidNum(auction: AuctionInstance, bidder: Address, expected: number) {
-    const result = await auction.methods.getBidNum({ args: { bidder } })
+    const result = await auction.view.getBidNum({ args: { bidder } })
     expect(result.returns).toEqual(BigInt(expected))
   }
 

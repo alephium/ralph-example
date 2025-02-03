@@ -3,17 +3,18 @@
 /* eslint-disable */
 
 import { Contract, ContractFactory } from "@alephium/web3";
-import { OldCode, NewCode } from ".";
 
 let contracts: ContractFactory<any>[] | undefined = undefined;
-export function getContractByCodeHash(codeHash: string): Contract {
+
+export function registerContract(factory: ContractFactory<any>) {
   if (contracts === undefined) {
-    contracts = [OldCode, NewCode];
+    contracts = [factory];
+  } else {
+    contracts.push(factory);
   }
-  const c = contracts.find(
-    (c) =>
-      c.contract.codeHash === codeHash || c.contract.codeHashDebug === codeHash
-  );
+}
+export function getContractByCodeHash(codeHash: string): Contract {
+  const c = contracts?.find((c) => c.contract.hasCodeHash(codeHash));
   if (c === undefined) {
     throw new Error("Unknown code with code hash: " + codeHash);
   }

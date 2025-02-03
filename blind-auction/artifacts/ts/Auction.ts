@@ -21,25 +21,32 @@ import {
   callMethod,
   multicallMethods,
   fetchContractState,
+  Asset,
   ContractInstance,
   getContractEventsCurrentCount,
-  Val,
+  TestContractParamsWithoutMaps,
+  TestContractResultWithoutMaps,
+  SignExecuteContractMethodParams,
+  SignExecuteScriptTxResult,
+  signExecuteMethod,
+  addStdIdToFields,
+  encodeContractFields,
+  Narrow,
 } from "@alephium/web3";
 import { default as AuctionContractJson } from "../Auction.ral.json";
-import { getContractByCodeHash } from "./contracts";
-
+import { getContractByCodeHash, registerContract } from "./contracts";
 import { Bid, AllStructs } from "./types";
 
 // Custom types for the contract
 export namespace AuctionTypes {
-  export interface Fields extends Record<string, Val> {
+  export type Fields = {
     beneficiary: Address;
     biddingEnd: bigint;
     revealEnd: bigint;
     ended: boolean;
     highestBidder: Address;
     highestBid: bigint;
-  }
+  };
 
   export type State = ContractState<Fields>;
 
@@ -49,6 +56,27 @@ export namespace AuctionTypes {
   }>;
 
   export interface CallMethodTable {
+    bid: {
+      params: CallContractParams<{
+        bidder: Address;
+        blindedBid: HexString;
+        deposit: bigint;
+      }>;
+      result: CallContractResult<null>;
+    };
+    reveal: {
+      params: CallContractParams<{
+        bidder: Address;
+        values: HexString;
+        fakes: HexString;
+        secrets: HexString;
+      }>;
+      result: CallContractResult<null>;
+    };
+    auctionEnd: {
+      params: Omit<CallContractParams<{}>, "args">;
+      result: CallContractResult<null>;
+    };
     getBidNum: {
       params: CallContractParams<{ bidder: Address }>;
       result: CallContractResult<bigint>;
@@ -70,23 +98,69 @@ export namespace AuctionTypes {
       ? CallMethodTable[MaybeName]["result"]
       : undefined;
   };
+  export type MulticallReturnType<Callss extends MultiCallParams[]> = {
+    [index in keyof Callss]: MultiCallResults<Callss[index]>;
+  };
+
+  export interface SignExecuteMethodTable {
+    bid: {
+      params: SignExecuteContractMethodParams<{
+        bidder: Address;
+        blindedBid: HexString;
+        deposit: bigint;
+      }>;
+      result: SignExecuteScriptTxResult;
+    };
+    reveal: {
+      params: SignExecuteContractMethodParams<{
+        bidder: Address;
+        values: HexString;
+        fakes: HexString;
+        secrets: HexString;
+      }>;
+      result: SignExecuteScriptTxResult;
+    };
+    auctionEnd: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
+    getBidNum: {
+      params: SignExecuteContractMethodParams<{ bidder: Address }>;
+      result: SignExecuteScriptTxResult;
+    };
+    getBid: {
+      params: SignExecuteContractMethodParams<{
+        bidder: Address;
+        index: bigint;
+      }>;
+      result: SignExecuteScriptTxResult;
+    };
+  }
+  export type SignExecuteMethodParams<T extends keyof SignExecuteMethodTable> =
+    SignExecuteMethodTable[T]["params"];
+  export type SignExecuteMethodResult<T extends keyof SignExecuteMethodTable> =
+    SignExecuteMethodTable[T]["result"];
 }
 
 class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
-  getInitialFieldsWithDefaultValues() {
-    return this.contract.getInitialFieldsWithDefaultValues() as AuctionTypes.Fields;
+  encodeFields(fields: AuctionTypes.Fields) {
+    return encodeContractFields(
+      addStdIdToFields(this.contract, fields),
+      this.contract.fieldsSig,
+      AllStructs
+    );
   }
 
   eventIndex = { AuctionEnded: 0 };
   consts = {
     ErrorCodes: {
-      InvalidArg: BigInt(0),
-      BiddingAlreadyEnded: BigInt(1),
-      InvalidBidderAddress: BigInt(2),
-      BiddingNotEnd: BigInt(3),
-      RevealAlreadyEnded: BigInt(4),
-      RevealNotEnd: BigInt(5),
-      AuctionEndAlreadyCalled: BigInt(6),
+      InvalidArg: BigInt("0"),
+      BiddingAlreadyEnded: BigInt("1"),
+      InvalidBidderAddress: BigInt("2"),
+      BiddingNotEnd: BigInt("3"),
+      RevealAlreadyEnded: BigInt("4"),
+      RevealNotEnd: BigInt("5"),
+      AuctionEndAlreadyCalled: BigInt("6"),
     },
   };
 
@@ -96,15 +170,15 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
 
   tests = {
     bid: async (
-      params: TestContractParams<
+      params: TestContractParamsWithoutMaps<
         AuctionTypes.Fields,
         { bidder: Address; blindedBid: HexString; deposit: bigint }
       >
-    ): Promise<TestContractResult<null, {}>> => {
-      return testMethod(this, "bid", params);
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(this, "bid", params, getContractByCodeHash);
     },
     reveal: async (
-      params: TestContractParams<
+      params: TestContractParamsWithoutMaps<
         AuctionTypes.Fields,
         {
           bidder: Address;
@@ -113,28 +187,42 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
           secrets: HexString;
         }
       >
-    ): Promise<TestContractResult<null, {}>> => {
-      return testMethod(this, "reveal", params);
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(this, "reveal", params, getContractByCodeHash);
     },
     auctionEnd: async (
-      params: Omit<TestContractParams<AuctionTypes.Fields, never>, "testArgs">
-    ): Promise<TestContractResult<null, {}>> => {
-      return testMethod(this, "auctionEnd", params);
+      params: Omit<
+        TestContractParamsWithoutMaps<AuctionTypes.Fields, never>,
+        "testArgs"
+      >
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(this, "auctionEnd", params, getContractByCodeHash);
     },
     getBidNum: async (
-      params: TestContractParams<AuctionTypes.Fields, { bidder: Address }>
-    ): Promise<TestContractResult<bigint, {}>> => {
-      return testMethod(this, "getBidNum", params);
+      params: TestContractParamsWithoutMaps<
+        AuctionTypes.Fields,
+        { bidder: Address }
+      >
+    ): Promise<TestContractResultWithoutMaps<bigint>> => {
+      return testMethod(this, "getBidNum", params, getContractByCodeHash);
     },
     getBid: async (
-      params: TestContractParams<
+      params: TestContractParamsWithoutMaps<
         AuctionTypes.Fields,
         { bidder: Address; index: bigint }
       >
-    ): Promise<TestContractResult<Bid, {}>> => {
-      return testMethod(this, "getBid", params);
+    ): Promise<TestContractResultWithoutMaps<Bid>> => {
+      return testMethod(this, "getBid", params, getContractByCodeHash);
     },
   };
+
+  stateForTest(
+    initFields: AuctionTypes.Fields,
+    asset?: Asset,
+    address?: string
+  ) {
+    return this.stateForTest_(initFields, asset, address, undefined);
+  }
 }
 
 // Use this object to test and deploy the contract
@@ -146,6 +234,7 @@ export const Auction = new Factory(
     AllStructs
   )
 );
+registerContract(Auction);
 
 // Use this class to interact with the blockchain
 export class AuctionInstance extends ContractInstance {
@@ -174,7 +263,28 @@ export class AuctionInstance extends ContractInstance {
     );
   }
 
-  methods = {
+  view = {
+    bid: async (
+      params: AuctionTypes.CallMethodParams<"bid">
+    ): Promise<AuctionTypes.CallMethodResult<"bid">> => {
+      return callMethod(Auction, this, "bid", params, getContractByCodeHash);
+    },
+    reveal: async (
+      params: AuctionTypes.CallMethodParams<"reveal">
+    ): Promise<AuctionTypes.CallMethodResult<"reveal">> => {
+      return callMethod(Auction, this, "reveal", params, getContractByCodeHash);
+    },
+    auctionEnd: async (
+      params?: AuctionTypes.CallMethodParams<"auctionEnd">
+    ): Promise<AuctionTypes.CallMethodResult<"auctionEnd">> => {
+      return callMethod(
+        Auction,
+        this,
+        "auctionEnd",
+        params === undefined ? {} : params,
+        getContractByCodeHash
+      );
+    },
     getBidNum: async (
       params: AuctionTypes.CallMethodParams<"getBidNum">
     ): Promise<AuctionTypes.CallMethodResult<"getBidNum">> => {
@@ -193,14 +303,43 @@ export class AuctionInstance extends ContractInstance {
     },
   };
 
+  transact = {
+    bid: async (
+      params: AuctionTypes.SignExecuteMethodParams<"bid">
+    ): Promise<AuctionTypes.SignExecuteMethodResult<"bid">> => {
+      return signExecuteMethod(Auction, this, "bid", params);
+    },
+    reveal: async (
+      params: AuctionTypes.SignExecuteMethodParams<"reveal">
+    ): Promise<AuctionTypes.SignExecuteMethodResult<"reveal">> => {
+      return signExecuteMethod(Auction, this, "reveal", params);
+    },
+    auctionEnd: async (
+      params: AuctionTypes.SignExecuteMethodParams<"auctionEnd">
+    ): Promise<AuctionTypes.SignExecuteMethodResult<"auctionEnd">> => {
+      return signExecuteMethod(Auction, this, "auctionEnd", params);
+    },
+    getBidNum: async (
+      params: AuctionTypes.SignExecuteMethodParams<"getBidNum">
+    ): Promise<AuctionTypes.SignExecuteMethodResult<"getBidNum">> => {
+      return signExecuteMethod(Auction, this, "getBidNum", params);
+    },
+    getBid: async (
+      params: AuctionTypes.SignExecuteMethodParams<"getBid">
+    ): Promise<AuctionTypes.SignExecuteMethodResult<"getBid">> => {
+      return signExecuteMethod(Auction, this, "getBid", params);
+    },
+  };
+
   async multicall<Calls extends AuctionTypes.MultiCallParams>(
     calls: Calls
-  ): Promise<AuctionTypes.MultiCallResults<Calls>> {
-    return (await multicallMethods(
-      Auction,
-      this,
-      calls,
-      getContractByCodeHash
-    )) as AuctionTypes.MultiCallResults<Calls>;
+  ): Promise<AuctionTypes.MultiCallResults<Calls>>;
+  async multicall<Callss extends AuctionTypes.MultiCallParams[]>(
+    callss: Narrow<Callss>
+  ): Promise<AuctionTypes.MulticallReturnType<Callss>>;
+  async multicall<
+    Callss extends AuctionTypes.MultiCallParams | AuctionTypes.MultiCallParams[]
+  >(callss: Callss): Promise<unknown> {
+    return await multicallMethods(Auction, this, callss, getContractByCodeHash);
   }
 }

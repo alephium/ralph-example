@@ -1,41 +1,39 @@
 {
-  "fullNodeVersion": "v2.8.5",
+  "fullNodeVersion": "v3.11.1",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
     "ignoreUnusedFieldsWarnings": false,
     "ignoreUnusedPrivateFunctionsWarnings": false,
     "ignoreUpdateFieldsCheckWarnings": false,
-    "ignoreCheckExternalCallerWarnings": false
+    "ignoreCheckExternalCallerWarnings": false,
+    "ignoreUnusedFunctionReturnWarnings": false,
+    "skipAbstractContractCheck": false
   },
   "infos": {
     "LockAlphAndToken": {
       "sourceFile": "lock-assets.ral",
       "sourceCodeHash": "73f67057ed3ca6a7279cf850bf8eff728839d32897889007dbcf184b5e8bd96f",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
+      "codeHashDebug": ""
     },
     "LockAlphOnly": {
       "sourceFile": "lock-assets.ral",
       "sourceCodeHash": "73f67057ed3ca6a7279cf850bf8eff728839d32897889007dbcf184b5e8bd96f",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
+      "codeHashDebug": ""
     },
     "LockAssets": {
       "sourceFile": "lock-assets.ral",
       "sourceCodeHash": "73f67057ed3ca6a7279cf850bf8eff728839d32897889007dbcf184b5e8bd96f",
       "bytecodeDebugPatch": "=4-2=2-2+27=3-1+c408d=11-1+b7e010c6c6f636b416c70684f6e6c79=47+f7=1+010d6c6f636b546f6b656e4f6e6c79=73+f7e01106c6f636b416c7068416e64546f6b656=49",
-      "codeHashDebug": "cdae77471b252db59a9318e4f1de08d7a93feb2a583fc775a4d332d60613fdd5",
-      "warnings": []
+      "codeHashDebug": "cdae77471b252db59a9318e4f1de08d7a93feb2a583fc775a4d332d60613fdd5"
     },
     "LockTokenOnly": {
       "sourceFile": "lock-assets.ral",
       "sourceCodeHash": "73f67057ed3ca6a7279cf850bf8eff728839d32897889007dbcf184b5e8bd96f",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
+      "codeHashDebug": ""
     }
   }
 }

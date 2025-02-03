@@ -15,7 +15,6 @@ import {
 } from '@alephium/web3'
 import { randomBytes } from 'crypto'
 import * as base58 from 'bs58'
-import { waitTxConfirmed as _waitTxConfirmed } from '@alephium/cli'
 import * as blake from 'blakejs'
 
 web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)

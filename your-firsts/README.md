@@ -1,46 +1,21 @@
-# My Firsts
+# Your Firsts
 
-This project contains examples to perform your first transactions,
-create your first fungible and non-fungible tokens, etc.
+This project contains examples to create
 
-## Install
+- your first ALPH transfer transaction
+  ```bash
+  npx ts-node src/transfer-alph.ts
+  ```
+- your first token transfer transaction
+  ```bash
+  npx ts-node src/transfer-token.ts
+  ```
+- your first fungible token
+  ```bash
+  npx ts-node src/fungible-token.ts
+  ```
+- your first non-fungible token
+  ```bash
+  npx ts-node src/non-fungible-token.ts
+  ```
 
-```
-npm install
-```
-
-## Start a local devnet for testing and development
-
-Please refer to the documentation here: https://docs.alephium.org/full-node/getting-started#devnet
-
-## Compile
-
-Compile the contract files:
-
-```
-npx @alephium/cli@latest compile 
-```
-
-## Run
-
-### First transactions
-
-```bash
-# Transfer ALPH
-npx tx-node src/transfer-alph.ts
-
-# Transfer Token
-npx tx-node src/transfer-token.ts
-```
-
-### First fungible token
-
-```bash
-npx tx-node src/fungible-token.ts
-```
-
-### First NFT
-
-```bash
-npx tx-node src/non-fungible-token.ts
-```

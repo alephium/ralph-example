@@ -21,6 +21,7 @@ import {
   callMethod,
   multicallMethods,
   fetchContractState,
+  Asset,
   ContractInstance,
   getContractEventsCurrentCount,
   TestContractParamsWithoutMaps,
@@ -30,9 +31,10 @@ import {
   signExecuteMethod,
   addStdIdToFields,
   encodeContractFields,
+  Narrow,
 } from "@alephium/web3";
 import { default as AwesomeNFTContractJson } from "../AwesomeNFT.ral.json";
-import { getContractByCodeHash } from "./contracts";
+import { getContractByCodeHash, registerContract } from "./contracts";
 
 // Custom types for the contract
 export namespace AwesomeNFTTypes {
@@ -66,10 +68,9 @@ export namespace AwesomeNFTTypes {
       ? CallMethodTable[MaybeName]["result"]
       : undefined;
   };
-  export type MulticallReturnType<Callss extends MultiCallParams[]> =
-    Callss["length"] extends 1
-      ? MultiCallResults<Callss[0]>
-      : { [index in keyof Callss]: MultiCallResults<Callss[index]> };
+  export type MulticallReturnType<Callss extends MultiCallParams[]> = {
+    [index in keyof Callss]: MultiCallResults<Callss[index]>;
+  };
 
   export interface SignExecuteMethodTable {
     getTokenUri: {
@@ -126,6 +127,14 @@ class Factory extends ContractFactory<
       );
     },
   };
+
+  stateForTest(
+    initFields: AwesomeNFTTypes.Fields,
+    asset?: Asset,
+    address?: string
+  ) {
+    return this.stateForTest_(initFields, asset, address, undefined);
+  }
 }
 
 // Use this object to test and deploy the contract
@@ -137,6 +146,7 @@ export const AwesomeNFT = new Factory(
     []
   )
 );
+registerContract(AwesomeNFT);
 
 // Use this class to interact with the blockchain
 export class AwesomeNFTInstance extends ContractInstance {
@@ -188,14 +198,22 @@ export class AwesomeNFTInstance extends ContractInstance {
     },
   };
 
+  async multicall<Calls extends AwesomeNFTTypes.MultiCallParams>(
+    calls: Calls
+  ): Promise<AwesomeNFTTypes.MultiCallResults<Calls>>;
   async multicall<Callss extends AwesomeNFTTypes.MultiCallParams[]>(
-    ...callss: Callss
-  ): Promise<AwesomeNFTTypes.MulticallReturnType<Callss>> {
-    return (await multicallMethods(
+    callss: Narrow<Callss>
+  ): Promise<AwesomeNFTTypes.MulticallReturnType<Callss>>;
+  async multicall<
+    Callss extends
+      | AwesomeNFTTypes.MultiCallParams
+      | AwesomeNFTTypes.MultiCallParams[]
+  >(callss: Callss): Promise<unknown> {
+    return await multicallMethods(
       AwesomeNFT,
       this,
       callss,
       getContractByCodeHash
-    )) as AwesomeNFTTypes.MulticallReturnType<Callss>;
+    );
   }
 }
