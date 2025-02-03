@@ -1,25 +1,12 @@
-# My dApp Template
+# Token Factory
 
-## Install
+Simple example of a token factory that can create new tokens as sub-contracts.
 
-```
-npm install
-```
+# How to Run
 
-## Start a local devnet for testing and development
-
-Please refer to the documentation here: https://wiki.alephium.org/full-node/devnet
-
-## Compile
-
-Compile the TypeScript files into JavaScript:
-
-```
-npx @alephium/cli@latest compile 
+```bash
+> npm run compile
+> npm run deploy
+> npx ts-node src/token.ts
 ```
 
-## Testing
-
-```
-npx @alephium/cli@latest test
-```

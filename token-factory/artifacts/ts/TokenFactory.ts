@@ -21,6 +21,7 @@ import {
   callMethod,
   multicallMethods,
   fetchContractState,
+  Asset,
   ContractInstance,
   getContractEventsCurrentCount,
   TestContractParamsWithoutMaps,
@@ -30,9 +31,10 @@ import {
   signExecuteMethod,
   addStdIdToFields,
   encodeContractFields,
+  Narrow,
 } from "@alephium/web3";
 import { default as TokenFactoryContractJson } from "../TokenFactory.ral.json";
-import { getContractByCodeHash } from "./contracts";
+import { getContractByCodeHash, registerContract } from "./contracts";
 
 // Custom types for the contract
 export namespace TokenFactoryTypes {
@@ -65,10 +67,9 @@ export namespace TokenFactoryTypes {
       ? CallMethodTable[MaybeName]["result"]
       : undefined;
   };
-  export type MulticallReturnType<Callss extends MultiCallParams[]> =
-    Callss["length"] extends 1
-      ? MultiCallResults<Callss[0]>
-      : { [index in keyof Callss]: MultiCallResults<Callss[index]> };
+  export type MulticallReturnType<Callss extends MultiCallParams[]> = {
+    [index in keyof Callss]: MultiCallResults<Callss[index]>;
+  };
 
   export interface SignExecuteMethodTable {
     createToken: {
@@ -99,10 +100,6 @@ class Factory extends ContractFactory<
     );
   }
 
-  getInitialFieldsWithDefaultValues() {
-    return this.contract.getInitialFieldsWithDefaultValues() as TokenFactoryTypes.Fields;
-  }
-
   at(address: string): TokenFactoryInstance {
     return new TokenFactoryInstance(address);
   }
@@ -122,6 +119,14 @@ class Factory extends ContractFactory<
       return testMethod(this, "createToken", params, getContractByCodeHash);
     },
   };
+
+  stateForTest(
+    initFields: TokenFactoryTypes.Fields,
+    asset?: Asset,
+    address?: string
+  ) {
+    return this.stateForTest_(initFields, asset, address, undefined);
+  }
 }
 
 // Use this object to test and deploy the contract
@@ -133,6 +138,7 @@ export const TokenFactory = new Factory(
     []
   )
 );
+registerContract(TokenFactory);
 
 // Use this class to interact with the blockchain
 export class TokenFactoryInstance extends ContractInstance {
@@ -166,14 +172,22 @@ export class TokenFactoryInstance extends ContractInstance {
     },
   };
 
+  async multicall<Calls extends TokenFactoryTypes.MultiCallParams>(
+    calls: Calls
+  ): Promise<TokenFactoryTypes.MultiCallResults<Calls>>;
   async multicall<Callss extends TokenFactoryTypes.MultiCallParams[]>(
-    ...callss: Callss
-  ): Promise<TokenFactoryTypes.MulticallReturnType<Callss>> {
-    return (await multicallMethods(
+    callss: Narrow<Callss>
+  ): Promise<TokenFactoryTypes.MulticallReturnType<Callss>>;
+  async multicall<
+    Callss extends
+      | TokenFactoryTypes.MultiCallParams
+      | TokenFactoryTypes.MultiCallParams[]
+  >(callss: Callss): Promise<unknown> {
+    return await multicallMethods(
       TokenFactory,
       this,
       callss,
       getContractByCodeHash
-    )) as TokenFactoryTypes.MulticallReturnType<Callss>;
+    );
   }
 }
