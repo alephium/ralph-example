@@ -3,6 +3,7 @@ import {
   Address,
   ONE_ALPH,
   addressFromContractId,
+  binToHex,
   groupOfAddress,
   sleep,
   subContractId
@@ -55,7 +56,7 @@ describe('test auction', () => {
   }
 
   async function checkBidderState(bidder: PrivateKeyWallet, amount: bigint) {
-    const path = base58.decode(bidder.address)
+    const path = binToHex(base58.decode(bidder.address))
     const bidderContractId = subContractId(auction.contractId, path, groupIndex)
     const bidderContract = Bidder.at(addressFromContractId(bidderContractId))
     const state = await bidderContract.fetchState()

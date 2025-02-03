@@ -21,15 +21,20 @@ import {
   callMethod,
   multicallMethods,
   fetchContractState,
+  Asset,
   ContractInstance,
   getContractEventsCurrentCount,
   TestContractParamsWithoutMaps,
   TestContractResultWithoutMaps,
+  SignExecuteContractMethodParams,
+  SignExecuteScriptTxResult,
+  signExecuteMethod,
   addStdIdToFields,
   encodeContractFields,
+  Narrow,
 } from "@alephium/web3";
 import { default as TestTokenContractJson } from "../test/TestToken.ral.json";
-import { getContractByCodeHash } from "./contracts";
+import { getContractByCodeHash, registerContract } from "./contracts";
 
 // Custom types for the contract
 export namespace TestTokenTypes {
@@ -56,6 +61,10 @@ export namespace TestTokenTypes {
       params: Omit<CallContractParams<{}>, "args">;
       result: CallContractResult<bigint>;
     };
+    getToken: {
+      params: CallContractParams<{ sender: Address; amount: bigint }>;
+      result: CallContractResult<null>;
+    };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
     CallMethodTable[T]["params"];
@@ -69,6 +78,39 @@ export namespace TestTokenTypes {
       ? CallMethodTable[MaybeName]["result"]
       : undefined;
   };
+  export type MulticallReturnType<Callss extends MultiCallParams[]> = {
+    [index in keyof Callss]: MultiCallResults<Callss[index]>;
+  };
+
+  export interface SignExecuteMethodTable {
+    getSymbol: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
+    getName: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
+    getDecimals: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
+    getTotalSupply: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
+    getToken: {
+      params: SignExecuteContractMethodParams<{
+        sender: Address;
+        amount: bigint;
+      }>;
+      result: SignExecuteScriptTxResult;
+    };
+  }
+  export type SignExecuteMethodParams<T extends keyof SignExecuteMethodTable> =
+    SignExecuteMethodTable[T]["params"];
+  export type SignExecuteMethodResult<T extends keyof SignExecuteMethodTable> =
+    SignExecuteMethodTable[T]["result"];
 }
 
 class Factory extends ContractFactory<
@@ -81,10 +123,6 @@ class Factory extends ContractFactory<
       this.contract.fieldsSig,
       []
     );
-  }
-
-  getInitialFieldsWithDefaultValues() {
-    return this.contract.getInitialFieldsWithDefaultValues() as TestTokenTypes.Fields;
   }
 
   at(address: string): TestTokenInstance {
@@ -133,6 +171,14 @@ class Factory extends ContractFactory<
       return testMethod(this, "getToken", params, getContractByCodeHash);
     },
   };
+
+  stateForTest(
+    initFields: TestTokenTypes.Fields,
+    asset?: Asset,
+    address?: string
+  ) {
+    return this.stateForTest_(initFields, asset, address, undefined);
+  }
 }
 
 // Use this object to test and deploy the contract
@@ -144,6 +190,7 @@ export const TestToken = new Factory(
     []
   )
 );
+registerContract(TestToken);
 
 // Use this class to interact with the blockchain
 export class TestTokenInstance extends ContractInstance {
@@ -155,7 +202,7 @@ export class TestTokenInstance extends ContractInstance {
     return fetchContractState(TestToken, this);
   }
 
-  methods = {
+  view = {
     getSymbol: async (
       params?: TestTokenTypes.CallMethodParams<"getSymbol">
     ): Promise<TestTokenTypes.CallMethodResult<"getSymbol">> => {
@@ -200,16 +247,63 @@ export class TestTokenInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    getToken: async (
+      params: TestTokenTypes.CallMethodParams<"getToken">
+    ): Promise<TestTokenTypes.CallMethodResult<"getToken">> => {
+      return callMethod(
+        TestToken,
+        this,
+        "getToken",
+        params,
+        getContractByCodeHash
+      );
+    },
+  };
+
+  transact = {
+    getSymbol: async (
+      params: TestTokenTypes.SignExecuteMethodParams<"getSymbol">
+    ): Promise<TestTokenTypes.SignExecuteMethodResult<"getSymbol">> => {
+      return signExecuteMethod(TestToken, this, "getSymbol", params);
+    },
+    getName: async (
+      params: TestTokenTypes.SignExecuteMethodParams<"getName">
+    ): Promise<TestTokenTypes.SignExecuteMethodResult<"getName">> => {
+      return signExecuteMethod(TestToken, this, "getName", params);
+    },
+    getDecimals: async (
+      params: TestTokenTypes.SignExecuteMethodParams<"getDecimals">
+    ): Promise<TestTokenTypes.SignExecuteMethodResult<"getDecimals">> => {
+      return signExecuteMethod(TestToken, this, "getDecimals", params);
+    },
+    getTotalSupply: async (
+      params: TestTokenTypes.SignExecuteMethodParams<"getTotalSupply">
+    ): Promise<TestTokenTypes.SignExecuteMethodResult<"getTotalSupply">> => {
+      return signExecuteMethod(TestToken, this, "getTotalSupply", params);
+    },
+    getToken: async (
+      params: TestTokenTypes.SignExecuteMethodParams<"getToken">
+    ): Promise<TestTokenTypes.SignExecuteMethodResult<"getToken">> => {
+      return signExecuteMethod(TestToken, this, "getToken", params);
+    },
   };
 
   async multicall<Calls extends TestTokenTypes.MultiCallParams>(
     calls: Calls
-  ): Promise<TestTokenTypes.MultiCallResults<Calls>> {
-    return (await multicallMethods(
+  ): Promise<TestTokenTypes.MultiCallResults<Calls>>;
+  async multicall<Callss extends TestTokenTypes.MultiCallParams[]>(
+    callss: Narrow<Callss>
+  ): Promise<TestTokenTypes.MulticallReturnType<Callss>>;
+  async multicall<
+    Callss extends
+      | TestTokenTypes.MultiCallParams
+      | TestTokenTypes.MultiCallParams[]
+  >(callss: Callss): Promise<unknown> {
+    return await multicallMethods(
       TestToken,
       this,
-      calls,
+      callss,
       getContractByCodeHash
-    )) as TestTokenTypes.MultiCallResults<Calls>;
+    );
   }
 }
