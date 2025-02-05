@@ -1,0 +1,53 @@
+Contract LendingProtocolAccount(
+    tokenId: ByteVec,
+    _address: Address,
+    parentContractAddress: Address,
+    mut amountDeposited: U256
+) {
+    enum ErrorCodes {
+        UNAUTHORIZED = 402
+        INSUFFICIENT_BALANCE = 423
+        INVALID_AMOUNT = 424
+    }
+
+    pub fn getTokenId() -> ByteVec {
+        return tokenId
+    }
+
+    pub fn getUser() -> Address {
+        return _address
+    }
+
+    pub fn getTotalDeposit() -> U256 {
+        return amountDeposited
+    }
+
+    @using(assetsInContract = true, preapprovedAssets = true, updateFields = true)
+    pub fn deposit(amount: U256) -> () { 
+        let caller = callerAddress!()
+
+        checkCaller!(caller == parentContractAddress, ErrorCodes.UNAUTHORIZED)
+        assert!(amount > 0, ErrorCodes.INVALID_AMOUNT)
+        transferTokenToSelf!(_address, tokenId, amount)
+
+        amountDeposited = amountDeposited + amount
+    }
+
+    @using(assetsInContract = true, updateFields = true)
+    pub fn withdraw(amount: U256) -> () {
+        let caller = callerAddress!()
+
+        checkCaller!(caller == parentContractAddress, ErrorCodes.UNAUTHORIZED)
+        assert!(amount > 0, ErrorCodes.INVALID_AMOUNT)
+        assert!(amountDeposited >= amount, ErrorCodes.INSUFFICIENT_BALANCE)
+
+        amountDeposited = amountDeposited - amount
+
+        transferTokenFromSelf!(_address, tokenId, amount)
+
+        if (amountDeposited == 0) {
+           destroySelf!(_address)
+        }
+    }
+
+}

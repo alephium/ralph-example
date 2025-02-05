@@ -1,0 +1,37 @@
+Abstract Contract LendingProtocolAccountFactory(
+    tokenId: ByteVec,
+    lendingProtocolAccountTemplateId: ByteVec
+) {
+    enum ErrorCodes {
+        DUPLICATE_ERROR = 422
+    }
+
+    pub fn lendingProtocolAccountExists(_address: Address) -> Bool {
+        let lendingProtocolAccountId = subContractId!(toByteVec!(_address))
+        return contractExists!(lendingProtocolAccountId)
+    }
+
+    pub fn getLendingProtocolAccount(_address: Address) -> LendingProtocolAccount {
+        let lendingProtocolAccountId = subContractId!(toByteVec!(_address))
+        return LendingProtocolAccount(lendingProtocolAccountId)
+    }
+
+    @using(preapprovedAssets = true)
+    fn createLendingProtocolAccount(_address: Address, amount: U256) -> () {
+        assert!(!lendingProtocolAccountExists(_address), ErrorCodes.DUPLICATE_ERROR)
+
+        let (encodedImmFields, encodedMutFields) = LendingProtocolAccount.encodeFields!(
+            tokenId,
+            _address,
+            selfAddress!(),
+            amount
+        )
+
+        let _ = copyCreateSubContract!{_address -> ALPH: 1 alph, tokenId: amount}(
+            toByteVec!(_address),
+            lendingProtocolAccountTemplateId,
+            encodedImmFields,
+            encodedMutFields
+        )
+    }
+}

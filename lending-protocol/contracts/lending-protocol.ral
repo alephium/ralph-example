@@ -1,0 +1,80 @@
+Contract LendingProtocol(
+    tokenId: ByteVec,
+    lendingProtocolAccountTemplateId: ByteVec,
+    mut amountDeposited: U256
+    mut owner_: Address
+) extends LendingProtocolAccountFactory(tokenId, lendingProtocolTemplateId) {
+    ////////////////////////
+    // Events
+    ////////////////////////
+
+    event Deposit(_address: Address, amount: U256)
+    event Withdrawal(_address: Address, amount: U256)
+
+    ////////////////////////
+    // Error Codes
+    ////////////////////////
+
+    enum ErrorCodes {
+        INVALID_AMOUNT = 0
+    }
+
+    ////////////////////////
+    // Public Functions
+    ////////////////////////
+
+    pub fn getTokenId() -> ByteVec {
+        return tokenId
+    }
+
+    @using(preapprovedAssets = true, updateFields = true, checkExternalCaller = false)
+    pub fn deposit(amount: U256) -> () {
+        let _address = callerAddress!()
+
+        assert!(amount > 0, ErrorCodes.INVALID_AMOUNT)
+        if (lendingProtocolAccountExists(_address)) {
+            let lendingProtocolAccount = getLendingProtocolAccount(_address)
+            lendingProtocolAccount.deposit{_address -> tokenId: amount}(amount)
+        } else {
+            createLendingProtocolAccount{_address -> ALPH: 1 alph, tokenId: amount}(_address, amount)
+        }
+        
+        amountDeposited = amountDeposited + amount
+        emit Deposit(_address, amount)
+    }
+
+    @using(updateFields = true, checkExternalCaller = false)
+    pub fn withdraw(amount: U256) -> () {
+        let _address = callerAddress!()
+
+        let lendingProtocolAccount = getLendingProtocolAccount(_address)
+
+        lendingProtocolAccount.withdraw(amount)
+
+        amountDeposited = amountDeposited - amount
+        emit Withdrawal(_address, amount)
+    }
+
+
+    pub fn upgrade(newBytecode: ByteVec) -> () {
+        onlyOwner(callerAddress!())
+
+        migrate!(newBytecode)
+    }
+}
+
+TxScript Deposit(lendingProtocol: LendingProtocol, amount: U256) {
+    let _address = callerAddress!()
+    let tokenId = lendingProtocol.getTokenId()
+    let lendingProtocolAccExists = lendingProtocol.lendingProtocolAccountExists(_address)
+
+    if (lendingProtocolAccExists) {
+        lendingProtocol.deposit{_address -> tokenId: amount}(amount)
+    } else {
+        lendingProtocol.deposit{_address -> tokenId: amount, ALPH: 1 alph}(amount)
+    }
+}
+
+TxScript Withdrawal(lendingProtocol: LendingProtocol, amount: U256) {
+    lendingProtocol.withdraw(amount)
+}
