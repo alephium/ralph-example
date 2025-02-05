@@ -1,0 +1,31 @@
+// invoke contract:
+TxScript AddOracle(dataFeed: WeatherDataFeed, oracle: Address) {
+    dataFeed.addOracle{callerAddress!() -> ALPH : minimalContractDeposit!() * 2}(oracle)
+}
+
+TxScript RemoveOracle(
+    dataFeed: WeatherDataFeed,
+    oracle: Address
+){
+    dataFeed.removeOracle(oracle)
+}
+
+TxScript MakeRequest(
+    dataFeed: WeatherDataFeed,
+    lat: U256,
+    lon: U256,
+    fee: U256
+){
+    let _ = dataFeed.makeRequest{callerAddress!() -> ALPH : fee + minimalContractDeposit!() * 2}(lat, lon)
+}
+
+TxScript CompleteRequest(
+    dataFeed: WeatherDataFeed,
+    requestId: ByteVec,
+    temp: ByteVec,
+    publicKey: ByteVec,
+    signature: ByteVec,
+    timestamp: U256
+){
+    dataFeed.completeRequest(requestId, temp, publicKey, signature, timestamp)
+}
