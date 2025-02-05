@@ -1,0 +1,67 @@
+// invoke contract:
+//reference: https://github.com/alephium/ralph-example/pull/48
+//may merch later
+TxScript AddOracle(dataFeed: WeatherDataFeed, oracle: Address) {
+    dataFeed.addOracle{callerAddress!() -> ALPH : minimalContractDeposit!() * 2}(oracle)
+}
+
+TxScript RemoveOracle(
+    dataFeed: WeatherDataFeed,
+    oracle: Address
+){
+    dataFeed.removeOracle(oracle)
+}
+
+TxScript MakeRequest(
+    dataFeed: WeatherDataFeed,
+    identifier: ByteVec,
+    timestamp: U256,
+    ancillaryData: ByteVec,
+    reward: U256,
+    bond: U256,
+    customLiveness: U256,
+    fee: U256
+){
+    let _ = dataFeed.makeRequest{callerAddress!() -> ALPH : fee + minimalContractDeposit!() * 2}(
+        identifier,
+        timestamp,
+        ancillaryData,
+        reward,
+        bond,
+        customLiveness
+    )
+}
+
+TxScript CompleteRequest(
+    dataFeed: WeatherDataFeed,
+    requestId: ByteVec,
+    temp: ByteVec,
+    publicKey: ByteVec,
+    signature: ByteVec,
+    timestamp: U256
+){
+    dataFeed.completeRequest{callerAddress!() -> ALPH: 0.1 alph}(requestId, temp, publicKey, signature, timestamp)
+}
+
+
+
+TxScript ProposePrice(
+    proposer: Address,
+    dataFeed: WeatherDataFeed,
+    requester: Address,
+    identifier: ByteVec,
+    timestamp: U256,
+    ancillaryData: ByteVec,
+    requestParams: Request,
+    price: I256
+){
+    dataFeed.proposePrice{  proposer -> ALPH: 2 alph}(proposer,requester, identifier, timestamp, ancillaryData, requestParams, price)
+}
+
+TxScript SetCurrentTime(
+    payer: Address,
+    dataFeed: WeatherDataFeed,
+    time: U256
+){
+    dataFeed.setCurrentTime{payer -> ALPH: 0.1 alph}(payer, time)
+}
