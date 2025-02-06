@@ -125,7 +125,7 @@ const OracleUpdater = () => {
           </table>
         </div>
         <button onClick={fetchRandomness} style={{ marginTop: '20px', padding: '10px 20px', fontSize: '16px' }}>
-          Update Random Number
+          Update Randomness
         </button>
       </div>
     </div>
