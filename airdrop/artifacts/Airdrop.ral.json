@@ -1,0 +1,104 @@
+{
+  "version": "v2.9.0",
+  "name": "Airdrop",
+  "bytecode": "0004403a407340ae40eb01030c4076001d0c170c160c130a314c17160c7a130a314d0e2a78170db4160d13c3038d7ea4c68000a7b4160d16001601aa160c0d2a170c4a2501031b1d001d0c171b161b1319314c17161b7a1319314d0e2a78171cb4161c13c3038d7ea4c68000a7b4161c16001601aa161b0d2a171b4a25010340344036001d0c173416341332314c1716347a1332314d0e2a781735b4163513c3038d7ea4c68000a7b4163516001601aa16340d2a17344a25010340664068001d0c17661666134064314c1716667a134064314d0e2a781767b4166713c3038d7ea4c68000a7b4166716001601aa16660d2a17664a25",
+  "codeHash": "ebb2cca54fd435d972fb3bc228ef10841f6ab65497985e7592c9794975898401",
+  "fieldsSig": {
+    "names": [],
+    "types": [],
+    "isMutable": []
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "disperse10",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "tokenId",
+        "amountPerAddress",
+        "addresses"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "U256",
+        "[Address;10]"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "disperse25",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "tokenId",
+        "amountPerAddress",
+        "addresses"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "U256",
+        "[Address;25]"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "disperse50",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "tokenId",
+        "amountPerAddress",
+        "addresses"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "U256",
+        "[Address;50]"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "disperse100",
+      "usePreapprovedAssets": true,
+      "useAssetsInContract": false,
+      "isPublic": true,
+      "paramNames": [
+        "tokenId",
+        "amountPerAddress",
+        "addresses"
+      ],
+      "paramTypes": [
+        "ByteVec",
+        "U256",
+        "[Address;100]"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false
+      ],
+      "returnTypes": []
+    }
+  ],
+  "constants": [],
+  "enums": []
+}
