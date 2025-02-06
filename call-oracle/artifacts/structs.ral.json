@@ -13,5 +13,23 @@
       true,
       true
     ]
+  },
+  {
+    "name": "DIARandomValue",
+    "fieldNames": [
+      "randomness",
+      "signature",
+      "round"
+    ],
+    "fieldTypes": [
+      "ByteVec",
+      "ByteVec",
+      "U256"
+    ],
+    "isMutable": [
+      true,
+      true,
+      true
+    ]
   }
 ]

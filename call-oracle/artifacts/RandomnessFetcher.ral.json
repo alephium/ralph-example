@@ -1,0 +1,32 @@
+{
+  "version": "v3.12.0",
+  "name": "RandomnessFetcher",
+  "bytecode": "04014033010000040014d3948fae950c0dce00d46393ea60170016000d0fce00d4b2bf32d0170317021701160116021603a102a101a100",
+  "codeHash": "35741d21031f56a1da31947e25bb2861663566b8d9a3e254155cd0651db416c6",
+  "fieldsSig": {
+    "names": [
+      "oracle",
+      "randomValue"
+    ],
+    "types": [
+      "IDIARandomOracle",
+      "DIARandomValue"
+    ],
+    "isMutable": [
+      false,
+      true
+    ]
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "update",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    }
+  ],
+  "constants": [],
+  "enums": []
+}

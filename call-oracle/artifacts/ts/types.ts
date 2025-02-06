@@ -9,3 +9,8 @@ export interface DIAOracleValue extends Record<string, Val> {
   value: bigint;
   timestamp: bigint;
 }
+export interface DIARandomValue extends Record<string, Val> {
+  randomness: HexString;
+  signature: HexString;
+  round: bigint;
+}
