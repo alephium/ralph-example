@@ -26,7 +26,7 @@ async function getRandomness(randomnessFetcher: RandomnessFetcherInstance): Prom
   }
 }
 
-const PriceUpdater = () => {
+const OracleUpdater = () => {
   web3.setCurrentNodeProvider('https://node.testnet.alephium.org')
   const priceFetcher = loadDeployments('testnet').contracts.PriceFetcher.contractInstance
   const randomnessFetcher = loadDeployments('testnet').contracts.RandomnessFetcher.contractInstance
@@ -132,4 +132,4 @@ const PriceUpdater = () => {
   );
 };
 
-export default PriceUpdater;
+export default OracleUpdater;
