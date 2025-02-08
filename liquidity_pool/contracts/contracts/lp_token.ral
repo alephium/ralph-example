@@ -1,0 +1,100 @@
+import "std/fungible_token_interface"
+
+Contract LPToken(
+    name: ByteVec,
+    symbol: ByteVec,
+    decimals: U256,
+    mut totalTokenSupply: U256
+) implements IFungibleToken {
+    // Track token balances
+    mapping[Address, U256] balances
+
+    // Events for token minting and burning
+    event Mint(to: Address, amount: U256)
+    event Burn(from: Address, amount: U256)
+    event Transfer(from: Address, to: Address, amount: U256)
+
+    // Error codes
+    enum ErrorCodes {
+        InsufficientBalance = 0
+        UnauthorizedMint = 1
+        InsufficientAllowance = 2
+    }
+
+    // Only the liquidity pool can mint/burn tokens
+    @using(updateFields = true, checkExternalCaller = false)
+    pub fn mint(to: Address, amount: U256) -> () {
+        // In a real implementation, you'd add authorization checks
+        balances[to] = balances[to] + amount  // Use explicit addition
+        totalTokenSupply = totalTokenSupply + amount  // Same here
+        emit Mint(to, amount)
+    }
+
+    @using(updateFields = true, checkExternalCaller = false)
+    pub fn burn(from: Address, amount: U256) -> () {
+        // Validate burning amount
+        assert!(balances[from] >= amount, ErrorCodes.InsufficientBalance)
+        
+        balances[from] = balances[from] - amount
+        totalTokenSupply = totalTokenSupply - amount
+        emit Burn(from, amount)
+    }
+
+    // Standard token interface implementations
+    pub fn getTotalSupply() -> U256 {
+        return totalTokenSupply
+    }
+
+    pub fn getSymbol() -> ByteVec {
+        return symbol
+    }
+
+    pub fn getName() -> ByteVec {
+        return name
+    }
+
+    pub fn getDecimals() -> U256 {
+        return decimals
+    }
+
+    pub fn balanceOf(address: Address) -> U256 {
+        return balances[address]
+    }
+
+    pub fn totalSupply() -> U256 {
+        return totalTokenSupply
+    }
+
+    pub fn getAddress() -> Address {
+        return callerAddress!()  // or however you determine the token's address
+    }
+
+
+    // Approve a spender to transfer tokens on behalf of the owner
+    // @using(updateFields = true)
+    // pub fn approve(spender: Address, amount: U256) -> () {
+    //     allowances[callerAddress!()][spender] = amount
+    // }
+
+    // // Transfer tokens from one address to another, with allowance
+    // @using(updateFields = true)
+    // pub fn transferFrom(from: Address, to: Address, amount: U256) -> () {
+    //     // Check if the sender has enough allowance
+    //     let allowance = allowances[from][callerAddress!()]
+    //     assert!(allowance >= amount, ErrorCodes.InsufficientAllowance)
+
+    //     // Check if the sender has enough tokens
+    //     assert!(balances[from] >= amount, ErrorCodes.InsufficientBalance)
+
+    //     // Perform the transfer
+    //     balances[from] = balances[from] - amount
+    //     balances[to] = balances[to] + amount
+
+    //     // Update the allowance
+    //     allowances[from][callerAddress!()] = allowance - amount
+
+    //     // Emit the transfer event
+    //     emit Transfer(from, to, amount)
+    // }
+}
+
