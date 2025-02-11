@@ -1,0 +1,3 @@
+TxScript EndVesting(vesting: Vesting, addressToEnd: Address, refundAddress: Address) {
+  vesting.endVesting(addressToEnd, refundAddress)
+}
