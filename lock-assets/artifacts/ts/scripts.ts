@@ -12,24 +12,3 @@ import {
   HexString,
 } from "@alephium/web3";
 import { getContractByCodeHash } from "./contracts";
-import { default as LockAlphAndTokenScriptJson } from "../LockAlphAndToken.ral.json";
-import { default as LockAlphOnlyScriptJson } from "../LockAlphOnly.ral.json";
-import { default as LockTokenOnlyScriptJson } from "../LockTokenOnly.ral.json";
-
-export const LockAlphAndToken = new ExecutableScript<{
-  lockAssets: HexString;
-  alphAmount: bigint;
-  tokenId: HexString;
-  tokenAmount: bigint;
-}>(Script.fromJson(LockAlphAndTokenScriptJson, "", []), getContractByCodeHash);
-
-export const LockAlphOnly = new ExecutableScript<{
-  lockAssets: HexString;
-  amount: bigint;
-}>(Script.fromJson(LockAlphOnlyScriptJson, "", []), getContractByCodeHash);
-
-export const LockTokenOnly = new ExecutableScript<{
-  lockAssets: HexString;
-  tokenId: HexString;
-  amount: bigint;
-}>(Script.fromJson(LockTokenOnlyScriptJson, "", []), getContractByCodeHash);

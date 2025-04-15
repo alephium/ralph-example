@@ -157,8 +157,8 @@ class Factory extends ContractFactory<LockAssetsInstance, {}> {
 export const LockAssets = new Factory(
   Contract.fromJson(
     LockAssetsContractJson,
-    "=4-2=2-2+27=3-1+c408d=11-1+b7e010c6c6f636b416c70684f6e6c79=47+f7=1+010d6c6f636b546f6b656e4f6e6c79=73+f7e01106c6f636b416c7068416e64546f6b656=49",
-    "cdae77471b252db59a9318e4f1de08d7a93feb2a583fc775a4d332d60613fdd5",
+    "=4-2=2+2c=1-1+066=2-2+9c=11-1+c=10+7e010c6c6f636b416c70684f6e6c79=46+1=1-1=10+7e010d6c6f636b546f6b656e4f6e6c79=72+1=1-1=10+7e01106c6f636b416c7068416e64546f6b656e=48",
+    "07ebabb5fe5519e7587f2220c56c841a4157e3c6a9d5386a17803ae5427e5a90",
     []
   )
 );

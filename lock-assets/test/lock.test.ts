@@ -1,18 +1,17 @@
 import {
   web3,
-  addressFromContractId,
   AssetOutput,
   DUST_AMOUNT,
   ONE_ALPH,
 } from '@alephium/web3'
 import { randomContractId, testAddress, mintToken, getSigner } from '@alephium/web3-test'
 import { deployToDevnet } from '@alephium/cli'
-import { LockAlphAndToken, LockAlphOnly, LockAssets, LockTokenOnly } from '../artifacts/ts'
+import { LockAssets } from '../artifacts/ts'
 
 describe('unit tests', () => {
   const testContractId = randomContractId()
   const testTokenId = testContractId
-  const testGasFee = 62500000000000000n // The default gas fee for unit tests
+  const testGasFee = ONE_ALPH / 2n
   web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
 
   it('test lock alph', async () => {
@@ -107,17 +106,19 @@ describe('integration tests', () => {
       throw new Error('The contract is not deployed on group 0')
     }
     const lockAddress = deployed.contractInstance.address
-    await LockAlphOnly.execute(signer, {
-      initialFields: { lockAssets: lockAddress, amount: ONE_ALPH },
-      attoAlphAmount: ONE_ALPH
+    const lockAssetsContract = LockAssets.at(lockAddress)
+    await lockAssetsContract.transact.lockAlphOnly({
+      signer, args: { amount: ONE_ALPH }, attoAlphAmount: ONE_ALPH
     })
-    await LockTokenOnly.execute(signer, {
-      initialFields: { lockAssets: lockAddress, tokenId, amount: 100n },
+    await lockAssetsContract.transact.lockTokenOnly({
+      signer,
+      args: { tokenId, amount: 100n },
       attoAlphAmount: ONE_ALPH,
       tokens: [{ id: tokenId, amount: 100n }]
     })
-    await LockAlphAndToken.execute(signer, {
-      initialFields: { lockAssets: lockAddress, tokenId, tokenAmount: 100n, alphAmount: ONE_ALPH },
+    await lockAssetsContract.transact.lockAlphAndToken({
+      signer,
+      args: { tokenId, tokenAmount: 100n, alphAmount: ONE_ALPH },
       attoAlphAmount: ONE_ALPH,
       tokens: [{ id: tokenId, amount: 100n }]
     })

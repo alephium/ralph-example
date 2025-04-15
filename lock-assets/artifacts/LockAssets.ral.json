@@ -1,8 +1,8 @@
 {
-  "version": "v2.8.5",
+  "version": "v3.12.1",
   "name": "LockAssets",
-  "bytecode": "000318403d405b01030102000ab4170116011600a21601561385265c002abe01030203000eb4170216027a13c3038d7ea4c68000a216001601a31602561385265c002abe01030304000eb4170316037a1600a216011602a31603561385265c002abe",
-  "codeHash": "40755c6fd76cc0aeabaf445405b45882c2071fefc5218596d6bea04ccd1298f3",
+  "bytecode": "00031d4047406a01030102000bd3be5e62d4b4170116011600a21601561385265c002abe01030203000fd32e612aaeb4170216027a13c3038d7ea4c68000a216001601a31602561385265c002abe01030304000fd3d4091f02b4170316037a1600a216011602a31603561385265c002abe",
+  "codeHash": "425447dcbe0ae20e0f344c0263554af2c1834c2e794ef84ea4d989eac65baadf",
   "fieldsSig": {
     "names": [],
     "types": [],
@@ -12,9 +12,6 @@
   "functions": [
     {
       "name": "lockAlphOnly",
-      "usePreapprovedAssets": true,
-      "useAssetsInContract": false,
-      "isPublic": true,
       "paramNames": [
         "amount"
       ],
@@ -28,9 +25,6 @@
     },
     {
       "name": "lockTokenOnly",
-      "usePreapprovedAssets": true,
-      "useAssetsInContract": false,
-      "isPublic": true,
       "paramNames": [
         "tokenId",
         "amount"
@@ -47,9 +41,6 @@
     },
     {
       "name": "lockAlphAndToken",
-      "usePreapprovedAssets": true,
-      "useAssetsInContract": false,
-      "isPublic": true,
       "paramNames": [
         "alphAmount",
         "tokenId",
