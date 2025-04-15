@@ -3,4 +3,5 @@
 /* eslint-disable */
 
 export * from "./LockAssets";
+export * from "./TokenToBeLocked";
 export * from "./scripts";

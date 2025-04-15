@@ -13,9 +13,15 @@
   "infos": {
     "LockAssets": {
       "sourceFile": "lock-assets.ral",
-      "sourceCodeHash": "1d45ec58aec6567b5d48c2ac42f13eda339d6fcc72d1f96c2d0fcdca808c1a83",
-      "bytecodeDebugPatch": "=4-2=2+2c=1-1+066=2-2+9c=11-1+c=10+7e010c6c6f636b416c70684f6e6c79=46+1=1-1=10+7e010d6c6f636b546f6b656e4f6e6c79=72+1=1-1=10+7e01106c6f636b416c7068416e64546f6b656e=48",
-      "codeHashDebug": "07ebabb5fe5519e7587f2220c56c841a4157e3c6a9d5386a17803ae5427e5a90"
+      "sourceCodeHash": "4e26ab1e3aa5c607286cdb6781c58d026cc73db15231cf2284d75b7e40f91c37",
+      "bytecodeDebugPatch": "=4-2=2-2+2c=3-1+6=4+40e1=11-1+c=10+7e010c6c6f636b416c70684f6e6c79=46+1=1-1=10+7e010d6c6f636b546f6b656e4f6e6c79=72+1=1-1=10+7e01106c6f636b416c7068416e64546f6b656e=59-1+3=10+7e01106d696e74416e644c6f636b546f6b656e=78",
+      "codeHashDebug": "d6eaf14baefe5e9314e05f4627748ebd9c0531cfa2d638604a79fd26196806e3"
+    },
+    "TokenToBeLocked": {
+      "sourceFile": "lock-assets.ral",
+      "sourceCodeHash": "4e26ab1e3aa5c607286cdb6781c58d026cc73db15231cf2284d75b7e40f91c37",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "e8e6cac2676e02d58337b1ceddc4754544bf37c8d41aeeda1c44ad348f969a7b"
     }
   }
 }

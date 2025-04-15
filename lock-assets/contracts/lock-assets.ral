@@ -19,4 +19,26 @@ Contract LockAssets() {
         let caller = callerAddress!()
         lockApprovedAssets!{caller -> ALPH: alphAmount, tokenId: tokenAmount}(caller, blockTimeStamp!() + 86400000) // 1 day
     }
+
+    @using(preapprovedAssets = true, checkExternalCaller = false)
+    pub fn mintAndLockToken(
+        tokenContractTemplateId: ByteVec,
+        tokenName: ByteVec,
+        recipient: Address,
+        amount: U256,
+        till: U256
+    ) -> () {
+        emit Debug(`mintAndLockToken`)
+        let tokenContractId = copyCreateSubContractWithToken!{callerAddress!() -> ALPH: 1 alph}(
+            tokenName, tokenContractTemplateId, #00, #00, amount
+        )
+        TokenToBeLocked(tokenContractId).lockTokens(recipient, amount, till)
+    }
+}
+
+Contract TokenToBeLocked() {
+    @using(assetsInContract = true, checkExternalCaller = false)
+    pub fn lockTokens(recipient: Address, amount: U256, till: U256) -> () {
+      lockApprovedAssets!{selfAddress!() -> selfTokenId!(): amount, ALPH: dustAmount!()}(recipient, till)
+    }
 }
