@@ -57,6 +57,16 @@ export namespace LockAssetsTypes {
       }>;
       result: CallContractResult<null>;
     };
+    mintAndLockToken: {
+      params: CallContractParams<{
+        tokenContractTemplateId: HexString;
+        tokenName: HexString;
+        recipient: Address;
+        amount: bigint;
+        till: bigint;
+      }>;
+      result: CallContractResult<null>;
+    };
   }
   export type CallMethodParams<T extends keyof CallMethodTable> =
     CallMethodTable[T]["params"];
@@ -91,6 +101,16 @@ export namespace LockAssetsTypes {
         alphAmount: bigint;
         tokenId: HexString;
         tokenAmount: bigint;
+      }>;
+      result: SignExecuteScriptTxResult;
+    };
+    mintAndLockToken: {
+      params: SignExecuteContractMethodParams<{
+        tokenContractTemplateId: HexString;
+        tokenName: HexString;
+        recipient: Address;
+        amount: bigint;
+        till: bigint;
       }>;
       result: SignExecuteScriptTxResult;
     };
@@ -146,6 +166,28 @@ class Factory extends ContractFactory<LockAssetsInstance, {}> {
         getContractByCodeHash
       );
     },
+    mintAndLockToken: async (
+      params: Omit<
+        TestContractParamsWithoutMaps<
+          never,
+          {
+            tokenContractTemplateId: HexString;
+            tokenName: HexString;
+            recipient: Address;
+            amount: bigint;
+            till: bigint;
+          }
+        >,
+        "initialFields"
+      >
+    ): Promise<TestContractResultWithoutMaps<null>> => {
+      return testMethod(
+        this,
+        "mintAndLockToken",
+        params,
+        getContractByCodeHash
+      );
+    },
   };
 
   stateForTest(initFields: {}, asset?: Asset, address?: string) {
@@ -157,8 +199,8 @@ class Factory extends ContractFactory<LockAssetsInstance, {}> {
 export const LockAssets = new Factory(
   Contract.fromJson(
     LockAssetsContractJson,
-    "=4-2=2-2+27=3-1+c408d=11-1+b7e010c6c6f636b416c70684f6e6c79=47+f7=1+010d6c6f636b546f6b656e4f6e6c79=73+f7e01106c6f636b416c7068416e64546f6b656=49",
-    "cdae77471b252db59a9318e4f1de08d7a93feb2a583fc775a4d332d60613fdd5",
+    "=4-2=2-2+2c=3-1+6=4+40e1=11-1+c=10+7e010c6c6f636b416c70684f6e6c79=46+1=1-1=10+7e010d6c6f636b546f6b656e4f6e6c79=72+1=1-1=10+7e01106c6f636b416c7068416e64546f6b656e=59-1+3=10+7e01106d696e74416e644c6f636b546f6b656e=78",
+    "d6eaf14baefe5e9314e05f4627748ebd9c0531cfa2d638604a79fd26196806e3",
     []
   )
 );
@@ -208,6 +250,17 @@ export class LockAssetsInstance extends ContractInstance {
         getContractByCodeHash
       );
     },
+    mintAndLockToken: async (
+      params: LockAssetsTypes.CallMethodParams<"mintAndLockToken">
+    ): Promise<LockAssetsTypes.CallMethodResult<"mintAndLockToken">> => {
+      return callMethod(
+        LockAssets,
+        this,
+        "mintAndLockToken",
+        params,
+        getContractByCodeHash
+      );
+    },
   };
 
   transact = {
@@ -225,6 +278,11 @@ export class LockAssetsInstance extends ContractInstance {
       params: LockAssetsTypes.SignExecuteMethodParams<"lockAlphAndToken">
     ): Promise<LockAssetsTypes.SignExecuteMethodResult<"lockAlphAndToken">> => {
       return signExecuteMethod(LockAssets, this, "lockAlphAndToken", params);
+    },
+    mintAndLockToken: async (
+      params: LockAssetsTypes.SignExecuteMethodParams<"mintAndLockToken">
+    ): Promise<LockAssetsTypes.SignExecuteMethodResult<"mintAndLockToken">> => {
+      return signExecuteMethod(LockAssets, this, "mintAndLockToken", params);
     },
   };
 }

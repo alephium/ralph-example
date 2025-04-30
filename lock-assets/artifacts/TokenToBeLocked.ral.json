@@ -1,0 +1,35 @@
+{
+  "version": "v3.12.1",
+  "name": "TokenToBeLocked",
+  "bytecode": "0001402001020303000bd395e606b1b27ab11601a313c3038d7ea4c68000a216001602be",
+  "codeHash": "e8e6cac2676e02d58337b1ceddc4754544bf37c8d41aeeda1c44ad348f969a7b",
+  "fieldsSig": {
+    "names": [],
+    "types": [],
+    "isMutable": []
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "lockTokens",
+      "paramNames": [
+        "recipient",
+        "amount",
+        "till"
+      ],
+      "paramTypes": [
+        "Address",
+        "U256",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false,
+        false
+      ],
+      "returnTypes": []
+    }
+  ],
+  "constants": [],
+  "enums": []
+}
