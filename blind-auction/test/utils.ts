@@ -1,11 +1,12 @@
 import { testAddress, testPrivateKey, expectAssertionError } from '@alephium/web3-test'
-import { Auction, AuctionEnd, AuctionInstance, NewBid, Reveal } from '../artifacts/ts'
+import { Auction, AuctionInstance, NewBid } from '../artifacts/ts'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
 import {
   ALPH_TOKEN_ID,
   Address,
   DUST_AMOUNT,
   HexString,
+  MAP_ENTRY_DEPOSIT,
   ONE_ALPH,
   SignerProvider,
   binToHex,
@@ -67,7 +68,7 @@ export async function bid(signer: SignerProvider, auction: AuctionInstance, amou
   return await NewBid.execute({
     signer,
     initialFields: { auction: auction.contractId, blindedBid: bidInfo.hash, amount },
-    attoAlphAmount: amount + ONE_ALPH * 2n
+    attoAlphAmount: amount + MAP_ENTRY_DEPOSIT * 2n
   })
 }
 
@@ -85,10 +86,11 @@ export async function reveal(signer: SignerProvider, auction: AuctionInstance, b
   const encodedValues = bidInfos.map((bidInfo) => bidInfo.value.toString(16).padStart(64, '0')).join('')
   const encodedFakes = bidInfos.map((bidInfo) => (bidInfo.fake ? '01' : '00')).join('')
   const encodedSecrets = bidInfos.map((bidInfo) => bidInfo.secret).join('')
-  return await Reveal.execute({
+  const bidder = await signer.getSelectedAccount()
+  return await auction.transact.reveal({
     signer,
-    initialFields: {
-      auction: auction.contractId,
+    args: {
+      bidder: bidder.address,
       values: encodedValues,
       fakes: encodedFakes,
       secrets: encodedSecrets
@@ -107,9 +109,8 @@ export async function revealFailed(
 }
 
 export async function auctionEnd(signer: SignerProvider, auction: AuctionInstance) {
-  return await AuctionEnd.execute({
+  return await auction.transact.auctionEnd({
     signer,
-    initialFields: { auction: auction.contractId },
     attoAlphAmount: DUST_AMOUNT
   })
 }
