@@ -1,6 +1,7 @@
 import {
   ALPH_TOKEN_ID,
   Address,
+  MINIMAL_CONTRACT_DEPOSIT,
   ONE_ALPH,
   addressFromContractId,
   binToHex,
@@ -60,7 +61,7 @@ describe('test auction', () => {
     const bidderContractId = subContractId(auction.contractId, path, groupIndex)
     const bidderContract = Bidder.at(addressFromContractId(bidderContractId))
     const state = await bidderContract.fetchState()
-    expect(state.asset.alphAmount).toEqual(amount + ONE_ALPH)
+    expect(state.asset.alphAmount).toEqual(amount + MINIMAL_CONTRACT_DEPOSIT)
     expect(state.fields.address).toEqual(bidder.address)
     expect(state.fields.auction).toEqual(auction.contractId)
   }

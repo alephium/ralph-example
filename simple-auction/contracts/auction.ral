@@ -37,7 +37,7 @@ Contract Auction(
     let path = toByteVec!(from)
     let bidderContractId = subContractId!(path)
     if (!contractExists!(bidderContractId)) {
-      let expectedAlphAmount = amount + 1 alph
+      let expectedAlphAmount = amount + minimalContractDeposit!()
       assert!(tokenRemaining!(from, ALPH) >= expectedAlphAmount, ErrorCodes.InvalidArg)
 
       let (encodedImmFields, encodedMutFields) = Bidder.encodeFields!(selfContract!(), from, amount)
