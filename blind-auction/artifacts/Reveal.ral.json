@@ -1,5 +1,5 @@
 {
-  "version": "v3.0.2",
+  "version": "v3.12.7",
   "name": "Reveal",
   "bytecodeTemplate": "0101030000000bb4d1a2b4{1}{2}{3}100c{0}0101",
   "fieldsSig": {
@@ -25,9 +25,6 @@
   "functions": [
     {
       "name": "main",
-      "usePreapprovedAssets": true,
-      "useAssetsInContract": false,
-      "isPublic": true,
       "paramNames": [],
       "paramTypes": [],
       "paramIsMutable": [],

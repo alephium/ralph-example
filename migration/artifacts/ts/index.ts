@@ -4,4 +4,5 @@
 
 export * from "./NewCode";
 export * from "./OldCode";
+export * from "./contracts";
 export * from "./scripts";

@@ -1,7 +1,7 @@
 import { expectAssertionError, testAddress, testPrivateKey } from '@alephium/web3-test'
 import { Auction, AuctionEnd, AuctionInstance, Bid, Bidder, GetToken, TestToken, Withdraw } from '../artifacts/ts'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
-import { ALPH_TOKEN_ID, Address, DUST_AMOUNT, ONE_ALPH, SignerProvider, groupOfAddress, web3, waitForTxConfirmation } from '@alephium/web3'
+import { ALPH_TOKEN_ID, Address, DUST_AMOUNT, ONE_ALPH, SignerProvider, groupOfAddress, web3, waitForTxConfirmation, SignTransferTxResult } from '@alephium/web3'
 import { randomBytes } from 'crypto'
 import * as base58 from 'bs58'
 
@@ -26,7 +26,8 @@ export async function deployTestToken(totalSupply: bigint) {
     },
     issueTokenAmount: totalSupply
   })
-  await GetToken.execute(defaultSigner, {
+  await GetToken.execute({
+    signer: defaultSigner,
     initialFields: {
       token: testToken.contractInstance.contractId,
       amount: totalSupply
@@ -77,12 +78,13 @@ export async function transferAlphTo(to: Address, amount: bigint) {
     defaultSigner.signAndSubmitTransferTx({
       signerAddress: testAddress,
       destinations: [{ address: to, attoAlphAmount: amount }]
-    })
+    }) as Promise<SignTransferTxResult>
   )
 }
 
 export async function bid(signer: SignerProvider, auction: AuctionInstance, amount: bigint) {
-  return await Bid.execute(signer, {
+  return await Bid.execute({
+    signer,
     initialFields: { auction: auction.contractId, amount },
     attoAlphAmount: amount + ONE_ALPH
   })
@@ -97,7 +99,10 @@ export async function bidFailed(signer: SignerProvider, auction: AuctionInstance
 }
 
 export async function withdraw(signer: SignerProvider, auction: AuctionInstance) {
-  return await Withdraw.execute(signer, { initialFields: { auction: auction.contractId } })
+  return await Withdraw.execute({
+    signer,
+    initialFields: { auction: auction.contractId }
+  })
 }
 
 export async function withdrawFailed(signer: SignerProvider, auction: AuctionInstance) {
@@ -109,7 +114,10 @@ export async function withdrawFailed(signer: SignerProvider, auction: AuctionIns
 }
 
 export async function auctionEnd(signer: SignerProvider, auction: AuctionInstance) {
-  return await AuctionEnd.execute(signer, { initialFields: { auction: auction.contractId } })
+  return await AuctionEnd.execute({
+    signer,
+    initialFields: { auction: auction.contractId }
+  })
 }
 
 export async function auctionEndFailed(signer: SignerProvider, auction: AuctionInstance, errorCode: bigint) {

@@ -1,5 +1,5 @@
 {
-  "version": "v2.3.3",
+  "version": "v3.12.7",
   "name": "NewSet",
   "bytecodeTemplate": "01010000000006{1}0d0d{0}010118",
   "fieldsSig": {
@@ -8,7 +8,7 @@
       "newN"
     ],
     "types": [
-      "ByteVec",
+      "NewCode",
       "U256"
     ],
     "isMutable": [
@@ -19,9 +19,6 @@
   "functions": [
     {
       "name": "main",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
       "paramNames": [],
       "paramTypes": [],
       "paramIsMutable": [],

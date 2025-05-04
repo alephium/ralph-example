@@ -1,5 +1,5 @@
 {
-  "version": "v3.0.2",
+  "version": "v3.12.7",
   "name": "AuctionEnd",
   "bytecodeTemplate": "010103000000040c0c{0}0102",
   "fieldsSig": {
@@ -16,9 +16,6 @@
   "functions": [
     {
       "name": "main",
-      "usePreapprovedAssets": true,
-      "useAssetsInContract": false,
-      "isPublic": true,
       "paramNames": [],
       "paramTypes": [],
       "paramIsMutable": [],

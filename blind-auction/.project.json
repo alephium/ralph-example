@@ -1,5 +1,5 @@
 {
-  "fullNodeVersion": "v3.11.1",
+  "fullNodeVersion": "v3.12.7",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
@@ -13,9 +13,9 @@
   "infos": {
     "Auction": {
       "sourceFile": "auction.ral",
-      "sourceCodeHash": "712973ad0914c8721120b9e304c6fc9a86777da230bea04135f80657058db25c",
-      "bytecodeDebugPatch": "=6-6+e6=2-1=1+7=2-2+ac=2-2+e5431a=13-1+5=93-1+d=40+7a7e0214696e73657274206174206d617020706174683a2000=134+7a7e0214696e73657274206174206d617020706174683a2000=91-1+b=177-1+4=57-1+f=225-1+c=138+7a7e021472656d6f7665206174206d617020706174683a2000=51-1+8=21-1+b=40+7a7e021472656d6f7665206174206d617020706174683a2000=300",
-      "codeHashDebug": "648a2196562521f62c79c87ba5aa4461bcc1c38b06ff97a929977faf712cf8b2"
+      "sourceCodeHash": "49b40af0717c09f4e604944039dbd18d9e1f1bcf7321994fc84d03eb44f7c68e",
+      "bytecodeDebugPatch": "=6-2+e7=2-2+88=2-2+ad=2-2+e6=1-1+31=1-1=13-1+6=95-1+d=40+7a7e0214696e73657274206174206d617020706174683a2000=134+7a7e0214696e73657274206174206d617020706174683a2000=91-1+b=177-1+4=57-1+f=225-1+c=138+7a7e021472656d6f7665206174206d617020706174683a2000=51-1+8=21-1+b=40+7a7e021472656d6f7665206174206d617020706174683a2000=300",
+      "codeHashDebug": "a57d086a89aa569a61c64fe57504f90e5c50e99710995f57ab243641d25d62b9"
     },
     "AuctionEnd": {
       "sourceFile": "scripts.ral",
@@ -25,7 +25,7 @@
     },
     "Bid": {
       "sourceFile": "auction.ral",
-      "sourceCodeHash": "712973ad0914c8721120b9e304c6fc9a86777da230bea04135f80657058db25c",
+      "sourceCodeHash": "49b40af0717c09f4e604944039dbd18d9e1f1bcf7321994fc84d03eb44f7c68e",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },

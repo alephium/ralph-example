@@ -1,4 +1,4 @@
-import { testAddress, testPrivateKey } from '@alephium/web3-test'
+import { testAddress, testPrivateKey, expectAssertionError } from '@alephium/web3-test'
 import { Auction, AuctionEnd, AuctionInstance, NewBid, Reveal } from '../artifacts/ts'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
 import {
@@ -64,7 +64,8 @@ export function randomP2PKHAddress(groupIndex = 0): string {
 }
 
 export async function bid(signer: SignerProvider, auction: AuctionInstance, amount: bigint, bidInfo: BidInfo) {
-  return await NewBid.execute(signer, {
+  return await NewBid.execute({
+    signer,
     initialFields: { auction: auction.contractId, blindedBid: bidInfo.hash, amount },
     attoAlphAmount: amount + ONE_ALPH * 2n
   })
@@ -84,7 +85,8 @@ export async function reveal(signer: SignerProvider, auction: AuctionInstance, b
   const encodedValues = bidInfos.map((bidInfo) => bidInfo.value.toString(16).padStart(64, '0')).join('')
   const encodedFakes = bidInfos.map((bidInfo) => (bidInfo.fake ? '01' : '00')).join('')
   const encodedSecrets = bidInfos.map((bidInfo) => bidInfo.secret).join('')
-  return await Reveal.execute(signer, {
+  return await Reveal.execute({
+    signer,
     initialFields: {
       auction: auction.contractId,
       values: encodedValues,
@@ -105,7 +107,8 @@ export async function revealFailed(
 }
 
 export async function auctionEnd(signer: SignerProvider, auction: AuctionInstance) {
-  return await AuctionEnd.execute(signer, {
+  return await AuctionEnd.execute({
+    signer,
     initialFields: { auction: auction.contractId },
     attoAlphAmount: DUST_AMOUNT
   })
@@ -124,10 +127,4 @@ export async function balanceOf(tokenId: string, address = testAddress): Promise
   if (tokenId === ALPH_TOKEN_ID) return BigInt(balances.balance)
   const balance = balances.tokenBalances?.find((t) => t.id === tokenId)
   return balance === undefined ? 0n : BigInt(balance.amount)
-}
-
-async function expectAssertionError(p: Promise<unknown>, address: string, errorCode: number): Promise<void> {
-  await expect(p).rejects.toThrowError(
-    new RegExp(`Assertion Failed in Contract @ ${address}, Error Code: ${errorCode}`, 'mg')
-  )
 }

@@ -5,6 +5,7 @@ import {
   ONE_ALPH,
   subContractId,
   stringToHex,
+  MINIMAL_CONTRACT_DEPOSIT,
 } from '@alephium/web3'
 import { randomContractId, testAddress, mintToken, getSigner } from '@alephium/web3-test'
 import { deployToDevnet } from '@alephium/cli'
@@ -13,15 +14,14 @@ import { LockAssets } from '../artifacts/ts'
 describe('unit tests', () => {
   const testContractId = randomContractId()
   const testTokenId = testContractId
-  const testGasFee = ONE_ALPH / 2n
   web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
 
   it('test lock alph', async () => {
     const test = async (lockAmount: bigint) => {
       const result = await LockAssets.tests.lockAlphOnly({
         blockTimeStamp: 0,
-        testArgs: { amount: lockAmount },
-        inputAssets: [{ address: testAddress, asset: { alphAmount: testGasFee + lockAmount } }]
+        args: { amount: lockAmount },
+        inputAssets: [{ address: testAddress, asset: { alphAmount: lockAmount } }]
       })
       expect(result.txOutputs.length).toEqual(1)
       const lockedOutput = result.txOutputs[0] as AssetOutput
@@ -36,12 +36,12 @@ describe('unit tests', () => {
     const test = async (inputAmount: bigint, lockAmount: bigint, alphAmount: bigint) => {
       const result = await LockAssets.tests.lockTokenOnly({
         blockTimeStamp: 0,
-        testArgs: { tokenId: testTokenId, amount: lockAmount },
+        args: { tokenId: testTokenId, amount: lockAmount },
         inputAssets: [
           {
             address: testAddress,
             asset: {
-              alphAmount: testGasFee + alphAmount,
+              alphAmount,
               tokens: [{ id: testTokenId, amount: inputAmount }]
             }
           }
@@ -62,12 +62,12 @@ describe('unit tests', () => {
     const test = async (inputAmount: bigint, lockAmount: bigint, alphAmount: bigint, expectedOutputNum: number) => {
       const result = await LockAssets.tests.lockAlphAndToken({
         blockTimeStamp: 0,
-        testArgs: { alphAmount: alphAmount, tokenId: testTokenId, tokenAmount: lockAmount },
+        args: { alphAmount, tokenId: testTokenId, tokenAmount: lockAmount },
         inputAssets: [
           {
             address: testAddress,
             asset: {
-              alphAmount: testGasFee + alphAmount,
+              alphAmount,
               tokens: [{ id: testTokenId, amount: inputAmount }]
             }
           }
