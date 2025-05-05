@@ -201,7 +201,7 @@ export const AwesomeNFTCollection = new Factory(
   Contract.fromJson(
     AwesomeNFTCollectionContractJson,
     "",
-    "86f278d2de249eca00d0c68f12167da0c1a54c02eaa8c148f89e659ae7cf11af",
+    "bfdc5f6a719295f98e2f11b8b6b600b492a9ca6ec457798dc34388a47951e89a",
     []
   )
 );
