@@ -1,5 +1,5 @@
 {
-  "fullNodeVersion": "v3.12.7",
+  "fullNodeVersion": "v3.14.0",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
@@ -19,7 +19,7 @@
     },
     "AwesomeNFTCollection": {
       "sourceFile": "awesome-nft-collection.ral",
-      "sourceCodeHash": "483dfc6c89363cd8a64c582c2a5517dd1f0a25f123dbdeb1cd5b89804986d05d",
+      "sourceCodeHash": "4341318ca3a7c1291eaf6881a9f6bada0c98ab48a860ec326cb518d7b57e3a0a",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "bfdc5f6a719295f98e2f11b8b6b600b492a9ca6ec457798dc34388a47951e89a"
     },
