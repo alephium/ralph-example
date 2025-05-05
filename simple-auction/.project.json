@@ -13,15 +13,15 @@
   "infos": {
     "Auction": {
       "sourceFile": "auction.ral",
-      "sourceCodeHash": "3a4ca7e4d7c16e5a63b399d273da49d55a1786c7d923344d2339ae502851aca1",
+      "sourceCodeHash": "af18c6fa6130e96f3147a33ba24d4c7f13ae763f3c0eada0ac66f5dbb72f07c4",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "733bd611efce1f65259d0ae48dd23ae9ba4f15113a47a49817006d0ae40546b9"
+      "codeHashDebug": "7b1c6f140a9bb755445d939b3cc5717993954ab384a2a6d1c23cabfb63c62de6"
     },
     "Bidder": {
       "sourceFile": "bidder.ral",
-      "sourceCodeHash": "17b024c825b317a487ecc6e39b3b8584a1f3c07ced5f944c14ef65c54b563139",
+      "sourceCodeHash": "92649f5673bd114d90775b15b08ce0a72e071b29e48cf755742b4ec58211fe63",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "d831408521cfc16f431ff8d1ad670710032c908039f14706afaa5b13e4ec8250"
+      "codeHashDebug": "385c3393bd0c93fa75175b8945a77006db3cc1d51613637920b331638992a81b"
     },
     "IFungibleToken": {
       "sourceFile": "../../../../../.npm/_npx/f1b120e1b513c04c/node_modules/@alephium/web3/std/fungible_token_interface.ral",

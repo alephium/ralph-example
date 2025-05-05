@@ -24,7 +24,7 @@ import {
   withdrawFailed
 } from './utils'
 import { PrivateKeyWallet } from '@alephium/web3-wallet'
-import { testAddress } from '@alephium/web3-test'
+import { expectAssertionError, testAddress } from '@alephium/web3-test'
 import * as base58 from 'bs58'
 
 describe('test auction', () => {
@@ -61,13 +61,17 @@ describe('test auction', () => {
     const bidderContractId = subContractId(auction.contractId, path, groupIndex)
     const bidderContract = Bidder.at(addressFromContractId(bidderContractId))
     const state = await bidderContract.fetchState()
-    expect(state.asset.alphAmount).toEqual(amount + MINIMAL_CONTRACT_DEPOSIT)
+    expect(state.asset.alphAmount).toEqual(amount)
     expect(state.fields.address).toEqual(bidder.address)
     expect(state.fields.auction).toEqual(auction.contractId)
   }
 
   test('bid:update highest bidder', async () => {
     const [bidder0, bidder1] = bidders
+
+    // bid lower than minimal contract deposit
+    await expectAssertionError(bid(bidder0, auction, MINIMAL_CONTRACT_DEPOSIT - 1n), auction.address, 2)
+
     await bid(bidder0, auction, alph(10))
     await checkHighestBidder(bidder0.address, alph(10))
     await checkBidderState(bidder0, alph(10))

@@ -87,7 +87,7 @@ export async function bid(signer: SignerProvider, auction: AuctionInstance, amou
   return await auction.transact.bid({
     signer,
     args: { from: from.address, amount },
-    attoAlphAmount: amount + MINIMAL_CONTRACT_DEPOSIT
+    attoAlphAmount: amount
   })
 }
 
@@ -112,7 +112,7 @@ export async function withdrawFailed(signer: SignerProvider, auction: AuctionIns
 }
 
 export async function auctionEnd(signer: SignerProvider, auction: AuctionInstance) {
-  return await auction.transact.auctionEnd({ signer })
+  return await auction.transact.auctionEnd({ signer, attoAlphAmount: DUST_AMOUNT })
 }
 
 export async function auctionEndFailed(signer: SignerProvider, auction: AuctionInstance, errorCode: bigint) {
