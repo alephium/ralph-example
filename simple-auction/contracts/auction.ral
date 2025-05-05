@@ -32,16 +32,16 @@ Contract Auction(
   pub fn bid(from: Address, amount: U256) -> () {
     assert!(blockTimeStamp!() <= auctionEndTime, ErrorCodes.AuctionAlreadyEnded)
     assert!(isAssetAddress!(from), ErrorCodes.InvalidBidderAddress)
+    assert!(amount > minimalContractDeposit!(), ErrorCodes.BidNotHighEnough)
     assert!(amount > highestBid, ErrorCodes.BidNotHighEnough)
 
     let path = toByteVec!(from)
     let bidderContractId = subContractId!(path)
     if (!contractExists!(bidderContractId)) {
-      let expectedAlphAmount = amount + 1 alph
-      assert!(tokenRemaining!(from, ALPH) >= expectedAlphAmount, ErrorCodes.InvalidArg)
+      assert!(tokenRemaining!(from, ALPH) >= amount, ErrorCodes.InvalidArg)
 
       let (encodedImmFields, encodedMutFields) = Bidder.encodeFields!(selfContract!(), from, amount)
-      let _ = copyCreateSubContract!{from -> ALPH : expectedAlphAmount}(path, bidderTemplateId, encodedImmFields, encodedMutFields)
+      let _ = copyCreateSubContract!{from -> ALPH : amount}(path, bidderTemplateId, encodedImmFields, encodedMutFields)
 
     } else {
       assert!(tokenRemaining!(from, ALPH) >= amount, ErrorCodes.InvalidArg)

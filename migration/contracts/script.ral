@@ -15,5 +15,5 @@ TxScript NewGet(contract: NewCode, expected: U256) {
 
 @using(preapprovedAssets = false)
 TxScript NewSet(contract: NewCode, newN: U256) {
-    contract.set(newN)
+    let _ = contract.set(newN)
 }

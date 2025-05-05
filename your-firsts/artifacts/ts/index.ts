@@ -5,4 +5,5 @@
 export * from "./AwesomeNFT";
 export * from "./AwesomeNFTCollection";
 export * from "./ShinyToken";
+export * from "./contracts";
 export * from "./scripts";

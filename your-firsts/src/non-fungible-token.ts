@@ -1,6 +1,6 @@
 import {
   DUST_AMOUNT,
-  ONE_ALPH,
+  MINIMAL_CONTRACT_DEPOSIT,
   binToHex,
   codec,
   stringToHex,
@@ -36,7 +36,7 @@ async function nonFungibleToken() {
   await nftCollection.transact.mint({
     signer,
     args: { nftUri: stringToHex('https://ipfs.io/ipfs/QmSeS5DQgu7Nwm5cmwhnPnRjGgA4YZYUoJJ1vRVwB3Z8iA/1') },
-    attoAlphAmount: ONE_ALPH / 10n + DUST_AMOUNT
+    attoAlphAmount: MINIMAL_CONTRACT_DEPOSIT + DUST_AMOUNT
   })
 
   // The NFT index is `0` since this is the first NFT we minted, we can calculate its contract id like this:

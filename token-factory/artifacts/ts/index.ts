@@ -4,4 +4,5 @@
 
 export * from "./Token";
 export * from "./TokenFactory";
+export * from "./contracts";
 export * from "./scripts";

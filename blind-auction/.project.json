@@ -1,5 +1,5 @@
 {
-  "fullNodeVersion": "v3.11.1",
+  "fullNodeVersion": "v3.14.0",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
@@ -13,31 +13,19 @@
   "infos": {
     "Auction": {
       "sourceFile": "auction.ral",
-      "sourceCodeHash": "712973ad0914c8721120b9e304c6fc9a86777da230bea04135f80657058db25c",
-      "bytecodeDebugPatch": "=6-6+e6=2-1=1+7=2-2+ac=2-2+e5431a=13-1+5=93-1+d=40+7a7e0214696e73657274206174206d617020706174683a2000=134+7a7e0214696e73657274206174206d617020706174683a2000=91-1+b=177-1+4=57-1+f=225-1+c=138+7a7e021472656d6f7665206174206d617020706174683a2000=51-1+8=21-1+b=40+7a7e021472656d6f7665206174206d617020706174683a2000=300",
-      "codeHashDebug": "648a2196562521f62c79c87ba5aa4461bcc1c38b06ff97a929977faf712cf8b2"
-    },
-    "AuctionEnd": {
-      "sourceFile": "scripts.ral",
-      "sourceCodeHash": "bd0ddc7f2042b7433851b5947c7ce2bb4fb6592dd4e5b5f9346340ee38a85bed",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": ""
+      "sourceCodeHash": "fc7b86e9a89b9779e8eacc3c6568d745a8667dafa2af70b4e73a44cf4cba61bb",
+      "bytecodeDebugPatch": "=6-4+e=1-1=2-2+80=2-1=1+5=2-2+de4313=12-2+52=95-1+b=34+7a7e0214696e73657274206174206d617020706174683a2000=128+7a7e0214696e73657274206174206d617020706174683a2000=91-1+b=177-1+4=57-1+f=225-1+c=136+7a7e021472656d6f7665206174206d617020706174683a2000=51-1+8=21-1+b=38+7a7e021472656d6f7665206174206d617020706174683a2000=300",
+      "codeHashDebug": "663fb20ed6c02ed38c1a0ac4bbaba391cc396e23a218896d2b2351e1fa174c66"
     },
     "Bid": {
       "sourceFile": "auction.ral",
-      "sourceCodeHash": "712973ad0914c8721120b9e304c6fc9a86777da230bea04135f80657058db25c",
+      "sourceCodeHash": "fc7b86e9a89b9779e8eacc3c6568d745a8667dafa2af70b4e73a44cf4cba61bb",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },
     "NewBid": {
       "sourceFile": "scripts.ral",
-      "sourceCodeHash": "bd0ddc7f2042b7433851b5947c7ce2bb4fb6592dd4e5b5f9346340ee38a85bed",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": ""
-    },
-    "Reveal": {
-      "sourceFile": "scripts.ral",
-      "sourceCodeHash": "bd0ddc7f2042b7433851b5947c7ce2bb4fb6592dd4e5b5f9346340ee38a85bed",
+      "sourceCodeHash": "95ab9ed36e7af50f4b063cd7623bc3d2a74fec3d0b26afda8519bb01dbf4b97b",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     }

@@ -36,6 +36,7 @@ import {
 import { default as AuctionContractJson } from "../Auction.ral.json";
 import { getContractByCodeHash, registerContract } from "./contracts";
 import { Bid, AllStructs } from "./types";
+import { RalphMap } from "@alephium/web3";
 
 // Custom types for the contract
 export namespace AuctionTypes {
@@ -140,6 +141,11 @@ export namespace AuctionTypes {
     SignExecuteMethodTable[T]["params"];
   export type SignExecuteMethodResult<T extends keyof SignExecuteMethodTable> =
     SignExecuteMethodTable[T]["result"];
+
+  export type Maps = {
+    bids?: Map<HexString, Bid>;
+    bidNum?: Map<Address, bigint>;
+  };
 }
 
 class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
@@ -170,48 +176,52 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
 
   tests = {
     bid: async (
-      params: TestContractParamsWithoutMaps<
+      params: TestContractParams<
         AuctionTypes.Fields,
-        { bidder: Address; blindedBid: HexString; deposit: bigint }
+        { bidder: Address; blindedBid: HexString; deposit: bigint },
+        AuctionTypes.Maps
       >
-    ): Promise<TestContractResultWithoutMaps<null>> => {
+    ): Promise<TestContractResult<null, AuctionTypes.Maps>> => {
       return testMethod(this, "bid", params, getContractByCodeHash);
     },
     reveal: async (
-      params: TestContractParamsWithoutMaps<
+      params: TestContractParams<
         AuctionTypes.Fields,
         {
           bidder: Address;
           values: HexString;
           fakes: HexString;
           secrets: HexString;
-        }
+        },
+        AuctionTypes.Maps
       >
-    ): Promise<TestContractResultWithoutMaps<null>> => {
+    ): Promise<TestContractResult<null, AuctionTypes.Maps>> => {
       return testMethod(this, "reveal", params, getContractByCodeHash);
     },
     auctionEnd: async (
       params: Omit<
-        TestContractParamsWithoutMaps<AuctionTypes.Fields, never>,
-        "testArgs"
+        TestContractParams<AuctionTypes.Fields, never, AuctionTypes.Maps>,
+        "args"
       >
-    ): Promise<TestContractResultWithoutMaps<null>> => {
+    ): Promise<TestContractResult<null, AuctionTypes.Maps>> => {
       return testMethod(this, "auctionEnd", params, getContractByCodeHash);
     },
     getBidNum: async (
-      params: TestContractParamsWithoutMaps<
+      params: TestContractParams<
         AuctionTypes.Fields,
-        { bidder: Address }
+        { bidder: Address },
+        AuctionTypes.Maps
       >
-    ): Promise<TestContractResultWithoutMaps<bigint>> => {
+    ): Promise<TestContractResult<bigint, AuctionTypes.Maps>> => {
       return testMethod(this, "getBidNum", params, getContractByCodeHash);
     },
     getBid: async (
-      params: TestContractParamsWithoutMaps<
+      params: TestContractParams<
         AuctionTypes.Fields,
-        { bidder: Address; index: bigint }
+        { bidder: Address; index: bigint },
+        AuctionTypes.Maps
       >
-    ): Promise<TestContractResultWithoutMaps<Bid>> => {
+    ): Promise<TestContractResult<Bid, AuctionTypes.Maps>> => {
       return testMethod(this, "getBid", params, getContractByCodeHash);
     },
   };
@@ -219,9 +229,10 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
   stateForTest(
     initFields: AuctionTypes.Fields,
     asset?: Asset,
-    address?: string
+    address?: string,
+    maps?: AuctionTypes.Maps
   ) {
-    return this.stateForTest_(initFields, asset, address, undefined);
+    return this.stateForTest_(initFields, asset, address, maps);
   }
 }
 
@@ -229,8 +240,8 @@ class Factory extends ContractFactory<AuctionInstance, AuctionTypes.Fields> {
 export const Auction = new Factory(
   Contract.fromJson(
     AuctionContractJson,
-    "=6-6+e6=2-1=1+7=2-2+ac=2-2+e5431a=13-1+5=93-1+d=40+7a7e0214696e73657274206174206d617020706174683a2000=134+7a7e0214696e73657274206174206d617020706174683a2000=91-1+b=177-1+4=57-1+f=225-1+c=138+7a7e021472656d6f7665206174206d617020706174683a2000=51-1+8=21-1+b=40+7a7e021472656d6f7665206174206d617020706174683a2000=300",
-    "648a2196562521f62c79c87ba5aa4461bcc1c38b06ff97a929977faf712cf8b2",
+    "=6-4+e=1-1=2-2+80=2-1=1+5=2-2+de4313=12-2+52=95-1+b=34+7a7e0214696e73657274206174206d617020706174683a2000=128+7a7e0214696e73657274206174206d617020706174683a2000=91-1+b=177-1+4=57-1+f=225-1+c=136+7a7e021472656d6f7665206174206d617020706174683a2000=51-1+8=21-1+b=38+7a7e021472656d6f7665206174206d617020706174683a2000=300",
+    "663fb20ed6c02ed38c1a0ac4bbaba391cc396e23a218896d2b2351e1fa174c66",
     AllStructs
   )
 );
@@ -241,6 +252,19 @@ export class AuctionInstance extends ContractInstance {
   constructor(address: Address) {
     super(address);
   }
+
+  maps = {
+    bids: new RalphMap<HexString, Bid>(
+      Auction.contract,
+      this.contractId,
+      "bids"
+    ),
+    bidNum: new RalphMap<Address, bigint>(
+      Auction.contract,
+      this.contractId,
+      "bidNum"
+    ),
+  };
 
   async fetchState(): Promise<AuctionTypes.State> {
     return fetchContractState(Auction, this);

@@ -1,3 +1,0 @@
-TxScript Withdraw(auction: Auction) {
-  auction.withdraw()
-}

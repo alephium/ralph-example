@@ -11,7 +11,7 @@ function arrayToByteVec(array: number[]): string {
 function testGet(array: number[], index: number, expected: number) {
   it(`test get ${array} ${index} ${expected}`, async () => {
     const testResult = await DynamicArrayForInt.tests.get({
-      testArgs: { array: arrayToByteVec(array), index: BigInt(index) }
+      args: { array: arrayToByteVec(array), index: BigInt(index) }
     })
     expect(testResult.returns).toEqual(BigInt(expected))
   })
@@ -20,7 +20,7 @@ function testGet(array: number[], index: number, expected: number) {
 function testUpdate(array: number[], index: number, value: number, expected: number[]) {
   it(`test update ${array} ${index} ${value}`, async () => {
     const testResult = await DynamicArrayForInt.tests.update({
-      testArgs: { array: arrayToByteVec(array), index: BigInt(index), value: BigInt(value) }
+      args: { array: arrayToByteVec(array), index: BigInt(index), value: BigInt(value) }
     })
     expect(testResult.returns).toEqual(arrayToByteVec(expected))
   })
@@ -29,7 +29,7 @@ function testUpdate(array: number[], index: number, value: number, expected: num
 function testPush(array: number[], value: number, expected: number[]) {
   it(`test push ${array} ${value}`, async () => {
     const testResult = await DynamicArrayForInt.tests.push({
-      testArgs: { array: arrayToByteVec(array), value: BigInt(value) }
+      args: { array: arrayToByteVec(array), value: BigInt(value) }
     })
     expect(testResult.returns).toEqual(arrayToByteVec(expected))
   })
@@ -38,7 +38,7 @@ function testPush(array: number[], value: number, expected: number[]) {
 function testPop(array: number[], expected: [number[], number]) {
   it(`test pop ${array}`, async () => {
     const testResult = await DynamicArrayForInt.tests.pop({
-      testArgs: { array: arrayToByteVec(array) }
+      args: { array: arrayToByteVec(array) }
     })
     expect(testResult.returns).toEqual([arrayToByteVec(expected[0]), BigInt(expected[1])])
   })
@@ -47,7 +47,7 @@ function testPop(array: number[], expected: [number[], number]) {
 function testSum(array: number[], expected: number) {
   it(`test sum ${array}`, async () => {
     const testResult = await DynamicArrayForInt.tests.sum({
-      testArgs: { array: arrayToByteVec(array) }
+      args: { array: arrayToByteVec(array) }
     })
     expect(testResult.returns).toEqual(BigInt(expected))
   })
@@ -62,7 +62,7 @@ describe('unit tests', () => {
     // Cannot use empty array
     await expect(
       DynamicArrayForInt.tests.get({
-        testArgs: { array: arrayToByteVec([]), index: 0n }
+        args: { array: arrayToByteVec([]), index: 0n }
       })
     ).rejects.toThrow('VM execution error: InvalidBytesSliceArg')
   })
@@ -74,7 +74,7 @@ describe('unit tests', () => {
     // Cannot use empty array
     await expect(
       DynamicArrayForInt.tests.update({
-        testArgs: { array: arrayToByteVec([]), index: 0n, value: 0n }
+        args: { array: arrayToByteVec([]), index: 0n, value: 0n }
       })
     ).rejects.toThrow('VM execution error: InvalidBytesSliceArg')
   })
@@ -90,7 +90,7 @@ describe('unit tests', () => {
     // Cannot use empty array
     await expect(
       DynamicArrayForInt.tests.pop({
-        testArgs: { array: arrayToByteVec([]) }
+        args: { array: arrayToByteVec([]) }
       })
     ).rejects.toThrow('VM execution error: ArithmeticError')
   })
@@ -102,7 +102,7 @@ describe('unit tests', () => {
     // Cannot use empty array
     await expect(
       DynamicArrayForInt.tests.sum({
-        testArgs: { array: arrayToByteVec([]) }
+        args: { array: arrayToByteVec([]) }
       })
     ).rejects.toThrow('VM execution error: Assertion Failed')
   })

@@ -1,5 +1,5 @@
 {
-  "version": "v2.12.0",
+  "version": "v3.12.7",
   "name": "BurnALPHScript",
   "bytecodeTemplate": "01010300000009b4{1}a2b4{1}0e0c{0}0100",
   "fieldsSig": {
@@ -19,9 +19,6 @@
   "functions": [
     {
       "name": "main",
-      "usePreapprovedAssets": true,
-      "useAssetsInContract": false,
-      "isPublic": true,
       "paramNames": [],
       "paramTypes": [],
       "paramIsMutable": [],

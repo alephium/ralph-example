@@ -3,4 +3,5 @@
 /* eslint-disable */
 
 export * from "./Gasless";
+export * from "./contracts";
 export * from "./scripts";

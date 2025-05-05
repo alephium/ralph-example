@@ -15,7 +15,7 @@
     "test": "jest -i --config ./jest-config.json"
   },
   "dependencies": {
-    "@alephium/web3": "^1.11.3"
+    "@alephium/web3": "^1.12.0-danube.0"
   },
   "devDependencies": {
     "@types/jest": "^27.5.1",

@@ -2,10 +2,13 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { RunScriptResult, DeployContractExecutionResult } from "@alephium/cli";
-import { NetworkId } from "@alephium/web3";
+import {
+  RunScriptResult,
+  DeployContractExecutionResult,
+  NetworkId,
+} from "@alephium/web3";
 import { OldCode, OldCodeInstance } from ".";
-import { default as devnetDeployments } from "../.deployments.devnet.json";
+import { default as devnetDeployments } from "../../deployments/.deployments.devnet.json";
 
 export type Deployments = {
   deployerAddress: string;
@@ -15,9 +18,9 @@ export type Deployments = {
 function toDeployments(json: any): Deployments {
   const contracts = {
     OldCode: {
-      ...json.contracts.OldCode,
+      ...json.contracts["OldCode"],
       contractInstance: OldCode.at(
-        json.contracts.OldCode.contractInstance.address
+        json.contracts["OldCode"].contractInstance.address
       ),
     },
   };
@@ -35,7 +38,7 @@ export function loadDeployments(
   if (deployments === undefined) {
     throw Error("The contract has not been deployed to the " + networkId);
   }
-  const allDeployments = Array.isArray(deployments)
+  const allDeployments: any[] = Array.isArray(deployments)
     ? deployments
     : [deployments];
   if (deployerAddress === undefined) {

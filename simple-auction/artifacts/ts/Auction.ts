@@ -214,7 +214,7 @@ export const Auction = new Factory(
   Contract.fromJson(
     AuctionContractJson,
     "",
-    "9435c062906c84ebc32204488a0d51e0c45ca6b447aceebfc23bf5f40101c1a0",
+    "7b1c6f140a9bb755445d939b3cc5717993954ab384a2a6d1c23cabfb63c62de6",
     []
   )
 );

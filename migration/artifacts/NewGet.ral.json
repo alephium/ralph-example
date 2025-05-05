@@ -1,5 +1,5 @@
 {
-  "version": "v2.3.3",
+  "version": "v3.12.7",
   "name": "NewGet",
   "bytecodeTemplate": "010100000000080c0d{0}0100{1}2f0c7b",
   "fieldsSig": {
@@ -8,7 +8,7 @@
       "expected"
     ],
     "types": [
-      "ByteVec",
+      "NewCode",
       "U256"
     ],
     "isMutable": [
@@ -19,9 +19,6 @@
   "functions": [
     {
       "name": "main",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
       "paramNames": [],
       "paramTypes": [],
       "paramIsMutable": [],

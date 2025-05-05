@@ -1,3 +1,0 @@
-TxScript AuctionEnd(auction: Auction) {
-  auction.auctionEnd()
-}

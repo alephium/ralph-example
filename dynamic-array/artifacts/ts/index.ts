@@ -3,4 +3,5 @@
 /* eslint-disable */
 
 export * from "./DynamicArrayForInt";
+export * from "./contracts";
 export * from "./scripts";

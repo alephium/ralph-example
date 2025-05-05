@@ -33,13 +33,13 @@ Contract AwesomeNFTCollection(
       assert!(nftId == contractId!(expectedTokenContract), ErrorCodes.NFTNotPartOfCollection)
   }
 
-  @using(preapprovedAssets = true, updateFields = true, checkExternalCaller = false)
+  @using(updateFields = true, checkExternalCaller = false)
   pub fn mint(nftUri: ByteVec) -> (ByteVec) {
     let minter = callerAddress!()
 
     let (initialImmState, initialMutState) = AwesomeNFT.encodeFields!(selfContractId!(), totalSupply, nftUri)
 
-    let contractId = copyCreateSubContractWithToken!{minter -> ALPH: minimalContractDeposit!()}(
+    let contractId = copyCreateSubContractWithToken!(
         toByteVec!(totalSupply),
         nftTemplateId,
         initialImmState,

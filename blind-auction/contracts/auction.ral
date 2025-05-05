@@ -26,7 +26,7 @@ Contract Auction(
     AuctionEndAlreadyCalled = 6
   }
 
-  @using(preapprovedAssets = true, assetsInContract = true, checkExternalCaller = false)
+  @using(preapprovedAssets = true, assetsInContract = true, checkExternalCaller = false, updateFields = true)
   pub fn bid(bidder: Address, blindedBid: ByteVec, deposit: U256) -> () {
     assert!(size!(blindedBid) == 32, ErrorCodes.InvalidArg)
     assert!(blockTimeStamp!() <= biddingEnd, ErrorCodes.BiddingAlreadyEnded)
@@ -34,21 +34,21 @@ Contract Auction(
 
     let mut count = 0
     if (!bidNum.contains!(bidder)) {
-      bidNum.insert!(bidder, bidder, 0)
+      bidNum.insert!(bidder, 0)
     } else {
       count = bidNum[bidder]
     }
 
     let bidKey = toByteVec!(bidder) ++ toByteVec!(count)
     let newBid = Bid { blindedBid: blindedBid, deposit: deposit }
-    bids.insert!(bidder, bidKey, newBid)
+    bids.insert!(bidKey, newBid)
     bidNum[bidder] = count + 1
     transferTokenToSelf!(bidder, ALPH, deposit)
   }
 
   // Note that if there are too many bids, there may be insufficient gas when the reveal function is executed.
   // If you want to use this code in production, please consider supporting batch reveal bids.
-  @using(preapprovedAssets = true, assetsInContract = true, updateFields = true, checkExternalCaller = false)
+  @using(assetsInContract = true, updateFields = true, checkExternalCaller = false)
   pub fn reveal(bidder: Address, values: ByteVec, fakes: ByteVec, secrets: ByteVec) -> () {
     assert!(blockTimeStamp!() > biddingEnd, ErrorCodes.BiddingNotEnd)
     assert!(blockTimeStamp!() <= revealEnd, ErrorCodes.RevealAlreadyEnded)
@@ -82,7 +82,7 @@ Contract Auction(
             highestBidder = bidder
             refund = refund - value
           }
-          bids.remove!(bidder, bidKey)
+          bids.remove!(bidKey)
           remains = remains - 1
         }
 
@@ -92,7 +92,7 @@ Contract Auction(
     }
     transferTokenFromSelf!(bidder, ALPH, refund)
     if (remains == 0) {
-      bidNum.remove!(bidder, bidder)
+      bidNum.remove!(bidder)
     }
   }
 

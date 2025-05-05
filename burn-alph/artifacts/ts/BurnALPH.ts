@@ -107,7 +107,7 @@ export const BurnALPH = new Factory(
   Contract.fromJson(
     BurnALPHContractJson,
     "",
-    "59308e31f3f450eee919ae338ed0d477a49eaa19eac964c32b35438714207fb7",
+    "7d81692ec7f4241c894c49985ed3bcf3a16ce6ef95d97d7221a5566649f053f0",
     []
   )
 );

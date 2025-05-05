@@ -1,16 +1,3 @@
 TxScript NewBid(auction: Auction, blindedBid: ByteVec, amount: U256) {
-  auction.bid{callerAddress!() -> ALPH : amount + minimalContractDeposit!() * 2}(callerAddress!(), blindedBid, amount)
-}
-
-TxScript Reveal(
-  auction: Auction,
-  values: ByteVec,
-  fakes: ByteVec,
-  secrets: ByteVec
-) {
-  auction.reveal{callerAddress!() -> ALPH: minimalContractDeposit!()}(callerAddress!(), values, fakes, secrets)
-}
-
-TxScript AuctionEnd(auction: Auction) {
-  auction.auctionEnd()
+  auction.bid{callerAddress!() -> ALPH : amount}(callerAddress!(), blindedBid, amount)
 }
