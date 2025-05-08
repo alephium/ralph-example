@@ -1,0 +1,48 @@
+Abstract Contract StakingTimeBond(
+    mut startTime: U256,
+    mut duration: U256,
+    mut earlyUnstakePenaltyPercent: U256,
+    mut owner_: Address
+) extends Permissions(owner_) {
+    enum TimeBondErrors {
+        PoolStarted = 10
+        InvalidParams = 11
+    }
+
+    fn isPoolEnded() -> Bool {
+        let endTime = startTime + duration
+
+        return blockTimeStamp!() >= endTime
+    }
+
+    fn isPoolStarted() -> Bool {
+        return blockTimeStamp!() >= startTime
+    }
+
+    @using(updateFields = true)
+    pub fn updateDuration(duration_: U256) -> () {
+        onlyOwner(callerAddress!())
+
+        duration = duration_
+    }
+
+    @using(updateFields = true)
+    pub fn updateStartTime(startTime_: U256) -> () {
+        onlyOwner(callerAddress!())
+
+        //make sure pool is not already started
+        assert!(!isPoolStarted(), TimeBondErrors.PoolStarted)
+
+        startTime = startTime_
+    }
+
+    @using(updateFields = true)
+    pub fn updateEarlyUnstakePenaltyPercent(earlyUnstakePenaltyPercent_: U256) -> () {
+        onlyOwner(callerAddress!())
+
+        //make sure percent is less than 100
+        assert!(earlyUnstakePenaltyPercent_ < 100, TimeBondErrors.InvalidParams)
+
+        earlyUnstakePenaltyPercent = earlyUnstakePenaltyPercent_
+    }
+}

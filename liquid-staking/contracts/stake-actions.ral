@@ -1,0 +1,27 @@
+TxScript Stake(staking: Staking, amount: U256) {
+    let staker = callerAddress!()
+    let tokenId = staking.getTokenId()
+    let stakingAccExists = staking.stakingAccountExists(staker)
+
+    if (stakingAccExists) {
+        staking.stake{staker -> tokenId: amount}(amount)
+    } else {
+        staking.stake{staker -> tokenId: amount, ALPH: 1 alph}(amount)
+    }
+}
+
+TxScript Unstake(staking: Staking, amount: U256) {
+    staking.unstake(amount)
+}
+
+TxScript ClaimRewards(staking: Staking) {
+    staking.claimRewards()
+}
+
+TxScript SetRewardRate(staking: Staking, rewardRate: U256) {
+    staking.setRewardRate(rewardRate)
+}
+
+TxScript UpdateStartTime(staking: Staking) {
+    staking.updateStartTime(blockTimeStamp!()) //now
+}

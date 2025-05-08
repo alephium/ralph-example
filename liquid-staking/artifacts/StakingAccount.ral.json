@@ -1,0 +1,181 @@
+{
+  "version": "v3.8.5",
+  "name": "StakingAccount",
+  "bytecode": "070b0e1c402a4038404640544072409640cb4116413f010000000103d307175852ce0002010000000103d380e5410ace0102010000000103d390cae142ce0202010000000103d300f22594a00002010000000103d3b2479cafa00102010000000103d3df45fb9ca0020201000203000cd3d39169e6b417021602ce034513147b1600a1021601a101010101020010d3d63c543cb417011601ce034513147bce02ce001600aca00016002aa10001020106001bd310bd129fb417011601ce034513147ba00016003413157ba00016002ba100ce02ce001600aba0000c2f4c02ce02b001020204004027d36006dcf6b417021602ce034513147ba00016003413157ba00016002ba100160016012c1340642d1703ce02ce00160016032babce03ce001603aba0000c2f4c02ce02b0010300020113d38a888f62b417001600ce034513147ba00217011600ce02ce011601aa0ca102160102",
+  "codeHash": "4932243b2e9ac01696a7c1fb828c0805f517f0b142ee9eddf30e13f89568129d",
+  "fieldsSig": {
+    "names": [
+      "tokenId",
+      "rewardsTokenId",
+      "staker",
+      "parentContractAddress",
+      "amountStaked",
+      "rewardPerTokenPaid",
+      "rewards"
+    ],
+    "types": [
+      "ByteVec",
+      "ByteVec",
+      "Address",
+      "Address",
+      "U256",
+      "U256",
+      "U256"
+    ],
+    "isMutable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true
+    ]
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "getTokenId",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "getRewardsTokenId",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "getStaker",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "Address"
+      ]
+    },
+    {
+      "name": "getAmountStaked",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "getRewardPerTokenPaid",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "getRewards",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "setRewards",
+      "paramNames": [
+        "newRewards",
+        "newRewardPerToken"
+      ],
+      "paramTypes": [
+        "U256",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "stake",
+      "paramNames": [
+        "amount"
+      ],
+      "paramTypes": [
+        "U256"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "unstake",
+      "paramNames": [
+        "amount"
+      ],
+      "paramTypes": [
+        "U256"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "unstakeWithPenalty",
+      "paramNames": [
+        "amount",
+        "penalty"
+      ],
+      "paramTypes": [
+        "U256",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "claimRewards",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    }
+  ],
+  "constants": [],
+  "enums": [
+    {
+      "name": "StakingAccountErrorCodes",
+      "fields": [
+        {
+          "name": "UnauthorizedAccess",
+          "value": {
+            "type": "U256",
+            "value": "20"
+          }
+        },
+        {
+          "name": "InsufficientBalance",
+          "value": {
+            "type": "U256",
+            "value": "21"
+          }
+        }
+      ]
+    }
+  ]
+}
