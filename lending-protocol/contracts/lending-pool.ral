@@ -1,0 +1,140 @@
+const ZERO_ADDRESS = @0000000000000000000000000000000000
+
+Contract LendingPool (token: Address, mut borrowInterestRate: U256, mut lendingInterestRate: U256, caller: Address) {
+
+    // Token amount record
+    let mut totalSupplyAmount: U256 = 0
+    let mut totalBorrowAmount: U256 = 0
+
+    // Error codes
+    enum ErrorCodes {
+        INVALID_CALLER_CONTRACT = 401
+        INVALID_BORROWER = 403
+        INSUFFICIENT_AMOUNT = 400
+    }
+
+    // Transactions Data structure
+    struct LenderTransaction {
+        user: Address,
+        mut amount: U256
+    }
+    struct BorrowTransaction {
+        user: Address,
+        collateral: Address,
+        mut amount: U256,
+        mut interest: U256,
+        mut dateLastBorrowed: U256
+    }
+
+    // Transactions Record
+    let supplies: [LenderTransaction; 1000000000] =  [LenderTransaction {user: @0000000000000000000000000000000000, amount: 0}; 1000000000]
+    let suppliesPointer: U256 = 0
+    let borrows: [BorrowTransaction; 1000000000] =  [
+        BorrowTransaction {
+            user: @0000000000000000000000000000000000,
+            collateral: @0000000000000000000000000000000000,
+            amount: 0,
+            interest: 0,
+            dateLastBorrowed: 0
+        }; 1000000000
+    ]
+    let borrowsPointer: U256 = 0
+
+    fn checkCaller() {
+        let _caller = callerAddress!();
+        assert!(_caller == caller, ErrorCodes.INVALID_CALLER_CONTRACT)
+    }
+
+    pub fn getTotalSupply() -> U256 {
+        return totalSupplyAmount;
+    }
+
+    pub fn getTotalBorrow() -> U256 {
+        return totalBorrowAmount;
+    }
+
+    pub fn updateLendingInterestRate(value: U256){
+        checkCaller()
+        lendingInterestRate = value
+    }
+
+    pub fn updateBorrowInterestRate(value: U256){
+        checkCaller()
+        borrowInterestRate = value
+    }
+
+    pub fn getBorrowInterestRate() -> U256 {
+        return borrowInterestRate
+    }
+    pub fn getLendingInterestRate() -> U256 {
+        return lendingInterestRate
+    }
+
+    pub fn supply(_user: Address, amount: U256) -> () {
+        checkCaller()
+        let mut lender = getLender(_user)
+        if (lender.user == ZERO_ADDRESS) {
+            lender = LenderTransaction{
+                user: _user,
+                amount: amount
+            }
+            supplies[suppliesPointer] = lender
+            suppliesPointer = suppliesPointer + 1
+        }else{
+            lender.amount = lender.amount + amount
+        }
+    }
+
+    pub fn borrow(_user: Address, _collateralToken: Address, amount: U256) -> () {
+        checkCaller()
+        let mut borrowerIndex = getBorrower(_user)
+        if (borrowerIndex == -1) {
+            borrower = BorrowTransaction{
+                user: _user,
+                collateral: _collateralToken
+                amount: amount,
+                interest: borrowInterestRate,
+                dateLastBorrowed: blockTimeStamp!()
+
+            }
+            borrows[borrowsPointer] = borrower
+            borrowsPointer = borrowsPointer + 1
+        }else{
+            borrows[borrowerIndex].amount = borrows[borrowerIndex].amount + amount
+            borrows[borrowerIndex].dateLastBorrowed = blockTimeStamp!()
+        }
+        totalBorrowAmount = totalBorrowAmount + amount
+        totalSupplyAmount = totalSupplyAmount - amount
+    }
+
+    pub fn repay(_user: Address, amount: U256) -> () {
+        checkCaller()
+        let mut borrowerIndex = getBorrower(_user)
+        assert!(borrowerIndex != -1, ErrorCodes.INVALID_BORROWER)
+        let amountToPay = borrows[borrowerIndex].amount + (borrows[borrowerIndex].amount * (borrows[borrowerIndex].interest / 100))
+        assert!(amount >= amountToPay, ErrorCodes.INSUFFICIENT_AMOUNT)
+        totalBorrowAmount = totalBorrowAmount + borrows[borrowerIndex].amount
+        totalSupplyAmount = totalSupplyAmount + amount
+        borrows[borrowerIndex].amount = 0
+        borrows[borrowerIndex].dateLastBorrowed = 0
+        borrows[borrowerIndex].interest = 0
+    }
+
+    fn getLender(_user: Address) -> I256 {
+        for (let mut index = 0; index <= suppliesPointer; index = index + 1) {
+            if(supplies[index].user == _user){
+                return index
+            }
+        }
+        return -1
+    }
+
+    fn getBorrower(_user: Address) -> I256 {
+        for (let mut index = 0; index <= borrowsPointer; index = index + 1) {
+            if(borrows[index].user == _user){
+                return index
+            }
+        }
+        return -1
+    }
+}
