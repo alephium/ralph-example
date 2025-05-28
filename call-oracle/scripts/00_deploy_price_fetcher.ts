@@ -4,7 +4,7 @@ import { PriceFetcher } from '../artifacts/ts/PriceFetcher'
 
 const deployPriceFetcher: DeployFunction<Settings> = async (deployer: Deployer, network: Network<Settings>): Promise<void> => {
   const result = await deployer.deployContract(PriceFetcher, { initialFields: {
-    oracle: network.settings.oracleAddress,
+    oracle: network.settings.priceOracleAddress,
     btcPrice: 0n,
     ethPrice: 0n,
     usdcPrice: 0n,

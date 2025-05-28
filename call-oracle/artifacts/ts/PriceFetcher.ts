@@ -21,6 +21,7 @@ import {
   callMethod,
   multicallMethods,
   fetchContractState,
+  Asset,
   ContractInstance,
   getContractEventsCurrentCount,
   TestContractParamsWithoutMaps,
@@ -30,10 +31,11 @@ import {
   signExecuteMethod,
   addStdIdToFields,
   encodeContractFields,
+  Narrow,
 } from "@alephium/web3";
 import { default as PriceFetcherContractJson } from "../PriceFetcher.ral.json";
-import { getContractByCodeHash } from "./contracts";
-import { DIAOracleValue, AllStructs } from "./types";
+import { getContractByCodeHash, registerContract } from "./contracts";
+import { DIAOracleValue, DIARandomValue, AllStructs } from "./types";
 
 // Custom types for the contract
 export namespace PriceFetcherTypes {
@@ -66,6 +68,9 @@ export namespace PriceFetcherTypes {
       ? CallMethodTable[MaybeName]["result"]
       : undefined;
   };
+  export type MulticallReturnType<Callss extends MultiCallParams[]> = {
+    [index in keyof Callss]: MultiCallResults<Callss[index]>;
+  };
 
   export interface SignExecuteMethodTable {
     update: {
@@ -91,10 +96,6 @@ class Factory extends ContractFactory<
     );
   }
 
-  getInitialFieldsWithDefaultValues() {
-    return this.contract.getInitialFieldsWithDefaultValues() as PriceFetcherTypes.Fields;
-  }
-
   at(address: string): PriceFetcherInstance {
     return new PriceFetcherInstance(address);
   }
@@ -109,6 +110,14 @@ class Factory extends ContractFactory<
       return testMethod(this, "update", params, getContractByCodeHash);
     },
   };
+
+  stateForTest(
+    initFields: PriceFetcherTypes.Fields,
+    asset?: Asset,
+    address?: string
+  ) {
+    return this.stateForTest_(initFields, asset, address, undefined);
+  }
 }
 
 // Use this object to test and deploy the contract
@@ -120,6 +129,7 @@ export const PriceFetcher = new Factory(
     AllStructs
   )
 );
+registerContract(PriceFetcher);
 
 // Use this class to interact with the blockchain
 export class PriceFetcherInstance extends ContractInstance {

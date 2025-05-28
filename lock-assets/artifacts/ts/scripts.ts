@@ -11,22 +11,4 @@ import {
   SignerProvider,
   HexString,
 } from "@alephium/web3";
-import { default as LockAlphAndTokenScriptJson } from "../LockAlphAndToken.ral.json";
-import { default as LockAlphOnlyScriptJson } from "../LockAlphOnly.ral.json";
-import { default as LockTokenOnlyScriptJson } from "../LockTokenOnly.ral.json";
-
-export const LockAlphAndToken = new ExecutableScript<{
-  lockAssets: HexString;
-  alphAmount: bigint;
-  tokenId: HexString;
-  tokenAmount: bigint;
-}>(Script.fromJson(LockAlphAndTokenScriptJson));
-export const LockAlphOnly = new ExecutableScript<{
-  lockAssets: HexString;
-  amount: bigint;
-}>(Script.fromJson(LockAlphOnlyScriptJson));
-export const LockTokenOnly = new ExecutableScript<{
-  lockAssets: HexString;
-  tokenId: HexString;
-  amount: bigint;
-}>(Script.fromJson(LockTokenOnlyScriptJson));
+import { getContractByCodeHash } from "./contracts";

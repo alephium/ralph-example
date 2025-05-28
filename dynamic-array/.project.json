@@ -1,55 +1,51 @@
 {
-  "fullNodeVersion": "v3.0.2",
+  "fullNodeVersion": "v3.11.1",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
     "ignoreUnusedFieldsWarnings": false,
     "ignoreUnusedPrivateFunctionsWarnings": false,
     "ignoreUpdateFieldsCheckWarnings": false,
-    "ignoreCheckExternalCallerWarnings": false
+    "ignoreCheckExternalCallerWarnings": false,
+    "ignoreUnusedFunctionReturnWarnings": false,
+    "skipAbstractContractCheck": false
   },
   "infos": {
     "DynamicArrayForInt": {
       "sourceFile": "dynamic-array.ral",
       "sourceCodeHash": "1f088238b343b759e2ab5ef47656046ea94765e9390a267abcd704f57b0db7b0",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "ea33ddedad28b33a021266875424e3eb0656da6e5162ed1dbce764875ba43d01",
-      "warnings": []
+      "codeHashDebug": "ea33ddedad28b33a021266875424e3eb0656da6e5162ed1dbce764875ba43d01"
     },
     "Get": {
       "sourceFile": "scripts.ral",
       "sourceCodeHash": "287e39d08dc2cd4faf5c0f8dd1d631316e2a2f2d8051d85a3142790049cde22d",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
+      "codeHashDebug": ""
     },
     "Pop": {
       "sourceFile": "scripts.ral",
       "sourceCodeHash": "287e39d08dc2cd4faf5c0f8dd1d631316e2a2f2d8051d85a3142790049cde22d",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
+      "codeHashDebug": ""
     },
     "Push": {
       "sourceFile": "scripts.ral",
       "sourceCodeHash": "287e39d08dc2cd4faf5c0f8dd1d631316e2a2f2d8051d85a3142790049cde22d",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
+      "codeHashDebug": ""
     },
     "Sum": {
       "sourceFile": "scripts.ral",
       "sourceCodeHash": "287e39d08dc2cd4faf5c0f8dd1d631316e2a2f2d8051d85a3142790049cde22d",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
+      "codeHashDebug": ""
     },
     "Update": {
       "sourceFile": "scripts.ral",
       "sourceCodeHash": "287e39d08dc2cd4faf5c0f8dd1d631316e2a2f2d8051d85a3142790049cde22d",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
+      "codeHashDebug": ""
     }
   }
 }

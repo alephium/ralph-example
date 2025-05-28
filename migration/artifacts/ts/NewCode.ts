@@ -9,7 +9,7 @@ import {
   TestContractResult,
   HexString,
   ContractFactory,
-  SubscribeOptions,
+  EventSubscribeOptions,
   EventSubscription,
   CallContractParams,
   CallContractResult,
@@ -21,11 +21,20 @@ import {
   callMethod,
   multicallMethods,
   fetchContractState,
+  Asset,
   ContractInstance,
   getContractEventsCurrentCount,
+  TestContractParamsWithoutMaps,
+  TestContractResultWithoutMaps,
+  SignExecuteContractMethodParams,
+  SignExecuteScriptTxResult,
+  signExecuteMethod,
+  addStdIdToFields,
+  encodeContractFields,
+  Narrow,
 } from "@alephium/web3";
 import { default as NewCodeContractJson } from "../NewCode.ral.json";
-import { getContractByCodeHash } from "./contracts";
+import { getContractByCodeHash, registerContract } from "./contracts";
 
 // Custom types for the contract
 export namespace NewCodeTypes {
@@ -57,25 +66,62 @@ export namespace NewCodeTypes {
       ? CallMethodTable[MaybeName]["result"]
       : undefined;
   };
+  export type MulticallReturnType<Callss extends MultiCallParams[]> = {
+    [index in keyof Callss]: MultiCallResults<Callss[index]>;
+  };
+
+  export interface SignExecuteMethodTable {
+    get: {
+      params: Omit<SignExecuteContractMethodParams<{}>, "args">;
+      result: SignExecuteScriptTxResult;
+    };
+    set: {
+      params: SignExecuteContractMethodParams<{ m: bigint }>;
+      result: SignExecuteScriptTxResult;
+    };
+  }
+  export type SignExecuteMethodParams<T extends keyof SignExecuteMethodTable> =
+    SignExecuteMethodTable[T]["params"];
+  export type SignExecuteMethodResult<T extends keyof SignExecuteMethodTable> =
+    SignExecuteMethodTable[T]["result"];
 }
 
 class Factory extends ContractFactory<NewCodeInstance, NewCodeTypes.Fields> {
+  encodeFields(fields: NewCodeTypes.Fields) {
+    return encodeContractFields(
+      addStdIdToFields(this.contract, fields),
+      this.contract.fieldsSig,
+      []
+    );
+  }
+
   at(address: string): NewCodeInstance {
     return new NewCodeInstance(address);
   }
 
   tests = {
     get: async (
-      params: Omit<TestContractParams<NewCodeTypes.Fields, never>, "testArgs">
-    ): Promise<TestContractResult<bigint>> => {
-      return testMethod(this, "get", params);
+      params: Omit<
+        TestContractParamsWithoutMaps<NewCodeTypes.Fields, never>,
+        "testArgs"
+      >
+    ): Promise<TestContractResultWithoutMaps<bigint>> => {
+      return testMethod(this, "get", params, getContractByCodeHash);
     },
     set: async (
-      params: TestContractParams<NewCodeTypes.Fields, { m: bigint }>
-    ): Promise<TestContractResult<bigint>> => {
-      return testMethod(this, "set", params);
+      params: TestContractParamsWithoutMaps<NewCodeTypes.Fields, { m: bigint }>
+    ): Promise<TestContractResultWithoutMaps<bigint>> => {
+      return testMethod(this, "set", params, getContractByCodeHash);
     },
   };
+
+  stateForTest(
+    initFields: NewCodeTypes.Fields,
+    asset?: Asset,
+    address?: string
+  ) {
+    return this.stateForTest_(initFields, asset, address, undefined);
+  }
 }
 
 // Use this object to test and deploy the contract
@@ -83,9 +129,11 @@ export const NewCode = new Factory(
   Contract.fromJson(
     NewCodeContractJson,
     "",
-    "16ef550a08d9e4991afd5af65516e28bd52f408260de4c1b3d331edd59d68288"
+    "5ab600c02f43c3e503464bcd10a714a49fe69a69d72ef6ad69a3c07700127c39",
+    []
   )
 );
+registerContract(NewCode);
 
 // Use this class to interact with the blockchain
 export class NewCodeInstance extends ContractInstance {
@@ -97,7 +145,7 @@ export class NewCodeInstance extends ContractInstance {
     return fetchContractState(NewCode, this);
   }
 
-  methods = {
+  view = {
     get: async (
       params?: NewCodeTypes.CallMethodParams<"get">
     ): Promise<NewCodeTypes.CallMethodResult<"get">> => {
@@ -116,14 +164,28 @@ export class NewCodeInstance extends ContractInstance {
     },
   };
 
+  transact = {
+    get: async (
+      params: NewCodeTypes.SignExecuteMethodParams<"get">
+    ): Promise<NewCodeTypes.SignExecuteMethodResult<"get">> => {
+      return signExecuteMethod(NewCode, this, "get", params);
+    },
+    set: async (
+      params: NewCodeTypes.SignExecuteMethodParams<"set">
+    ): Promise<NewCodeTypes.SignExecuteMethodResult<"set">> => {
+      return signExecuteMethod(NewCode, this, "set", params);
+    },
+  };
+
   async multicall<Calls extends NewCodeTypes.MultiCallParams>(
     calls: Calls
-  ): Promise<NewCodeTypes.MultiCallResults<Calls>> {
-    return (await multicallMethods(
-      NewCode,
-      this,
-      calls,
-      getContractByCodeHash
-    )) as NewCodeTypes.MultiCallResults<Calls>;
+  ): Promise<NewCodeTypes.MultiCallResults<Calls>>;
+  async multicall<Callss extends NewCodeTypes.MultiCallParams[]>(
+    callss: Narrow<Callss>
+  ): Promise<NewCodeTypes.MulticallReturnType<Callss>>;
+  async multicall<
+    Callss extends NewCodeTypes.MultiCallParams | NewCodeTypes.MultiCallParams[]
+  >(callss: Callss): Promise<unknown> {
+    return await multicallMethods(NewCode, this, callss, getContractByCodeHash);
   }
 }

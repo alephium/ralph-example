@@ -11,24 +11,28 @@ import {
   SignerProvider,
   HexString,
 } from "@alephium/web3";
+import { getContractByCodeHash } from "./contracts";
 import { default as AuctionEndScriptJson } from "../AuctionEnd.ral.json";
 import { default as BidScriptJson } from "../Bid.ral.json";
 import { default as GetTokenScriptJson } from "../test/GetToken.ral.json";
 import { default as WithdrawScriptJson } from "../Withdraw.ral.json";
 
 export const AuctionEnd = new ExecutableScript<{ auction: HexString }>(
-  Script.fromJson(AuctionEndScriptJson, "", [])
+  Script.fromJson(AuctionEndScriptJson, "", []),
+  getContractByCodeHash
 );
 
 export const Bid = new ExecutableScript<{ auction: HexString; amount: bigint }>(
-  Script.fromJson(BidScriptJson, "", [])
+  Script.fromJson(BidScriptJson, "", []),
+  getContractByCodeHash
 );
 
 export const GetToken = new ExecutableScript<{
   token: HexString;
   amount: bigint;
-}>(Script.fromJson(GetTokenScriptJson, "", []));
+}>(Script.fromJson(GetTokenScriptJson, "", []), getContractByCodeHash);
 
 export const Withdraw = new ExecutableScript<{ auction: HexString }>(
-  Script.fromJson(WithdrawScriptJson, "", [])
+  Script.fromJson(WithdrawScriptJson, "", []),
+  getContractByCodeHash
 );

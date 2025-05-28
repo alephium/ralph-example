@@ -2,15 +2,24 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { RunScriptResult, DeployContractExecutionResult } from "@alephium/cli";
-import { NetworkId } from "@alephium/web3";
-import { PriceFetcher, PriceFetcherInstance } from ".";
+import {
+  RunScriptResult,
+  DeployContractExecutionResult,
+  NetworkId,
+} from "@alephium/web3";
+import {
+  PriceFetcher,
+  PriceFetcherInstance,
+  RandomnessFetcher,
+  RandomnessFetcherInstance,
+} from ".";
 import { default as testnetDeployments } from "../../deployments/.deployments.testnet.json";
 
 export type Deployments = {
   deployerAddress: string;
   contracts: {
     PriceFetcher: DeployContractExecutionResult<PriceFetcherInstance>;
+    RandomnessFetcher: DeployContractExecutionResult<RandomnessFetcherInstance>;
   };
 };
 
@@ -22,6 +31,15 @@ function toDeployments(json: any): Deployments {
         json.contracts["PriceFetcher"].contractInstance.address
       ),
     },
+    RandomnessFetcher:
+      json.contracts["RandomnessFetcher"] === undefined
+        ? undefined
+        : {
+            ...json.contracts["RandomnessFetcher"],
+            contractInstance: RandomnessFetcher.at(
+              json.contracts["RandomnessFetcher"].contractInstance.address
+            ),
+          },
   };
   return {
     ...json,

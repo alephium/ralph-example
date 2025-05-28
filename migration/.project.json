@@ -1,55 +1,51 @@
 {
-  "fullNodeVersion": "v2.3.3",
+  "fullNodeVersion": "v3.11.1",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
     "ignoreUnusedFieldsWarnings": false,
     "ignoreUnusedPrivateFunctionsWarnings": false,
     "ignoreUpdateFieldsCheckWarnings": false,
-    "ignoreCheckExternalCallerWarnings": false
+    "ignoreCheckExternalCallerWarnings": false,
+    "ignoreUnusedFunctionReturnWarnings": false,
+    "skipAbstractContractCheck": false
   },
   "infos": {
     "MigrateWithFields": {
       "sourceFile": "script.ral",
       "sourceCodeHash": "0b842f9009fe0a64f3bf64d7fffc06f6d7c8aad9eda55c22c248fd293047629c",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
+      "codeHashDebug": ""
     },
     "NewCode": {
       "sourceFile": "contract.ral",
-      "sourceCodeHash": "67ae5ebd3898d49df2ae88afadf58bc28a0f4cc26f058df9117091e400937363",
+      "sourceCodeHash": "45a6e5879ed825314981f5eb4a86053f160402dc367ed52a315ce0f8b5a3d1cb",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "16ef550a08d9e4991afd5af65516e28bd52f408260de4c1b3d331edd59d68288",
-      "warnings": []
+      "codeHashDebug": "5ab600c02f43c3e503464bcd10a714a49fe69a69d72ef6ad69a3c07700127c39"
     },
     "NewGet": {
       "sourceFile": "script.ral",
       "sourceCodeHash": "0b842f9009fe0a64f3bf64d7fffc06f6d7c8aad9eda55c22c248fd293047629c",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
+      "codeHashDebug": ""
     },
     "NewSet": {
       "sourceFile": "script.ral",
       "sourceCodeHash": "0b842f9009fe0a64f3bf64d7fffc06f6d7c8aad9eda55c22c248fd293047629c",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
+      "codeHashDebug": ""
     },
     "OldCode": {
       "sourceFile": "contract.ral",
-      "sourceCodeHash": "67ae5ebd3898d49df2ae88afadf58bc28a0f4cc26f058df9117091e400937363",
+      "sourceCodeHash": "45a6e5879ed825314981f5eb4a86053f160402dc367ed52a315ce0f8b5a3d1cb",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "aaad7b5fbaa43e5176f92b4688ca4cad6526f060aeec52b6766f5262f070286b",
-      "warnings": []
+      "codeHashDebug": "8ff6f6893bf0e2e97ab43f96a94fd26d70966186994b73750c599e3fa9bf1c9c"
     },
     "OldGet": {
       "sourceFile": "script.ral",
       "sourceCodeHash": "0b842f9009fe0a64f3bf64d7fffc06f6d7c8aad9eda55c22c248fd293047629c",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
+      "codeHashDebug": ""
     }
   }
 }

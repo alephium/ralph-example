@@ -1,26 +1,20 @@
 import {
   web3,
-  Project,
-  addressFromContractId,
   AssetOutput,
   DUST_AMOUNT,
   ONE_ALPH,
+  subContractId,
+  stringToHex,
 } from '@alephium/web3'
 import { randomContractId, testAddress, mintToken, getSigner } from '@alephium/web3-test'
 import { deployToDevnet } from '@alephium/cli'
-import { LockAlphAndToken, LockAlphOnly, LockAssets, LockTokenOnly } from '../artifacts/ts'
+import { LockAssets } from '../artifacts/ts'
 
 describe('unit tests', () => {
   const testContractId = randomContractId()
   const testTokenId = testContractId
-  const testContractAddress = addressFromContractId(testContractId)
-  const testGasFee = 62500000000000000n // The default gas fee for unit tests
-
-  // We initialize the fixture variables before all tests
-  beforeAll(async () => {
-    web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
-    await Project.build()
-  })
+  const testGasFee = ONE_ALPH / 2n
+  web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
 
   it('test lock alph', async () => {
     const test = async (lockAmount: bigint) => {
@@ -103,34 +97,57 @@ describe('unit tests', () => {
 })
 
 describe('integration tests', () => {
-  beforeAll(async () => {
-    web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
-    await Project.build()
-  })
+  web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
 
   it('should lock Alph and tokens on devnet', async () => {
+    const nodeProvider = web3.getCurrentNodeProvider()
     const signer = await getSigner(ONE_ALPH * 100n, 0)
     const deployments = await deployToDevnet()
     const { contractId: tokenId } = await mintToken(signer.address, 1000n)
-    const deployed = deployments.getDeployedContractResult(0, 'LockAssets')
-    if (deployed === undefined) {
-      throw new Error('The contract is not deployed on group 0')
+    const deployedLockAssets = deployments.getDeployedContractResult(0, 'LockAssets')
+    if (deployedLockAssets === undefined) {
+      throw new Error('The LockAssets contract is not deployed on group 0')
     }
-    const lockAddress = deployed.contractInstance.address
-    await LockAlphOnly.execute(signer, {
-      initialFields: { lockAssets: lockAddress, amount: ONE_ALPH },
-      attoAlphAmount: ONE_ALPH
+    const lockAddress = deployedLockAssets.contractInstance.address
+    const lockAssetsContract = LockAssets.at(lockAddress)
+    await lockAssetsContract.transact.lockAlphOnly({
+      signer, args: { amount: ONE_ALPH }, attoAlphAmount: ONE_ALPH
     })
-    await LockTokenOnly.execute(signer, {
-      initialFields: { lockAssets: lockAddress, tokenId, amount: 100n },
+    await lockAssetsContract.transact.lockTokenOnly({
+      signer,
+      args: { tokenId, amount: 100n },
       attoAlphAmount: ONE_ALPH,
       tokens: [{ id: tokenId, amount: 100n }]
     })
-    await LockAlphAndToken.execute(signer, {
-      initialFields: { lockAssets: lockAddress, tokenId, tokenAmount: 100n, alphAmount: ONE_ALPH },
+    await lockAssetsContract.transact.lockAlphAndToken({
+      signer,
+      args: { tokenId, tokenAmount: 100n, alphAmount: ONE_ALPH },
       attoAlphAmount: ONE_ALPH,
       tokens: [{ id: tokenId, amount: 100n }]
     })
 
+    const deployedTokenToBeLocked = deployments.getDeployedContractResult(0, 'TokenToBeLocked')
+    if (deployedTokenToBeLocked === undefined) {
+      throw new Error('The TokenToBeLocked contract is not deployed on group 0')
+    }
+
+    const tokenName = stringToHex("lockToken")
+    const oneDayFromNow = BigInt(Date.now() + 86400000)
+    const recipient = await getSigner()
+    await lockAssetsContract.transact.mintAndLockToken({
+      signer,
+      args: {
+        tokenContractTemplateId: deployedTokenToBeLocked.contractInstance.contractId,
+        tokenName,
+        recipient: recipient.address,
+        amount: 2n,
+        till: oneDayFromNow
+       },
+      attoAlphAmount: ONE_ALPH
+    })
+
+    const lockedTokenId = subContractId(deployedLockAssets.contractInstance.contractId, tokenName, 0)
+    const recipientBalance = await nodeProvider.addresses.getAddressesAddressBalance(recipient.address)
+    expect(recipientBalance.lockedTokenBalances).toEqual([{ id: lockedTokenId, amount: "2" }])
   }, 20000)
 })

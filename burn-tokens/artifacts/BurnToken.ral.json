@@ -1,5 +1,5 @@
 {
-  "version": "v2.9.0",
+  "version": "v3.11.1",
   "name": "BurnToken",
   "bytecodeTemplate": "01010300000004b4{0}{1}bd",
   "fieldsSig": {
@@ -19,9 +19,6 @@
   "functions": [
     {
       "name": "main",
-      "usePreapprovedAssets": true,
-      "useAssetsInContract": false,
-      "isPublic": true,
       "paramNames": [],
       "paramTypes": [],
       "paramIsMutable": [],

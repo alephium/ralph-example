@@ -1,8 +1,8 @@
 {
-  "version": "v2.3.3",
+  "version": "v3.11.1",
   "name": "OldCode",
-  "bytecode": "0102094022010000000102ce000201000204000b130064160113016417031702160016021603bb",
-  "codeHash": "aaad7b5fbaa43e5176f92b4688ca4cad6526f060aeec52b6766f5262f070286b",
+  "bytecode": "01020e402c010000000103d3f36cd8e4ce000201000204000cd3c061357e130064160113016417031702160016021603bb",
+  "codeHash": "8ff6f6893bf0e2e97ab43f96a94fd26d70966186994b73750c599e3fa9bf1c9c",
   "fieldsSig": {
     "names": [
       "n"
@@ -18,9 +18,6 @@
   "functions": [
     {
       "name": "get",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
       "paramNames": [],
       "paramTypes": [],
       "paramIsMutable": [],
@@ -30,9 +27,6 @@
     },
     {
       "name": "migrateWithFields",
-      "usePreapprovedAssets": false,
-      "useAssetsInContract": false,
-      "isPublic": true,
       "paramNames": [
         "newCode",
         "newN"

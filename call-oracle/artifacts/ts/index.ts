@@ -3,4 +3,5 @@
 /* eslint-disable */
 
 export * from "./PriceFetcher";
+export * from "./RandomnessFetcher";
 export * from "./scripts";

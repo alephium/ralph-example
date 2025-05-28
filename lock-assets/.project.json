@@ -1,41 +1,27 @@
 {
-  "fullNodeVersion": "v2.8.5",
+  "fullNodeVersion": "v3.12.1",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
     "ignoreUnusedFieldsWarnings": false,
     "ignoreUnusedPrivateFunctionsWarnings": false,
     "ignoreUpdateFieldsCheckWarnings": false,
-    "ignoreCheckExternalCallerWarnings": false
+    "ignoreCheckExternalCallerWarnings": false,
+    "ignoreUnusedFunctionReturnWarnings": false,
+    "skipAbstractContractCheck": false
   },
   "infos": {
-    "LockAlphAndToken": {
-      "sourceFile": "lock-assets.ral",
-      "sourceCodeHash": "73f67057ed3ca6a7279cf850bf8eff728839d32897889007dbcf184b5e8bd96f",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
-    },
-    "LockAlphOnly": {
-      "sourceFile": "lock-assets.ral",
-      "sourceCodeHash": "73f67057ed3ca6a7279cf850bf8eff728839d32897889007dbcf184b5e8bd96f",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
-    },
     "LockAssets": {
       "sourceFile": "lock-assets.ral",
-      "sourceCodeHash": "73f67057ed3ca6a7279cf850bf8eff728839d32897889007dbcf184b5e8bd96f",
-      "bytecodeDebugPatch": "=4-2=2-2+27=3-1+c408d=11-1+b7e010c6c6f636b416c70684f6e6c79=47+f7=1+010d6c6f636b546f6b656e4f6e6c79=73+f7e01106c6f636b416c7068416e64546f6b656=49",
-      "codeHashDebug": "cdae77471b252db59a9318e4f1de08d7a93feb2a583fc775a4d332d60613fdd5",
-      "warnings": []
+      "sourceCodeHash": "4e26ab1e3aa5c607286cdb6781c58d026cc73db15231cf2284d75b7e40f91c37",
+      "bytecodeDebugPatch": "=4-2=2-2+2c=3-1+6=4+40e1=11-1+c=10+7e010c6c6f636b416c70684f6e6c79=46+1=1-1=10+7e010d6c6f636b546f6b656e4f6e6c79=72+1=1-1=10+7e01106c6f636b416c7068416e64546f6b656e=59-1+3=10+7e01106d696e74416e644c6f636b546f6b656e=78",
+      "codeHashDebug": "d6eaf14baefe5e9314e05f4627748ebd9c0531cfa2d638604a79fd26196806e3"
     },
-    "LockTokenOnly": {
+    "TokenToBeLocked": {
       "sourceFile": "lock-assets.ral",
-      "sourceCodeHash": "73f67057ed3ca6a7279cf850bf8eff728839d32897889007dbcf184b5e8bd96f",
+      "sourceCodeHash": "4e26ab1e3aa5c607286cdb6781c58d026cc73db15231cf2284d75b7e40f91c37",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
+      "codeHashDebug": "e8e6cac2676e02d58337b1ceddc4754544bf37c8d41aeeda1c44ad348f969a7b"
     }
   }
 }

@@ -2,6 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export * from "./OldCode";
 export * from "./NewCode";
+export * from "./OldCode";
 export * from "./scripts";

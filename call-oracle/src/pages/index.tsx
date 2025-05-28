@@ -1,7 +1,7 @@
 import React from 'react'
 import styles from '@/styles/Home.module.css'
 import { AlephiumConnectButton, useWallet } from '@alephium/web3-react'
-import PriceUpdater from '@/components/PriceUpdater'
+import OracleUpdater from '@/components/OracleUpdater'
 
 export default function Home() {
   const { connectionStatus } = useWallet()
@@ -11,7 +11,7 @@ export default function Home() {
       <div className={styles.container}>
         <AlephiumConnectButton />
         {connectionStatus === 'connected' && (
-          <PriceUpdater />
+          <OracleUpdater />
         )}
       </div>
     </>

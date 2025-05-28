@@ -1,33 +1,10 @@
-# My dApp Template
+# Blind Auction
 
-## Install
+A decentralized blind auction implementation on the Alephium blockchain. In a blind auction (also known as a sealed-bid auction), bidders submit their bids without knowing others' bids, and the highest bidder wins.
 
-```
-npm install
-```
+## Features
 
-## Start a local devnet for testing and development
-
-```
-npx @alephium/cli@latest devnet start
-```
-
-## Compile
-
-Compile the TypeScript files into JavaScript:
-
-```
-npx @alephium/cli@latest compile 
-```
-
-## Stop/restart devnet
-
-```
-npx @alephium/cli@latest devnet stop
-```
-
-## Testing
-
-```
-npx @alephium/cli@latest test
-```
+- Secure and private bidding process
+- Automated winner selection
+- Fair and transparent auction mechanism
+- Built on Alephium blockchain

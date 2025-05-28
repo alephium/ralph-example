@@ -11,6 +11,7 @@ import {
   SignerProvider,
   HexString,
 } from "@alephium/web3";
+import { getContractByCodeHash } from "./contracts";
 import { default as GetScriptJson } from "../Get.ral.json";
 import { default as PopScriptJson } from "../Pop.ral.json";
 import { default as PushScriptJson } from "../Push.ral.json";
@@ -22,27 +23,27 @@ export const Get = new ExecutableScript<{
   array: HexString;
   index: bigint;
   expected: bigint;
-}>(Script.fromJson(GetScriptJson, "", []));
+}>(Script.fromJson(GetScriptJson, "", []), getContractByCodeHash);
 
 export const Pop = new ExecutableScript<{
   contract: HexString;
   array: HexString;
   expectedArray: HexString;
   expectedValue: bigint;
-}>(Script.fromJson(PopScriptJson, "", []));
+}>(Script.fromJson(PopScriptJson, "", []), getContractByCodeHash);
 
 export const Push = new ExecutableScript<{
   contract: HexString;
   array: HexString;
   value: bigint;
   expected: HexString;
-}>(Script.fromJson(PushScriptJson, "", []));
+}>(Script.fromJson(PushScriptJson, "", []), getContractByCodeHash);
 
 export const Sum = new ExecutableScript<{
   contract: HexString;
   array: HexString;
   expected: bigint;
-}>(Script.fromJson(SumScriptJson, "", []));
+}>(Script.fromJson(SumScriptJson, "", []), getContractByCodeHash);
 
 export const Update = new ExecutableScript<{
   contract: HexString;
@@ -50,4 +51,4 @@ export const Update = new ExecutableScript<{
   index: bigint;
   value: bigint;
   expected: HexString;
-}>(Script.fromJson(UpdateScriptJson, "", []));
+}>(Script.fromJson(UpdateScriptJson, "", []), getContractByCodeHash);

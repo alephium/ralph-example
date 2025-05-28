@@ -1,34 +1,51 @@
 {
-  "fullNodeVersion": "v3.5.0",
+  "fullNodeVersion": "v3.11.1",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
     "ignoreUnusedFieldsWarnings": false,
     "ignoreUnusedPrivateFunctionsWarnings": false,
     "ignoreUpdateFieldsCheckWarnings": false,
-    "ignoreCheckExternalCallerWarnings": false
+    "ignoreCheckExternalCallerWarnings": false,
+    "ignoreUnusedFunctionReturnWarnings": false,
+    "skipAbstractContractCheck": false
   },
   "infos": {
     "DIAOracleValue": {
       "sourceFile": "price_fetcher.ral",
       "sourceCodeHash": "0b4cfa86cb15cee0dbfb5d7f31800b82025f6b44aea7439558d6912f2bb84bc3",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
+      "codeHashDebug": ""
+    },
+    "DIARandomValue": {
+      "sourceFile": "randomness_fetcher.ral",
+      "sourceCodeHash": "1acb45228441eb23ce7eb3fee85cee4eafe4fbfcf31d6ebaf9a701bc7a9defd0",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
     },
     "IDIAOracle": {
       "sourceFile": "price_fetcher.ral",
       "sourceCodeHash": "0b4cfa86cb15cee0dbfb5d7f31800b82025f6b44aea7439558d6912f2bb84bc3",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "",
-      "warnings": []
+      "codeHashDebug": ""
+    },
+    "IDIARandomOracle": {
+      "sourceFile": "randomness_fetcher.ral",
+      "sourceCodeHash": "1acb45228441eb23ce7eb3fee85cee4eafe4fbfcf31d6ebaf9a701bc7a9defd0",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
     },
     "PriceFetcher": {
       "sourceFile": "price_fetcher.ral",
       "sourceCodeHash": "0b4cfa86cb15cee0dbfb5d7f31800b82025f6b44aea7439558d6912f2bb84bc3",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "234c356f92e0e441323a14f31234857df46285aba20dc9423bccba90b0f3714e",
-      "warnings": []
+      "codeHashDebug": "234c356f92e0e441323a14f31234857df46285aba20dc9423bccba90b0f3714e"
+    },
+    "RandomnessFetcher": {
+      "sourceFile": "randomness_fetcher.ral",
+      "sourceCodeHash": "1acb45228441eb23ce7eb3fee85cee4eafe4fbfcf31d6ebaf9a701bc7a9defd0",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "35741d21031f56a1da31947e25bb2861663566b8d9a3e254155cd0651db416c6"
     }
   }
 }
