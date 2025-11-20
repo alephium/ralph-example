@@ -1,0 +1,21 @@
+{
+  "fullNodeVersion": "v3.8.5",
+  "compilerOptionsUsed": {
+    "ignoreUnusedConstantsWarnings": false,
+    "ignoreUnusedVariablesWarnings": false,
+    "ignoreUnusedFieldsWarnings": false,
+    "ignoreUnusedPrivateFunctionsWarnings": false,
+    "ignoreUpdateFieldsCheckWarnings": false,
+    "ignoreCheckExternalCallerWarnings": false,
+    "ignoreUnusedFunctionReturnWarnings": false,
+    "skipAbstractContractCheck": false
+  },
+  "infos": {
+    "StableSwap": {
+      "sourceFile": "token.ral",
+      "sourceCodeHash": "ff5df47d3ff020aab77153a2a34a9769102d343c96ab5e36279abd1f1d2cb402",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "f2e7f01c2c27781486310a479aa6977e1af238f4be92e4810bc3ce84ade5b24b"
+    }
+  }
+}
