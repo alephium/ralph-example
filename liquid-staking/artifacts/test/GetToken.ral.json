@@ -1,0 +1,28 @@
+{
+  "version": "v3.8.5",
+  "name": "GetToken",
+  "bytecodeTemplate": "01010300000006b4{1}0e0c{0}0104",
+  "fieldsSig": {
+    "names": [
+      "token",
+      "amount"
+    ],
+    "types": [
+      "TestToken",
+      "U256"
+    ],
+    "isMutable": [
+      false,
+      false
+    ]
+  },
+  "functions": [
+    {
+      "name": "main",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    }
+  ]
+}

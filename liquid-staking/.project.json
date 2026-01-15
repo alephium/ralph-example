@@ -1,0 +1,92 @@
+{
+  "fullNodeVersion": "v3.8.5",
+  "compilerOptionsUsed": {
+    "ignoreUnusedConstantsWarnings": false,
+    "ignoreUnusedVariablesWarnings": false,
+    "ignoreUnusedFieldsWarnings": false,
+    "ignoreUnusedPrivateFunctionsWarnings": false,
+    "ignoreUpdateFieldsCheckWarnings": false,
+    "ignoreCheckExternalCallerWarnings": false,
+    "ignoreUnusedFunctionReturnWarnings": false
+  },
+  "infos": {
+    "ClaimRewards": {
+      "sourceFile": "stake-actions.ral",
+      "sourceCodeHash": "5b8d00d7cc54fe35cca638b2a565f9fcb53e44743d5cdc119af9995dcc0c1cf7",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "GetToken": {
+      "sourceFile": "test/get_token.ral",
+      "sourceCodeHash": "422128094e7c46cf6e7e079fe0c257d12b943e335ce3fed2f0833bb660afb59b",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "IFungibleToken": {
+      "sourceFile": "../node_modules/@alephium/web3/std/fungible_token_interface.ral",
+      "sourceCodeHash": "62910bf11e1eeb6cb2fd468626ff606a9b06306b2b81590c3b10f6deb5966bde",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "Permissions": {
+      "sourceFile": "permissions.ral",
+      "sourceCodeHash": "195838d2b7ad318ddb3a47b7e7fd843b4a202a37d7dfb8ca9be7766eff483958",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "SetRewardRate": {
+      "sourceFile": "stake-actions.ral",
+      "sourceCodeHash": "5b8d00d7cc54fe35cca638b2a565f9fcb53e44743d5cdc119af9995dcc0c1cf7",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "Stake": {
+      "sourceFile": "stake-actions.ral",
+      "sourceCodeHash": "5b8d00d7cc54fe35cca638b2a565f9fcb53e44743d5cdc119af9995dcc0c1cf7",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "Staking": {
+      "sourceFile": "staking.ral",
+      "sourceCodeHash": "bf5a35e5007b27fba02cfeb9fc267d421e8650ee529161b510d0378d6169c255",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "5a7f28d9d1802c0bdcc4cbc89db92c28e7b61f555c2e12caac4624cf2ac0dcac"
+    },
+    "StakingAccount": {
+      "sourceFile": "staking_account.ral",
+      "sourceCodeHash": "81984e661b3a7952c6fb2d81b468b249124c84eb61583551b301ec4f6a2b83ba",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "4932243b2e9ac01696a7c1fb828c0805f517f0b142ee9eddf30e13f89568129d"
+    },
+    "StakingAccountFactory": {
+      "sourceFile": "staking_account_factory.ral",
+      "sourceCodeHash": "d9d219a19b7e8d816f538e593b3ee47f5c66912240ad1b7f84a8ed49b2915c36",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "StakingTimeBond": {
+      "sourceFile": "staking_timebond.ral",
+      "sourceCodeHash": "0c24eed97e13ae179352dab803d90091487a9909e436ac30b9bdab4ea271c7a2",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "TestToken": {
+      "sourceFile": "test/test_token.ral",
+      "sourceCodeHash": "4ec56d341212f266f1ba88ee87be49850d00bc389098d95df510375b381fd17b",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": "d959b6752da129d379f006c4280b0dc4960155fa453a51d0d055424781069f80"
+    },
+    "Unstake": {
+      "sourceFile": "stake-actions.ral",
+      "sourceCodeHash": "5b8d00d7cc54fe35cca638b2a565f9fcb53e44743d5cdc119af9995dcc0c1cf7",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    },
+    "UpdateStartTime": {
+      "sourceFile": "stake-actions.ral",
+      "sourceCodeHash": "5b8d00d7cc54fe35cca638b2a565f9fcb53e44743d5cdc119af9995dcc0c1cf7",
+      "bytecodeDebugPatch": "",
+      "codeHashDebug": ""
+    }
+  }
+}

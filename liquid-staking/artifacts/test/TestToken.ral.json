@@ -1,0 +1,78 @@
+{
+  "version": "v3.8.5",
+  "name": "TestToken",
+  "bytecode": "02050a141d402640370100000001021401000201000000010214010002010000000102131202010000000102ce0002010202020005d359e9ded71600b11601ab",
+  "codeHash": "d959b6752da129d379f006c4280b0dc4960155fa453a51d0d055424781069f80",
+  "fieldsSig": {
+    "names": [
+      "totalSupply",
+      "__stdInterfaceId"
+    ],
+    "types": [
+      "U256",
+      "ByteVec"
+    ],
+    "isMutable": [
+      false,
+      false
+    ]
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "getSymbol",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "getName",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "getDecimals",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "getTotalSupply",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "U256"
+      ]
+    },
+    {
+      "name": "getToken",
+      "paramNames": [
+        "sender",
+        "amount"
+      ],
+      "paramTypes": [
+        "Address",
+        "U256"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": []
+    }
+  ],
+  "constants": [],
+  "enums": [],
+  "stdInterfaceId": "0001"
+}
