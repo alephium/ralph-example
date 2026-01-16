@@ -1,0 +1,107 @@
+struct Request {
+    mut lat: U256,
+    mut lon: U256,
+    mut status: Bool,
+    mut temp: ByteVec
+}
+
+Contract WeatherDataFeed(
+    owner: Address,
+    mut authorizedOraclesCount: U256,
+    mut lastTimestamp: U256,
+    mut lastRequestId: ByteVec,
+    fee: U256,
+    feeWallet: Address
+) {
+    mapping[Address, Bool] authorizedOracles
+    mapping[ByteVec, Request] requests
+
+    event NewRequest(requestId: ByteVec, lat: U256, lon: U256)
+    event RequestCompleted(requestId: ByteVec, temp: ByteVec)
+
+    enum ErrorCodes {
+        UnauthorizedOracle = 0
+        InvalidCaller = 1
+        InvalidTimestamp = 2
+    }
+
+    @using(preapprovedAssets = true, updateFields = true)
+    pub fn addOracle(newOracle: Address) -> () {
+        // Ensure only the owner can add oracles
+        checkCaller!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
+
+        authorizedOracles.insert!(callerAddress!(), newOracle, true)
+        authorizedOraclesCount = authorizedOraclesCount + 1
+    }
+
+    @using(updateFields = true)
+    pub fn removeOracle(oracle: Address) -> () {
+        // Ensure only the owner can remove oracles
+        checkCaller!(callerAddress!() == owner, ErrorCodes.InvalidCaller)
+
+        authorizedOracles.remove!(callerAddress!(), oracle)
+        authorizedOraclesCount = authorizedOraclesCount - 1
+    }
+
+    pub fn checkOracle(oracle: Address) -> Bool {
+        return authorizedOracles[oracle]
+    }
+
+    @using(preapprovedAssets = true, checkExternalCaller = false)
+    pub fn makeRequest(lat: U256, lon: U256) -> ByteVec {
+        let caller = callerAddress!()
+
+        // Create a unique request ID
+        let requestId = blake2b!(toByteVec!(lat) ++ toByteVec!(lon) ++ toByteVec!(blockTimeStamp!()) ++ toByteVec!(caller))
+
+        // Initialize the request
+        requests.insert!(caller, requestId, Request {
+            lat: lat,
+            lon: lon,
+            status: false,
+            temp: zeros!(5)
+        })
+
+        // Pay fee to the oracle
+        transferToken!(caller, feeWallet, ALPH, fee)
+
+        // Emit the new request event
+        emit NewRequest(requestId, lat, lon)
+
+        return requestId
+    }
+
+    @using(updateFields = true)
+    pub fn completeRequest(requestId: ByteVec, temp: ByteVec, publicKey: ByteVec, signature: ByteVec, timestamp: U256) -> () {
+        let caller = callerAddress!()
+
+        // Ensure only authorized oracles can complete requests
+        checkCaller!(authorizedOracles[caller], ErrorCodes.UnauthorizedOracle)
+
+        // Ensure the timestamp is valid
+        assert!(lastTimestamp <= timestamp, ErrorCodes.InvalidTimestamp)
+
+        // Verify signature       
+        verifySecP256K1!(requestId, publicKey, signature)
+
+        // Update the request
+        let existingRequest = requests[requestId]
+        requests[requestId] = Request {
+            lat: existingRequest.lat,
+            lon: existingRequest.lon,
+            status: true,
+            temp: temp
+        }
+
+        // Update state variables
+        lastTimestamp = blockTimeStamp!()
+        lastRequestId = requestId
+
+        // Emit the completion event
+        emit RequestCompleted(requestId, temp)
+    }
+
+    pub fn getRequest(requestId: ByteVec) -> Request {
+        return requests[requestId]
+    }
+}
