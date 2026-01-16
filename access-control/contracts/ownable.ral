@@ -1,0 +1,102 @@
+Contract OwnerControl(
+    mut owner: Address,
+    mut proposedOwner: Address
+) {
+
+    mapping[Address, ByteVec] rolesMapping
+    mapping[ByteVec, ByteVec] roleAdminsMapping
+
+    mapping[U256, U256] timestamps
+
+    pub fn owner() -> Address {
+        return owner    
+    }
+
+    @using(checkExternalCaller = false, updateFields = true, preapprovedAssets = true)
+    pub fn transferOwnership(new_owner: Address) -> () {
+        assert!(callerAddress!() == owner(), 1)
+        owner = new_owner
+        proposedOwner = new_owner
+        rolesMapping.insert!(new_owner, new_owner, #)
+        rolesMapping.remove!(callerAddress!(), callerAddress!())
+    }
+
+    @using(checkExternalCaller = false, updateFields = true)
+    pub fn proposeNewOwner(proposed_owner: Address) -> () {
+        assert!(callerAddress!() == owner(), 1)
+        proposedOwner = proposed_owner
+    }
+
+    @using(checkExternalCaller = false, updateFields = true, preapprovedAssets = true)
+    pub fn acceptOwnership(res: Bool) -> () {
+        assert!(callerAddress!() == proposedOwner, 2)
+        if (res) {
+            rolesMapping.remove!(owner, owner)
+            owner = proposedOwner
+            proposedOwner = nullContractAddress!()
+            rolesMapping.insert!(owner, owner, #)
+        } else {
+            proposedOwner = nullContractAddress!()
+        }
+    }
+
+    @using(checkExternalCaller = false, updateFields = true, preapprovedAssets = true)
+    pub fn renounceOwnership() -> () {
+        assert!(callerAddress!() == owner, 1)
+        rolesMapping.remove!(owner, owner)
+        owner = nullContractAddress!()
+        proposedOwner = nullContractAddress!()
+    }
+
+    pub fn hasRole(address: Address, role: ByteVec) -> Bool {
+        return rolesMapping[address] == role
+    }
+
+    pub fn getRoleAdmin(role: ByteVec) -> ByteVec {
+        return roleAdminsMapping[role]
+    }
+
+    @using(checkExternalCaller = false, preapprovedAssets = true)
+    pub fn grantRole(address: Address, role: ByteVec) -> () {
+        assert!(rolesMapping[address] == role, 3)
+        assert!(roleAdminsMapping[role] == rolesMapping[callerAddress!()], 1)
+        rolesMapping.insert!(address, address, role)
+    }
+
+    @using(checkExternalCaller = false, preapprovedAssets = true)
+    pub fn revokeRole(address: Address, role: ByteVec) -> () {
+        assert!(rolesMapping[address] == role, 3)
+        assert!(roleAdminsMapping[role] == rolesMapping[callerAddress!()], 1)
+        rolesMapping.remove!(address, address)
+    }
+
+    @using(checkExternalCaller = false, preapprovedAssets = true)
+    pub fn createRole(role: ByteVec) -> () {
+        assert!(rolesMapping[callerAddress!()] != #, 1)
+        assert!(rolesMapping[callerAddress!()] != role, 4)
+        roleAdminsMapping.insert!(callerAddress!(), rolesMapping[callerAddress!()], role)
+    }
+
+    pub fn onlyOwner() -> () {
+        assert!(callerAddress!() == owner, 1)
+    }
+
+    pub fn onlyRole(role: ByteVec) -> () {
+        assert!(rolesMapping[callerAddress!()] == role, 1)
+    }
+
+    @using(checkExternalCaller = false, preapprovedAssets = true)
+    pub fn queueOperation(delay: U256) -> Bool {
+        let current = blockTimeStamp!()
+        timestamps.insert!(callerAddress!(), current, delay)
+        while (blockTimeStamp!() != current + delay) {
+            assert!(timestamps[current] == delay, 4)
+        }
+        return true
+    }
+
+    @using(checkExternalCaller = false, preapprovedAssets = true)
+    pub fn cancelOperation(id: U256) -> () {
+        timestamps.remove!(callerAddress!(), id)
+    }
+}

@@ -1,0 +1,218 @@
+{
+  "version": "v3.8.5",
+  "name": "OwnerControl",
+  "bytecode": "020e0e4056406b40be40ec4111413241a0420b4276428742ac42fc431d010000000103d3c7497323a0000201030101001dd31b2c73fcb40000450d7b1600a1001600a1011600d1a2140a5f5f6d61705f5f305f5f16004744b11400d20101b40d0c140a5f5f6d61705f5f305f5fb44744cb0103010001010008d35eb6ba75b40000450d7b1600a10101030101004022d342a4056db4a001450e7b16004c18a0000d0c140a5f5f6d61705f5f305f5fa0004744cb0103a001a100caa101a000d1a2140a5f5f6d61705f5f305f5fa0004744b11400d201014a02caa101010300000013d38066b350b4a000450d7ba0000d0c140a5f5f6d61705f5f305f5fa0004744cb0103caa100caa10101000202010dd3ba5c17700c0d0d140a5f5f6d61705f5f305f5f16004744cb01011601410201000101010ad3e25c60910c0d0d140a5f5f6d61705f5f315f5f160044cb0101020103020200402cd38beba4c40c0d0d140a5f5f6d61705f5f305f5f16004744cb01011601410f7b0c0d0d140a5f5f6d61705f5f315f5f160144cb01010c0d0d140a5f5f6d61705f5f305f5fb44744cb0101410d7b1600d1a2140a5f5f6d61705f5f305f5f16004744b11601d201010103020200402bd3a43dcab40c0d0d140a5f5f6d61705f5f305f5f16004744cb01011601410f7b0c0d0d140a5f5f6d61705f5f315f5f160144cb01010c0d0d140a5f5f6d61705f5f305f5fb44744cb0101410d7b16000d0c140a5f5f6d61705f5f305f5f16004744cb01030103010100402cd32bcee2aa0c0d0d140a5f5f6d61705f5f305f5fb44744cb01011400420d7b0c0d0d140a5f5f6d61705f5f305f5fb44744cb0101160042107bb4d1a2140a5f5f6d61705f5f315f5f0c0d0d140a5f5f6d61705f5f305f5fb44744cb010144b11600d20101010000000006d36d89afffb4a000450d7b01000101000ed377ecc1980c0d0d140a5f5f6d61705f5f305f5fb44744cb01011600410d7b01030102014023d32c39dc66561701b4d1a2140a5f5f6d61705f5f325f5f16014044b11600d2010156160116002a304c0e0c0d0d140a5f5f6d61705f5f325f5f16014044cb010116002f107b4a2c030201030101000ad3005de27bb40d0c140a5f5f6d61705f5f325f5f16004044cb0103",
+  "codeHash": "cda00d19131e4605cda978b4a9d77e6725d6659a0076f70e3199c67cc24921d4",
+  "fieldsSig": {
+    "names": [
+      "owner",
+      "proposedOwner"
+    ],
+    "types": [
+      "Address",
+      "Address"
+    ],
+    "isMutable": [
+      true,
+      true
+    ]
+  },
+  "eventsSig": [],
+  "functions": [
+    {
+      "name": "owner",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": [
+        "Address"
+      ]
+    },
+    {
+      "name": "transferOwnership",
+      "paramNames": [
+        "new_owner"
+      ],
+      "paramTypes": [
+        "Address"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "proposeNewOwner",
+      "paramNames": [
+        "proposed_owner"
+      ],
+      "paramTypes": [
+        "Address"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "acceptOwnership",
+      "paramNames": [
+        "res"
+      ],
+      "paramTypes": [
+        "Bool"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "renounceOwnership",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    },
+    {
+      "name": "hasRole",
+      "paramNames": [
+        "address",
+        "role"
+      ],
+      "paramTypes": [
+        "Address",
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": [
+        "Bool"
+      ]
+    },
+    {
+      "name": "getRoleAdmin",
+      "paramNames": [
+        "role"
+      ],
+      "paramTypes": [
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": [
+        "ByteVec"
+      ]
+    },
+    {
+      "name": "grantRole",
+      "paramNames": [
+        "address",
+        "role"
+      ],
+      "paramTypes": [
+        "Address",
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "revokeRole",
+      "paramNames": [
+        "address",
+        "role"
+      ],
+      "paramTypes": [
+        "Address",
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false,
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "createRole",
+      "paramNames": [
+        "role"
+      ],
+      "paramTypes": [
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "onlyOwner",
+      "paramNames": [],
+      "paramTypes": [],
+      "paramIsMutable": [],
+      "returnTypes": []
+    },
+    {
+      "name": "onlyRole",
+      "paramNames": [
+        "role"
+      ],
+      "paramTypes": [
+        "ByteVec"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    },
+    {
+      "name": "queueOperation",
+      "paramNames": [
+        "delay"
+      ],
+      "paramTypes": [
+        "U256"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": [
+        "Bool"
+      ]
+    },
+    {
+      "name": "cancelOperation",
+      "paramNames": [
+        "id"
+      ],
+      "paramTypes": [
+        "U256"
+      ],
+      "paramIsMutable": [
+        false
+      ],
+      "returnTypes": []
+    }
+  ],
+  "constants": [],
+  "enums": [],
+  "mapsSig": {
+    "names": [
+      "rolesMapping",
+      "roleAdminsMapping",
+      "timestamps"
+    ],
+    "types": [
+      "Map[Address,ByteVec]",
+      "Map[ByteVec,ByteVec]",
+      "Map[U256,U256]"
+    ]
+  }
+}
