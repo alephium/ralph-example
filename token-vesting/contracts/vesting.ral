@@ -1,0 +1,136 @@
+struct UserVestingSchedule {
+  startTime: U256,
+  cliffTime: U256,
+  endTime: U256,
+  lockedAmount: U256,
+  totalClaimed: U256,
+  totalAmountVested: U256
+}
+
+Contract Vesting(
+  metadataTemplateId: ByteVec,
+  tokenId: ByteVec,
+  manager: Address,
+  mut totalSchedules: U256
+){
+  event Claim(recipient: Address, amount: U256)
+
+  event NewScheduleAdded(recipient: Address, startTime: U256, cliffTime:U256, endTime: U256, totalAmount: U256)
+  
+  event VestingEndedByOwner(addressToEnd: Address, amountWithdrawable: U256, amountRefundable: U256)
+
+  enum ErrorCodes {
+    InvalidCaller = 0
+    InvalidCliffTime = 1
+    InvalidEndTime = 2
+    InvalidPercentage = 3
+    InsufficientAlph = 4
+    AlreadyHasLock = 5
+    MetadataNotExists = 6
+    InsufficientToken = 7
+  }
+
+  @using(preapprovedAssets = true, updateFields = true)
+  pub fn addVestingScheduleWithPercentage(recipient: Address, startTime: U256, cliffTime: U256, endTime: U256, totalAmount: U256, percentage: U256) -> () {
+    let caller = callerAddress!()
+    checkCaller!(caller == manager, ErrorCodes.InvalidCaller)
+    assert!(percentage <= 100, ErrorCodes.InvalidPercentage)
+
+    let vestAmount = (totalAmount * percentage) / 100
+
+    assert!(cliffTime >= startTime,ErrorCodes.InvalidCliffTime)
+    assert!(endTime >= cliffTime, ErrorCodes.InvalidEndTime)
+
+    assert!(tokenRemaining!(caller, ALPH) >= minimalContractDeposit!(), ErrorCodes.InsufficientAlph)
+    assert!(tokenRemaining!(caller, tokenId) >= totalAmount, ErrorCodes.InsufficientToken)
+
+    createSub{caller -> ALPH : minimalContractDeposit!(), tokenId: totalAmount}(caller, recipient, startTime, cliffTime, endTime, vestAmount)
+    
+    totalSchedules = totalSchedules + 1
+
+    emit NewScheduleAdded(recipient, startTime, cliffTime, endTime, vestAmount)    
+  }
+
+  @using(preapprovedAssets = true, updateFields = true)
+  pub fn addVestingSchedule(recipient: Address, startTime: U256, cliffTime: U256, endTime: U256, totalAmount: U256) -> () {
+    let caller = callerAddress!()
+
+    checkCaller!(caller == manager, ErrorCodes.InvalidCaller)
+
+    assert!(cliffTime >= startTime,ErrorCodes.InvalidCliffTime)
+    assert!(endTime >= cliffTime, ErrorCodes.InvalidEndTime)
+
+    assert!(tokenRemaining!(caller, ALPH) >= minimalContractDeposit!(), ErrorCodes.InsufficientAlph)
+    assert!(tokenRemaining!(caller, tokenId) >= totalAmount, ErrorCodes.InsufficientToken)
+
+    createSub{caller -> ALPH : minimalContractDeposit!(), tokenId: totalAmount}(caller, recipient, startTime, cliffTime, endTime, totalAmount)
+    
+    totalSchedules = totalSchedules + 1
+
+    emit NewScheduleAdded(recipient, startTime, cliffTime, endTime, totalAmount)
+  }
+
+  pub fn endVesting(addressToEnd: Address, refundAddress: Address) -> () {
+    let caller = callerAddress!()
+    checkCaller!(caller == manager, ErrorCodes.InvalidCaller)
+
+    let metadata = getMetadata(addressToEnd)
+
+    let (amountWithdrawable, amountRefundable) = metadata.endVesting(refundAddress)
+
+    metadata.removeVestingSchedule()
+
+    emit VestingEndedByOwner(addressToEnd, amountWithdrawable, amountRefundable)
+  }
+ 
+  pub fn claim() -> (){
+    let caller = callerAddress!()
+    let metadata = getMetadata(caller)
+
+    let prevClaimed = metadata.getTotalAmountClaimed()
+
+    checkCaller!(caller == metadata.getAddress(), ErrorCodes.InvalidCaller)
+
+    metadata.unlockToken()
+
+    let currClaimed = metadata.getTotalAmountClaimed()
+
+    emit Claim(caller, currClaimed - prevClaimed)
+  }
+
+  pub fn getUserVestingSchedule(address: Address) -> UserVestingSchedule {
+    let metadata = getMetadata(address)
+
+    return UserVestingSchedule {
+      startTime: metadata.getStartTime(),
+      cliffTime: metadata.getCliffTime(),
+      endTime: metadata.getEndTime(),
+      lockedAmount: metadata.getTotalAmountLocked(),
+      totalClaimed: metadata.getTotalAmountClaimed(),
+      totalAmountVested: metadata.getTotalAmountVested()
+    }
+  }
+
+  pub fn getTokenId() -> ByteVec {
+    return tokenId
+  }
+
+  pub fn getTotalVestingSchedules() -> U256 {
+    return totalSchedules
+  }
+
+  @using(preapprovedAssets = true)
+  fn createSub(caller: Address, recipient: Address, startTime: U256, cliffTime: U256, endTime: U256, totalAmount: U256) -> () {
+    let path = toByteVec!(recipient)
+    let metadataContractId = subContractId!(path)
+    assert!(!contractExists!(metadataContractId), ErrorCodes.AlreadyHasLock)
+    let (encodedImmFields, encodedMutFields) = Metadata.encodeFields!(selfContract!(), recipient, startTime, cliffTime, endTime, totalAmount, 0)
+    let _ = copyCreateSubContract!{caller -> ALPH : minimalContractDeposit!(), tokenId: totalAmount}(path, metadataTemplateId, encodedImmFields, encodedMutFields)
+  }
+
+  fn getMetadata(address: Address) -> Metadata{
+    let metadataContractId = subContractId!(toByteVec!(address))
+    assert!(contractExists!(metadataContractId), ErrorCodes.MetadataNotExists)
+    return Metadata(metadataContractId)
+  }
+}
