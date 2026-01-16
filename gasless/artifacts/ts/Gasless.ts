@@ -95,7 +95,7 @@ class Factory extends ContractFactory<GaslessInstance, {}> {
     payGas: async (
       params?: Omit<
         TestContractParamsWithoutMaps<never, never>,
-        "testArgs" | "initialFields"
+        "args" | "initialFields"
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
       return testMethod(
@@ -108,7 +108,7 @@ class Factory extends ContractFactory<GaslessInstance, {}> {
     payNoGas: async (
       params?: Omit<
         TestContractParamsWithoutMaps<never, never>,
-        "testArgs" | "initialFields"
+        "args" | "initialFields"
       >
     ): Promise<TestContractResultWithoutMaps<null>> => {
       return testMethod(

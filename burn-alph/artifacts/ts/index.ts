@@ -3,4 +3,5 @@
 /* eslint-disable */
 
 export * from "./BurnALPH";
+export * from "./contracts";
 export * from "./scripts";

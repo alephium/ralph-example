@@ -168,7 +168,7 @@ export const Bidder = new Factory(
   Contract.fromJson(
     BidderContractJson,
     "",
-    "d831408521cfc16f431ff8d1ad670710032c908039f14706afaa5b13e4ec8250",
+    "385c3393bd0c93fa75175b8945a77006db3cc1d51613637920b331638992a81b",
     []
   )
 );

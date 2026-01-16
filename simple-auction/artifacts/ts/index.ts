@@ -5,4 +5,5 @@
 export * from "./Auction";
 export * from "./Bidder";
 export * from "./TestToken";
+export * from "./contracts";
 export * from "./scripts";

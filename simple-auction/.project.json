@@ -1,5 +1,5 @@
 {
-  "fullNodeVersion": "v3.11.1",
+  "fullNodeVersion": "v3.14.0",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
@@ -13,36 +13,18 @@
   "infos": {
     "Auction": {
       "sourceFile": "auction.ral",
-      "sourceCodeHash": "b52f14223a84fc2381c4e78b613e310511e4a9d1ddf9ea8561f5e30b0289411d",
+      "sourceCodeHash": "af18c6fa6130e96f3147a33ba24d4c7f13ae763f3c0eada0ac66f5dbb72f07c4",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "9435c062906c84ebc32204488a0d51e0c45ca6b447aceebfc23bf5f40101c1a0"
-    },
-    "AuctionEnd": {
-      "sourceFile": "auction_end.ral",
-      "sourceCodeHash": "47150dfb10d95a7a7144fa4054261e92e835a72efc2bcfb2bf46e617f2b3da6b",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": ""
-    },
-    "Bid": {
-      "sourceFile": "bid.ral",
-      "sourceCodeHash": "c4686bd35b18ccd304d4d740cea1da6c7b885098c5c48d956dd76cdd2fd325b0",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": ""
+      "codeHashDebug": "7b1c6f140a9bb755445d939b3cc5717993954ab384a2a6d1c23cabfb63c62de6"
     },
     "Bidder": {
       "sourceFile": "bidder.ral",
-      "sourceCodeHash": "17b024c825b317a487ecc6e39b3b8584a1f3c07ced5f944c14ef65c54b563139",
+      "sourceCodeHash": "92649f5673bd114d90775b15b08ce0a72e071b29e48cf755742b4ec58211fe63",
       "bytecodeDebugPatch": "",
-      "codeHashDebug": "d831408521cfc16f431ff8d1ad670710032c908039f14706afaa5b13e4ec8250"
-    },
-    "GetToken": {
-      "sourceFile": "test/get_token.ral",
-      "sourceCodeHash": "422128094e7c46cf6e7e079fe0c257d12b943e335ce3fed2f0833bb660afb59b",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": ""
+      "codeHashDebug": "385c3393bd0c93fa75175b8945a77006db3cc1d51613637920b331638992a81b"
     },
     "IFungibleToken": {
-      "sourceFile": "../node_modules/@alephium/web3/std/fungible_token_interface.ral",
+      "sourceFile": "../../../../../.npm/_npx/f1b120e1b513c04c/node_modules/@alephium/web3/std/fungible_token_interface.ral",
       "sourceCodeHash": "62910bf11e1eeb6cb2fd468626ff606a9b06306b2b81590c3b10f6deb5966bde",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
@@ -52,12 +34,6 @@
       "sourceCodeHash": "4ec56d341212f266f1ba88ee87be49850d00bc389098d95df510375b381fd17b",
       "bytecodeDebugPatch": "",
       "codeHashDebug": "d959b6752da129d379f006c4280b0dc4960155fa453a51d0d055424781069f80"
-    },
-    "Withdraw": {
-      "sourceFile": "withdraw.ral",
-      "sourceCodeHash": "001373f0ff87430124158ddc5c8223b9c2e3d6e1fd6f54d4d0197039adf602fc",
-      "bytecodeDebugPatch": "",
-      "codeHashDebug": ""
     }
   }
 }

@@ -4,4 +4,5 @@
 
 export * from "./LockAssets";
 export * from "./TokenToBeLocked";
+export * from "./contracts";
 export * from "./scripts";

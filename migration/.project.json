@@ -1,5 +1,5 @@
 {
-  "fullNodeVersion": "v3.11.1",
+  "fullNodeVersion": "v3.14.0",
   "compilerOptionsUsed": {
     "ignoreUnusedConstantsWarnings": false,
     "ignoreUnusedVariablesWarnings": false,
@@ -13,7 +13,7 @@
   "infos": {
     "MigrateWithFields": {
       "sourceFile": "script.ral",
-      "sourceCodeHash": "0b842f9009fe0a64f3bf64d7fffc06f6d7c8aad9eda55c22c248fd293047629c",
+      "sourceCodeHash": "656f7bf3fcb7d462f5dd78430f5318a14717521b501838ec579a194101f4bc07",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },
@@ -25,13 +25,13 @@
     },
     "NewGet": {
       "sourceFile": "script.ral",
-      "sourceCodeHash": "0b842f9009fe0a64f3bf64d7fffc06f6d7c8aad9eda55c22c248fd293047629c",
+      "sourceCodeHash": "656f7bf3fcb7d462f5dd78430f5318a14717521b501838ec579a194101f4bc07",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },
     "NewSet": {
       "sourceFile": "script.ral",
-      "sourceCodeHash": "0b842f9009fe0a64f3bf64d7fffc06f6d7c8aad9eda55c22c248fd293047629c",
+      "sourceCodeHash": "656f7bf3fcb7d462f5dd78430f5318a14717521b501838ec579a194101f4bc07",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     },
@@ -43,7 +43,7 @@
     },
     "OldGet": {
       "sourceFile": "script.ral",
-      "sourceCodeHash": "0b842f9009fe0a64f3bf64d7fffc06f6d7c8aad9eda55c22c248fd293047629c",
+      "sourceCodeHash": "656f7bf3fcb7d462f5dd78430f5318a14717521b501838ec579a194101f4bc07",
       "bytecodeDebugPatch": "",
       "codeHashDebug": ""
     }

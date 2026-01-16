@@ -4,4 +4,5 @@
 
 export * from "./PriceFetcher";
 export * from "./RandomnessFetcher";
+export * from "./contracts";
 export * from "./scripts";

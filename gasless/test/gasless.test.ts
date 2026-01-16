@@ -18,14 +18,14 @@ describe('integration tests', () => {
       }
     )
 
-    const payNoGasTxResult = await PayNoGas.execute(signer, { initialFields: { gaslessContract: contractInstance.contractId } })
+    const payNoGasTxResult = await PayNoGas.execute({signer, initialFields: { gaslessContract: contractInstance.contractId } })
     const signerBalanceAfterPayNoGasTx = await nodeProvider.addresses.getAddressesAddressBalance(signer.address)
     expect(BigInt(signerBalanceAfterPayNoGasTx.balance)).toBe(initialSignerBalance)
     const contractBalanceAfterPayNoGasTx = await nodeProvider.addresses.getAddressesAddressBalance(contractInstance.address)
     const contractGasFee = BigInt(payNoGasTxResult.gasAmount) * BigInt(payNoGasTxResult.gasPrice)
     expect(BigInt(contractBalanceAfterPayNoGasTx.balance)).toBe(initialContractBalance - contractGasFee)
 
-    const payGasResult = await PayGas.execute(signer, { initialFields: { gaslessContract: contractInstance.contractId } })
+    const payGasResult = await PayGas.execute({signer, initialFields: { gaslessContract: contractInstance.contractId } })
     const signerBalanceAfterPayGasTx = await nodeProvider.addresses.getAddressesAddressBalance(signer.address)
     const signerGasFee = BigInt(payGasResult.gasAmount) * BigInt(payGasResult.gasPrice)
     expect(BigInt(signerBalanceAfterPayGasTx.balance)).toBe(initialSignerBalance - signerGasFee)

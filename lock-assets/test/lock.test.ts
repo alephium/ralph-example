@@ -5,23 +5,25 @@ import {
   ONE_ALPH,
   subContractId,
   stringToHex,
+  MINIMAL_CONTRACT_DEPOSIT,
+  ContractOutput,
+  addressFromContractId,
 } from '@alephium/web3'
 import { randomContractId, testAddress, mintToken, getSigner } from '@alephium/web3-test'
 import { deployToDevnet } from '@alephium/cli'
-import { LockAssets } from '../artifacts/ts'
+import { LockAssets, TokenToBeLocked } from '../artifacts/ts'
 
 describe('unit tests', () => {
   const testContractId = randomContractId()
   const testTokenId = testContractId
-  const testGasFee = ONE_ALPH / 2n
   web3.setCurrentNodeProvider('http://127.0.0.1:22973', undefined, fetch)
 
   it('test lock alph', async () => {
     const test = async (lockAmount: bigint) => {
       const result = await LockAssets.tests.lockAlphOnly({
         blockTimeStamp: 0,
-        testArgs: { amount: lockAmount },
-        inputAssets: [{ address: testAddress, asset: { alphAmount: testGasFee + lockAmount } }]
+        args: { amount: lockAmount },
+        inputAssets: [{ address: testAddress, asset: { alphAmount: lockAmount } }]
       })
       expect(result.txOutputs.length).toEqual(1)
       const lockedOutput = result.txOutputs[0] as AssetOutput
@@ -36,12 +38,12 @@ describe('unit tests', () => {
     const test = async (inputAmount: bigint, lockAmount: bigint, alphAmount: bigint) => {
       const result = await LockAssets.tests.lockTokenOnly({
         blockTimeStamp: 0,
-        testArgs: { tokenId: testTokenId, amount: lockAmount },
+        args: { tokenId: testTokenId, amount: lockAmount },
         inputAssets: [
           {
             address: testAddress,
             asset: {
-              alphAmount: testGasFee + alphAmount,
+              alphAmount,
               tokens: [{ id: testTokenId, amount: inputAmount }]
             }
           }
@@ -62,12 +64,12 @@ describe('unit tests', () => {
     const test = async (inputAmount: bigint, lockAmount: bigint, alphAmount: bigint, expectedOutputNum: number) => {
       const result = await LockAssets.tests.lockAlphAndToken({
         blockTimeStamp: 0,
-        testArgs: { alphAmount: alphAmount, tokenId: testTokenId, tokenAmount: lockAmount },
+        args: { alphAmount, tokenId: testTokenId, tokenAmount: lockAmount },
         inputAssets: [
           {
             address: testAddress,
             asset: {
-              alphAmount: testGasFee + alphAmount,
+              alphAmount,
               tokens: [{ id: testTokenId, amount: inputAmount }]
             }
           }
@@ -93,6 +95,44 @@ describe('unit tests', () => {
     await expect(test(100n, 100n, DUST_AMOUNT + 1n, 1)).rejects.toThrow('VM execution error') // Not enough dust amount for the alph UTXO
     await expect(test(100n, 100n, 2n * DUST_AMOUNT - 1n, 2)).rejects.toThrow('VM execution error') // Not enough dust amount for the alph UTXO
     await expect(test(100n, 100n, 2n * DUST_AMOUNT, 2)).resolves.not.toThrow() // Just enough dust amount for the alph UTXO + the token UTXO
+  })
+
+
+  it('test mint and lock token', async () => {
+    const signer = await getSigner(ONE_ALPH)
+    const recipient = await getSigner(0n)
+
+    const contractId = randomContractId()
+    const contractAddress = addressFromContractId(contractId)
+    const tokenToBeLocked = TokenToBeLocked.stateForTest({})
+    const tokenId = subContractId(contractId, stringToHex("lockToken"), 0)
+    const tokenAddress = addressFromContractId(tokenId)
+
+    const result = await LockAssets.tests.mintAndLockToken({
+      blockTimeStamp: 0,
+      contractAddress,
+      args: {
+        tokenContractTemplateId: tokenToBeLocked.contractId,
+        tokenName: stringToHex("lockToken"),
+        recipient: recipient.address,
+        amount: 2n,
+        till: 86400000n
+      },
+      inputAssets: [{ address: signer.address, asset: { alphAmount: DUST_AMOUNT } }],
+      existingContracts: [ tokenToBeLocked ],
+      dustAmount: MINIMAL_CONTRACT_DEPOSIT
+    })
+
+    expect(result.txOutputs.length).toEqual(2)
+    const tokenContractOutput = result.txOutputs[0] as ContractOutput
+    expect(tokenContractOutput.address).toEqual(tokenAddress)
+    expect(tokenContractOutput.alphAmount).toEqual(MINIMAL_CONTRACT_DEPOSIT)
+
+    const lockedContractOutput = result.txOutputs[1] as AssetOutput
+    expect(lockedContractOutput.address).toEqual(recipient.address)
+    expect(lockedContractOutput.lockTime).toEqual(86400000)
+    expect(lockedContractOutput.alphAmount).toEqual(DUST_AMOUNT)
+    expect(lockedContractOutput.tokens).toEqual([{ id: tokenId, amount: 2n }])
   })
 })
 

@@ -1,7 +1,7 @@
 Contract TokenFactory(
     tokenTemplate: Token
 ) {
-    @using(preapprovedAssets = true, checkExternalCaller = false)
+    @using(checkExternalCaller = false)
     pub fn createToken(
         symbol: ByteVec,
         name: ByteVec,
@@ -16,7 +16,7 @@ Contract TokenFactory(
             totalSupply
         )
         let subContractPath = symbol
-        let contractId = copyCreateSubContractWithToken!{caller -> ALPH: minimalContractDeposit!()}(
+        let contractId = copyCreateSubContractWithToken!(
             subContractPath,
             contractId!(tokenTemplate),
             encodeImmutableFields,

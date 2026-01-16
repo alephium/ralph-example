@@ -23,6 +23,6 @@ Contract Bidder(auction: Auction, address: Address, mut bidAmount: U256) {
   pub fn auctionEnd(to: Address, amount: U256) -> () {
     checkCaller!(callerContractId!() == contractId!(auction), InvalidCaller)
     transferTokenFromSelf!(to, ALPH, amount)
-    destroySelf!(address)
+    destroySelf!(to)
   }
 }
