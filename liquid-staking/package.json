@@ -1,0 +1,28 @@
+{
+  "name": "liquid-staking",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "jest",
+    "build": "npx @alephium/cli compile",
+    "devnet": "bash start-devnet.sh",
+    "docker:up": "docker-compose up --build",
+    "docker:down": "docker-compose down",
+    "docker:build": "docker-compose run app npm run build"
+  },
+  "dependencies": {
+    "@alephium/web3": "0.19.2",
+    "@alephium/cli": "0.19.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.0.4",
+    "@alephium/web3-test": "0.19.2",
+    "@types/node": "^18.0.0",
+    "ts-node": "^10.9.1"
+  },
+  "engines": {
+    "node": ">=16.0.0 <21.0.0"
+  }
+}

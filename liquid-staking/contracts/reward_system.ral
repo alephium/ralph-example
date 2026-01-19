@@ -1,0 +1,143 @@
+Contract RewardSystem(
+    tokenId: ByteVec,
+    rewardTokenId: ByteVec,
+    mut baseRewardRate: U256,  // Annual rate in basis points (1% = 100)
+    mut poolPerformanceMultiplier: U256,  // In basis points (100% = 10000)
+    owner: Address
+) {
+    // Stake information for each user
+    pub struct StakeInfo {
+        amount: U256,  // Amount of tokens staked
+        startTime: U256,  // Initial stake timestamp
+        lastClaimTime: U256  // Last reward claim timestamp
+    }
+
+    // Mapping to store stake info for each address
+    mapping[Address => StakeInfo] mut stakes
+
+    // Constants for calculations (in basis points)
+    const BasisPoints: U256 = 10000
+    const MaxMultiplier: U256 = 20000  // 200%
+    const SecondsInYear: U256 = 31536000  // 365 * 24 * 60 * 60
+
+    @using(preapprovedAssets = true)
+    pub fn stake(amount: U256) -> () {
+        let caller = callerAddress!()
+        assert!(amount > 0, ErrorCodes.InvalidAmount)
+        
+        transferToken!(caller, selfAddress!(), tokenId, amount)
+        
+        let currentTime = blockTimeStamp!()
+        let stakeInfo = if (stakes.contains(caller)) {
+            let existing = stakes[caller]
+            StakeInfo {
+                amount: existing.amount + amount,
+                startTime: existing.startTime,
+                lastClaimTime: currentTime
+            }
+        } else {
+            StakeInfo {
+                amount: amount,
+                startTime: currentTime,
+                lastClaimTime: currentTime
+            }
+        }
+        
+        stakes[caller] = stakeInfo
+        emit Stake(caller, amount)
+    }
+
+    @using(preapprovedAssets = true)
+    pub fn withdraw(amount: U256) -> () {
+        let caller = callerAddress!()
+        assert!(stakes.contains(caller), ErrorCodes.NoStakeFound)
+        let stakeInfo = stakes[caller]
+        assert!(amount > 0 && amount <= stakeInfo.amount, ErrorCodes.InvalidAmount)
+        
+        // Claim any pending rewards before withdrawal
+        let rewards = calculateReward(caller)
+        if (rewards > 0) {
+            transferToken!(selfAddress!(), caller, rewardTokenId, rewards)
+            emit RewardClaimed(caller, rewards)
+        }
+        
+        // Process withdrawal
+        transferToken!(selfAddress!(), caller, tokenId, amount)
+        
+        let newAmount = stakeInfo.amount - amount
+        if (newAmount == 0) {
+            removeFromMap!(stakes, caller)
+        } else {
+            let newStakeInfo = StakeInfo {
+                amount: newAmount,
+                startTime: stakeInfo.startTime,
+                lastClaimTime: blockTimeStamp!()
+            }
+            stakes[caller] = newStakeInfo
+        }
+        
+        emit Withdraw(caller, amount)
+    }
+
+    pub fn claimRewards() -> () {
+        let caller = callerAddress!()
+        assert!(stakes.contains(caller), ErrorCodes.NoStakeFound)
+        let stakeInfo = stakes[caller]
+        
+        let reward = calculateReward(caller)
+        assert!(reward > 0, ErrorCodes.NoRewardsToClaim)
+        
+        transferToken!(selfAddress!(), caller, rewardTokenId, reward)
+        
+        let newStakeInfo = StakeInfo {
+            amount: stakeInfo.amount,
+            startTime: stakeInfo.startTime,
+            lastClaimTime: blockTimeStamp!()
+        }
+        stakes[caller] = newStakeInfo
+        
+        emit RewardClaimed(caller, reward)
+    }
+
+    fn calculateReward(staker: Address) -> U256 {
+        let stakeInfo = stakes[staker]
+        let timeElapsed = blockTimeStamp!() - stakeInfo.lastClaimTime
+        
+        // Base reward calculation
+        let baseReward = (stakeInfo.amount * baseRewardRate * timeElapsed) / (SecondsInYear * BasisPoints)
+        
+        // Apply time-based multiplier
+        let stakeDuration = blockTimeStamp!() - stakeInfo.startTime
+        let timeMultiplier = if (stakeDuration >= 30 days!()) {
+            11000  // 110%
+        } else if (stakeDuration >= 7 days!()) {
+            10500  // 105%
+        } else {
+            10000  // 100%
+        }
+        
+        // Apply pool performance multiplier and time multiplier
+        return (baseReward * timeMultiplier * poolPerformanceMultiplier) / (BasisPoints * BasisPoints)
+    }
+
+    pub fn updatePoolPerformance(newMultiplier: U256) -> () {
+        checkCaller!(callerAddress!() == owner)
+        assert!(newMultiplier > 0 && newMultiplier <= MaxMultiplier, ErrorCodes.InvalidMultiplier)
+        poolPerformanceMultiplier = newMultiplier
+        emit PoolPerformanceUpdated(newMultiplier)
+    }
+
+    // Error codes
+    const ErrorCodes = {
+        InvalidAmount: 0,
+        NoStakeFound: 1,
+        NoRewardsToClaim: 2,
+        InvalidMultiplier: 3
+    }
+
+    // Events
+    event Stake(staker: Address, amount: U256)
+    event Withdraw(staker: Address, amount: U256)
+    event RewardClaimed(staker: Address, amount: U256)
+    event PoolPerformanceUpdated(multiplier: U256)
+} 

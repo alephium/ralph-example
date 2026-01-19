@@ -1,0 +1,18 @@
+Contract Staking(
+    // ... existing fields
+    rewardSystemId: ByteVec
+) {
+    // ... existing code
+
+    @using(updateFields = true)
+    pub fn stake(amount: U256) -> () {
+        // ... existing stake logic
+        updateRewards(callerAddress!())
+    }
+
+    @using(updateFields = true)
+    pub fn unstake(amount: U256) -> () {
+        // ... existing unstake logic
+        distributeRewards(callerAddress!())
+    }
+}
