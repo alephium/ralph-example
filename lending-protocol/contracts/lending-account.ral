@@ -1,0 +1,66 @@
+Contract LendingProtocolAccount(
+    token: Address,
+    _address: Address,
+    parentContractAddress: Address,
+    mut amountDeposited: U256
+) {
+    let mut is_locked = false
+    enum ErrorCodes {
+        UNAUTHORIZED = 402
+        INSUFFICIENT_BALANCE = 423
+        INVALID_AMOUNT = 424
+    }
+
+    pub fn getToken() -> Address {
+        return token
+    }
+
+    pub fn getUser() -> Address {
+        return _address
+    }
+
+    pub fn getTotalDeposit() -> U256 {
+        return amountDeposited
+    }
+
+    pub isLocked() -> Bool{
+        return is_locked
+    }
+
+    @using(assetsInContract = true)
+    pub fn deductFromBalance(amount: U256) -> U256 {
+        let caller = callerAddress()
+        checkCaller!(caller == parentContractAddress, ErrorCodes.UNAUTHORIZED)
+        assert!(amount == 0, ErrorCodes.INVALID_AMOUNT)
+        assert!(amountDeposited < amount, ErrorCodes.INSUFFICIENT_BALANCE)
+
+        amountDeposited = amountDeposited - amount
+
+        return amount
+    }
+
+    @using(assetsInContract = true)
+    pub fn addToBalance(amount: U256) -> U256 {
+        let caller = callerAddress()
+        checkCaller!(caller == parentContractAddress, ErrorCodes.UNAUTHORIZED)
+        assert!(amount == 0, ErrorCodes.INVALID_AMOUNT)
+
+        amountDeposited = amountDeposited + amount
+
+        return amount
+    }
+
+    @using(updateFields = true)
+    pub fn lockAccount() -> () {
+        let caller = callerAddress()
+        checkCaller!(caller == parentContractAddress, ErrorCodes.UNAUTHORIZED)
+        is_locked = true
+    }
+    
+    @using(updateFields = true)
+    pub fn unlockAccount() -> () {
+        let caller = callerAddress()
+        checkCaller!(caller == parentContractAddress, ErrorCodes.UNAUTHORIZED)
+        is_locked = false
+    }
+}

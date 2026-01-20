@@ -1,0 +1,164 @@
+Contract LendingProtocol(
+    owner: Address,
+    lendingProtocolTemplateId: ByteVec
+) extends LendingProtocolAccountFactory(lendingProtocolTemplateId), Authorization(owner) {
+
+    ////////////////////////
+    // Variables
+    ////////////////////////
+    const POOL_LENGTH = 1000000000
+    let mut supportedAssets: Array[Address, POOL_LENGTH] = [#0; POOL_LENGTH]
+    let mut supportedAssetsPointer = 0
+    struct UserAccounts {
+        accounts: Array[ByteVec, POOL_LENGTH],
+        pointer: U256
+    }
+    
+    mapping[Address , U256] pool_supply
+    mapping[Address, ByteVec] addressToTokenId
+    mapping[Address, UserAccounts] userToAccounts
+
+    ////////////////////////
+    // Events
+    ////////////////////////
+
+    event Borrow(_address: Address, _token: Address, _amount: U256)
+    event Lend(_address: Address, _token: Address, _amount: U256)
+    event Repay(_address: Address, _token: Address, _amount: U256)
+    event AccounCreation(_address: Address, token: Address)
+
+    ////////////////////////
+    // Error Codes
+    ////////////////////////
+
+    enum ErrorCodes {
+        INVALID_AMOUNT = 0
+        NO_COLLATERAL = 1
+        INVALID_TOKEN = 2
+        CANNOT_BORROW = 3
+        CANNOT_LEND = 4
+        INSUFFICIENT_LIQUIDITY = 5
+    }
+
+    ////////////////////////
+    // Public Functions
+    ////////////////////////
+
+    pub fn tokenExists(token: Address) -> Bool {
+        for(let mut index = 0; index < supportedAssetsPointer; index = index + 1) {
+            if(supportedAssets[index] == token){
+                return true
+            }
+        }
+        return false
+    }
+
+    pub fn userCanBorrow(_user: Address, _collateralToken: Address, amount: U256) -> Bool {
+        // TODO: write logic to check whether user can use collateral token to borrow specified amount
+        // check whether user has deposited _collateralToken
+        // cannot borrow if collateral account is locked
+        // calculate to check whether user can use deposited amount to collect specified amount
+        if(!lendingProtocolAccountExists(_user, _collateralToken)){
+            return false
+        }
+        let account = getLendingProtocolAccount(_user, _collateralToken)
+        if(account.isLocked()){
+            return false
+        }
+        if(amount.getTotalDeposit() < amount){
+            return false
+        }
+        return true
+    }
+
+    @using(preapprovedAssets = true, updateFields = true)
+    pub fn addTokenToProtocol(tokenAddress: Address, tokenId: ByteVec, amount: U256, borrowInterest: U256, lendingInterest: U256  ) -> () {
+        // add token to protocol
+        let _caller = callerAddress!()
+        onlyOwner(_caller)
+        let (encodedImmFields, encodedMutFields) = encodeFields!(
+            tokenAddress,
+            borrowInterest,
+            lendingInterest,
+            selfAddress!(),
+        )
+        copyCreateSubContract!(
+            toByteVec!(tokenAddress),
+            lendingProtocolTemplateId,
+            encodedImmFields,
+            encodedMutFields
+        )
+        supportedAssets[supportedAssetsPointer] = tokenAddress
+        supportedAssetsPointer = supportedAssetsPointer + 1
+        addressToTokenId[tokenAddress] = tokenId
+    }
+    @using(preapprovedAssets = true, updateFields = true)
+    pub fn deposit(token: Address, amount: U256){
+        //TODO: implement a deposit logic
+    }
+    @using(preapprovedAssets = true, updateFields = true)
+    pub fn withdraw(token: Address, amount: U256){
+        //TODO: implement a withdrawal logic
+    }
+
+    @using(preapprovedAssets = true, updateFields = true)
+    pub fn borrow(token: Address, collateralToken: Address, amount: U256) -> () {
+        let _address = callerAddress!()
+
+        assert!(lendingProtocolAccountExists(_address, collateralToken))
+        assert!(amount > 0, ErrorCodes.INVALID_AMOUNT)
+        assert!(tokenExists(token), ErrorCodes.INVALID_TOKEN)
+        assert!(userCanBorrow(_address, collateralToken, amount), ErrorCodes.CANNOT_BORROW)
+        assert!(tokenRemaining!(selfAddress!(), addressToTokenId[token]) > amount, ErrorCodes.INSUFFICIENT_LIQUIDITY)
+        
+        // get collacteral account
+        let collateralAccount = getLendingProtocolAccount(_address, collateralToken)
+        collateralAccount.lockAccount()
+
+
+        let lendingPoolId = subContractId!(toByteVec!(token))
+        LendingPool(lendingPoolId).borrow(
+            _address,
+            amount
+        )
+        transferTokenFromSelf!(_address, addressToTokenId[token], amount)
+        emit Borrow(_address, token, amount)
+    }
+
+    pub fn lend(token: Address, amount: U256) -> () {
+        // TODO: add function in the lending account to increase and decrease deposited amount
+        let _address = callerAddress!()
+        assert!(lendingProtocolAccountExists(_address, token), ErrorCodes.CANNOT_LEND)
+        let account = getLendingProtocolAccount(_address, token)
+        assert!(account.getTotalDeposit() >= amount, ErrorCodes.CANNOT_LEND)
+        account.deductFromBalance(amount)
+        let lendingPoolId = subContractId!(toByteVec!(token))
+        LendingPool(lendingPoolId).supply(
+            _address,
+            amount
+        )
+        emit Lend(_address, token, amount)
+    }
+
+    @using(preapprovedAssets = true, updateFields = true)
+    pub fn repay(token: Address, amount:U256) -> () {
+        let _address = callerAddress!()
+        assert!(lendingProtocolAccountExists(_address, token))
+        let lendingPoolId = subContractId!(toByteVec!(token))
+        LendingPool(lendingPoolId).repay(
+            _address,
+            amount
+        )
+        transferTokenToSelf!(_address, addressToTokenId[token], amount)
+        emit Repay(_address, token, amount)
+    }
+
+
+    pub fn upgrade(newBytecode: ByteVec) -> () {
+        onlyOwner(callerAddress!())
+        migrate!(newBytecode)
+    }
+}
+
+
+
