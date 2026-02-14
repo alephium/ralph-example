@@ -1,0 +1,15 @@
+TxScript DisperseAirdrop10(airdrop: Airdrop, tokenId: ByteVec, amountPerAddress: U256, addresses: [Address; 10]) {    
+    airdrop.disperse10{callerAddress!() -> ALPH: (dustAmount!() * 10), tokenId: amountPerAddress * 10}(tokenId, amountPerAddress, addresses)
+}
+
+TxScript DisperseAirdrop25(airdrop: Airdrop, tokenId: ByteVec, amountPerAddress: U256, addresses: [Address; 25]) { 
+    airdrop.disperse25{callerAddress!() -> ALPH: (dustAmount!() * 25), tokenId: amountPerAddress * 25}(tokenId, amountPerAddress, addresses)
+}
+
+TxScript DisperseAirdrop50(airdrop: Airdrop, tokenId: ByteVec, amountPerAddress: U256, addresses: [Address; 50]) { 
+    airdrop.disperse50{callerAddress!() -> ALPH: (dustAmount!() * 50), tokenId: amountPerAddress * 50}(tokenId, amountPerAddress, addresses)
+}
+
+TxScript DisperseAirdrop100(airdrop: Airdrop, tokenId: ByteVec, amountPerAddress: U256, addresses: [Address; 100]) { 
+    airdrop.disperse100{callerAddress!() -> ALPH: (dustAmount!() * 100), tokenId: amountPerAddress * 100}(tokenId, amountPerAddress, addresses)
+}

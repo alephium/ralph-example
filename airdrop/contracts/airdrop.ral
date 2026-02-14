@@ -1,0 +1,42 @@
+Contract Airdrop() {
+
+    // airdrop tokens to 10 addresses
+    @using(preapprovedAssets = true, assetsInContract = false, updateFields = false, checkExternalCaller = false)
+    pub fn disperse10(tokenId: ByteVec, amountPerAddress: U256, addresses: [Address; 10]) -> () {
+        for (let mut index = 0; index < 10; index = index + 1) {
+            let recipient = addresses[index]
+            transferToken!(callerAddress!(), recipient, ALPH, dustAmount!())
+            transferToken!(callerAddress!(), recipient, tokenId, amountPerAddress)
+        }
+    }
+
+    // airdrop tokens to 25 addresses
+    @using(preapprovedAssets = true, assetsInContract = false, updateFields = false, checkExternalCaller = false)
+    pub fn disperse25(tokenId: ByteVec, amountPerAddress: U256, addresses: [Address; 25]) -> () {
+        for (let mut index = 0; index < 25; index = index + 1) {
+            let recipient = addresses[index]
+            transferToken!(callerAddress!(), recipient, ALPH, dustAmount!())
+            transferToken!(callerAddress!(), recipient, tokenId, amountPerAddress)
+        }
+    }
+
+    // airdrop tokens to 50 addresses
+    @using(preapprovedAssets = true, assetsInContract = false, updateFields = false, checkExternalCaller = false)
+    pub fn disperse50(tokenId: ByteVec, amountPerAddress: U256, addresses: [Address; 50]) -> () {
+        for (let mut index = 0; index < 50; index = index + 1) {
+            let recipient = addresses[index]
+            transferToken!(callerAddress!(), recipient, ALPH, dustAmount!())
+            transferToken!(callerAddress!(), recipient, tokenId, amountPerAddress)
+        }
+    }
+
+    // airdrop tokens to 100 addresses
+    @using(preapprovedAssets = true, assetsInContract = false, updateFields = false, checkExternalCaller = false)
+    pub fn disperse100(tokenId: ByteVec, amountPerAddress: U256, addresses: [Address; 100]) -> () {
+        for (let mut index = 0; index < 100; index = index + 1) {
+            let recipient = addresses[index]
+            transferToken!(callerAddress!(), recipient, ALPH, dustAmount!())
+            transferToken!(callerAddress!(), recipient, tokenId, amountPerAddress)
+        }
+    }
+}
